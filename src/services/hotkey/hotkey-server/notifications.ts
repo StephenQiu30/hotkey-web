@@ -8,7 +8,7 @@ export async function listNotificationsApiNotificationsGet(
   params: HotKeyAPI.listNotificationsApiNotificationsGetParams,
   options?: { [key: string]: any }
 ) {
-  return request<Record<string, any>>("/api/notifications", {
+  return request<HotKeyAPI.NotificationListResponse>("/api/notifications", {
     method: "GET",
     params: {
       // limit has a default value: 50
