@@ -28,6 +28,36 @@ export function CreatorWorkbench({ initialHotspots, trendPoints }: CreatorWorkbe
   const selected = useMemo(() => hotspots.find((item) => item.id === selectedHotspotId) ?? hotspots[0], [hotspots, selectedHotspotId]);
   const topicIdeas = rotateTopicIdeas(selected?.ai_analysis?.topic_ideas ?? [], topicRotation);
   const savedCount = hotspots.filter((item) => item.saved).length;
+  const notificationItems: HotKeyAPI.NotificationListResponse = {
+    limit: 3,
+    offset: 0,
+    items: [
+      {
+        id: 1,
+        hotspot_id: selected?.id ?? null,
+        report_id: null,
+        channel: "email",
+        recipient: credentials.email,
+        status: "skipped",
+        error_message: "SMTP 未配置时保留站内通知记录。",
+        sent_at: null,
+        created_at: "2026-05-24T10:00:00Z",
+        updated_at: "2026-05-24T10:00:00Z",
+      },
+      {
+        id: 2,
+        hotspot_id: null,
+        report_id: 30,
+        channel: "in_app",
+        recipient: "creator-workbench",
+        status: "queued",
+        error_message: null,
+        sent_at: null,
+        created_at: "2026-05-24T09:30:00Z",
+        updated_at: "2026-05-24T09:30:00Z",
+      },
+    ],
+  };
 
   function toggleFavorite(hotspotId: number) {
     setHotspots((items) => items.map((item) => (item.id === hotspotId ? { ...item, saved: !item.saved } : item)));
@@ -311,6 +341,32 @@ export function CreatorWorkbench({ initialHotspots, trendPoints }: CreatorWorkbe
             </CardContent>
           </Card>
         </div>
+
+        <Card>
+          <CardHeader className="flex-row items-center justify-between gap-3">
+            <div>
+              <CardTitle>通知列表</CardTitle>
+              <CardDescription>提醒入口与通知配置预留，契约同步自 NotificationListResponse。</CardDescription>
+            </div>
+            <Button variant="outline" size="sm" type="button">
+              <Bell aria-hidden="true" data-icon="inline-start" />
+              通知配置
+            </Button>
+          </CardHeader>
+          <CardContent className="grid gap-3 md:grid-cols-2">
+            {notificationItems.items.map((item) => (
+              <article className="rounded-lg border bg-card p-4" key={item.id}>
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="text-sm font-semibold leading-6">{item.channel === "email" ? "邮件通知" : "站内提醒入口"}</h3>
+                  <span className="rounded-md bg-secondary px-2 py-1 text-xs text-secondary-foreground">{item.status}</span>
+                </div>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  {item.error_message ?? `发送给 ${item.recipient ?? "当前创作者"}`}
+                </p>
+              </article>
+            ))}
+          </CardContent>
+        </Card>
       </section>
     </main>
   );

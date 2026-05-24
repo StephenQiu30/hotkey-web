@@ -299,6 +299,38 @@ declare namespace HotKeyAPI {
     provider: string;
   };
 
+  type NotificationListResponse = {
+    /** Items */
+    items: NotificationRead[];
+    /** Limit */
+    limit: number;
+    /** Offset */
+    offset: number;
+  };
+
+  type NotificationRead = {
+    /** Channel */
+    channel: string;
+    /** Created At */
+    created_at: string;
+    /** Error Message */
+    error_message: string | null;
+    /** Hotspot Id */
+    hotspot_id: number | null;
+    /** Id */
+    id: number;
+    /** Recipient */
+    recipient: string | null;
+    /** Report Id */
+    report_id: number | null;
+    /** Sent At */
+    sent_at: string | null;
+    /** Status */
+    status: string;
+    /** Updated At */
+    updated_at: string;
+  };
+
   type ReportCreate = {
     /** Period Start */
     period_start?: string | null;
