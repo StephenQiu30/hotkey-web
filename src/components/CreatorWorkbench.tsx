@@ -1,7 +1,7 @@
 "use client";
 
-import { Bell, Bookmark, Flame, LineChart, RefreshCw, Search, Sparkles, Star } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Bell, Bookmark, Flame, LineChart, Lock, Mail, RefreshCw, Search, Sparkles, Star } from "lucide-react";
+import { type FormEvent, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +17,11 @@ type CreatorWorkbenchProps = {
 };
 
 export function CreatorWorkbench({ initialHotspots, trendPoints }: CreatorWorkbenchProps) {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [credentials, setCredentials] = useState<HotKeyAPI.EmailLoginRequest>({
+    email: "creator@hotkey.local",
+    password: "hotkey-demo",
+  });
   const [hotspots, setHotspots] = useState(initialHotspots);
   const [selectedHotspotId, setSelectedHotspotId] = useState(initialHotspots[0]?.id ?? 0);
   const [topicRotation, setTopicRotation] = useState(0);
@@ -30,6 +35,78 @@ export function CreatorWorkbench({ initialHotspots, trendPoints }: CreatorWorkbe
 
   function handleRotateTopicIdeas() {
     setTopicRotation((value) => value + 1);
+  }
+
+  function handleEmailLogin(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsAuthenticated(Boolean(credentials.email && credentials.password));
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <main className="min-h-screen bg-background text-foreground">
+        <section className="mx-auto grid min-h-screen max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-center lg:px-8">
+          <div className="flex flex-col gap-5">
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                <Flame aria-hidden="true" />
+              </div>
+              <div>
+                <p className="text-xl font-semibold tracking-normal">HotKey</p>
+                <p className="text-sm text-muted-foreground">内容创作者热点 SaaS 台</p>
+              </div>
+            </div>
+            <div className="rounded-lg border bg-gradient-to-br from-primary/20 via-card to-card p-5 shadow-sm">
+              <p className="text-sm font-medium text-muted-foreground">邮箱登录后进入创作者工作流</p>
+              <h1 className="mt-3 max-w-3xl text-3xl font-semibold leading-tight tracking-normal sm:text-4xl">
+                从登录开始，把热点快速整理成今日选题。
+              </h1>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
+                MVP 阶段优先打通 Web 邮箱/密码入口、热点榜单、快速理解与内容选题生成链路。
+              </p>
+            </div>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>邮箱登录</CardTitle>
+              <CardDescription>使用 Web 邮箱/密码账号进入工作台。</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form className="flex flex-col gap-4" onSubmit={handleEmailLogin}>
+                <label className="flex flex-col gap-2 text-sm font-medium">
+                  邮箱
+                  <span className="flex items-center gap-2 rounded-md border bg-background px-3 py-2">
+                    <Mail aria-hidden="true" className="text-muted-foreground" />
+                    <input
+                      className="min-w-0 flex-1 bg-transparent text-sm outline-none"
+                      onChange={(event) => setCredentials((value) => ({ ...value, email: event.target.value }))}
+                      type="email"
+                      value={credentials.email}
+                    />
+                  </span>
+                </label>
+                <label className="flex flex-col gap-2 text-sm font-medium">
+                  密码
+                  <span className="flex items-center gap-2 rounded-md border bg-background px-3 py-2">
+                    <Lock aria-hidden="true" className="text-muted-foreground" />
+                    <input
+                      className="min-w-0 flex-1 bg-transparent text-sm outline-none"
+                      onChange={(event) => setCredentials((value) => ({ ...value, password: event.target.value }))}
+                      type="password"
+                      value={credentials.password}
+                    />
+                  </span>
+                </label>
+                <Button className="w-full" type="submit">
+                  进入工作台
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </section>
+      </main>
+    );
   }
 
   return (
