@@ -27,6 +27,7 @@ class WebDesignSystemContractTests(unittest.TestCase):
             self.assertIn(package_name, dependencies)
 
         for relative_path in [
+            "components.json",
             "postcss.config.mjs",
             "src/lib/utils.ts",
             "src/components/ui/button.tsx",
