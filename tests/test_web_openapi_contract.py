@@ -15,11 +15,11 @@ class WebOpenApiContractTests(unittest.TestCase):
         package_json = json.loads(package_path.read_text(encoding="utf-8"))
 
         self.assertIn("@umijs/openapi", package_json["devDependencies"])
-        self.assertEqual(package_json["scripts"]["openapi:generate"], "umi-openapi")
+        self.assertEqual(package_json["scripts"]["openapi:generate"], "openapi2ts")
 
     def test_openapi_config_uses_hotkey_server_schema_and_services_output(self) -> None:
-        config_path = ROOT / "openapi.config.ts"
-        self.assertTrue(config_path.exists(), "openapi.config.ts is required for @umijs/openapi generation")
+        config_path = ROOT / "openapi2ts.config.ts"
+        self.assertTrue(config_path.exists(), "openapi2ts.config.ts is required for @umijs/openapi generation")
         config = config_path.read_text(encoding="utf-8")
 
         self.assertIn("../hotkey-server/docs/openapi.json", config)
