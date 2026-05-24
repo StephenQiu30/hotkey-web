@@ -4,5 +4,6 @@ __pycache__/
 node_modules/
 dist/
 .next/
+tsconfig.tsbuildinfo
 .env
 .env.local
