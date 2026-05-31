@@ -30,7 +30,7 @@ agent:
 
 # Claude runner
 claude:
-  command: claude -p --dangerously-skip-permissions
+  command: claude -p --dangerously-skip-permissions --output-format stream-json --include-partial-messages --verbose
 ```
 
 本工作流默认使用 Claude 执行。所有进度事实源使用 `## Claude Workpad`，可复用流程和角色配置使用 `.claude/` 路径。
