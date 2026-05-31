@@ -25,13 +25,17 @@ terminal_states:
 
 # Agent 配置
 agent:
-  default_runtime: claude
+  default_runtime: codex
   max_concurrent: 10
   max_turns: 20
   runtime_by_label:
     agent:codex: codex
     agent:claude: claude
     agent:cursor: cursor
+
+# Codex runner
+codex:
+  command: codex app-server
 
 # Claude runner
 claude:
@@ -42,7 +46,7 @@ cursor:
   command: cursor-agent -p --force --sandbox disabled
 ```
 
-本工作流默认使用 Claude 执行，也可以通过 Linear 标签 `agent:codex`、`agent:claude`、`agent:cursor` 覆盖使用的 Agent。所有进度事实源和可复用流程路径应与当前 Agent 保持一致。
+本工作流默认使用 Codex 执行，也可以通过 Linear 标签 `agent:codex`、`agent:claude`、`agent:cursor` 覆盖使用的 Agent。所有进度事实源和可复用流程路径应与当前 Agent 保持一致。
 
 ## Ticket 状态机
 
