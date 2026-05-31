@@ -27,7 +27,13 @@ terminal_states:
 agent:
   max_concurrent: 10
   max_turns: 20
+
+# Claude runner
+claude:
+  command: claude --dangerously-skip-permissions
 ```
+
+本工作流默认使用 Claude 执行。所有进度事实源使用 `## Claude Workpad`，可复用流程和角色配置使用 `.claude/` 路径。
 
 ## Ticket 状态机
 
@@ -73,7 +79,7 @@ Backlog → Todo → In Progress → Human Review → Merging → Done
 ### Step 3: 人工审查与合并
 1. 轮询更新
 2. 如需返工，遵循 rework 流程
-3. 执行 `land` skill 进行合并
+3. 执行 `.claude/skills/land/SKILL.md` 中的 `land` skill 进行合并
 
 ### Step 4: 返工处理
 1. **视为完整方案重置，不是增量补丁**
@@ -139,3 +145,4 @@ Backlog → Todo → In Progress → Human Review → Merging → Done
 2. 不编辑 issue 正文
 3. 临时证据编辑必须还原
 4. 超出范围的工作放入单独的 Backlog issue
+5. 功能或行为变更默认 test-first；文档、清理、CI 和删除无用代码可用可执行验证替代红灯测试

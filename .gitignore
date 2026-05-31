@@ -42,6 +42,7 @@ temp/
 .env
 .env.*
 !.env.example
+**/.claude/settings.local.json
 
 # 日志文件
 *.log
