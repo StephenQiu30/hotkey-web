@@ -44,6 +44,17 @@ class WebOpenApiContractTests(unittest.TestCase):
         ]:
             self.assertIn(expected, generated_text)
 
+    def test_request_adapter_consumes_unified_error_body(self) -> None:
+        request_adapter = (ROOT / "src" / "lib" / "request.ts").read_text(encoding="utf-8")
+
+        for expected in [
+            "class HotKeyAPIError extends Error",
+            "payload.error",
+            "payload.code",
+            'contentType.includes("application/json")',
+        ]:
+            self.assertIn(expected, request_adapter)
+
 
 if __name__ == "__main__":
     unittest.main()

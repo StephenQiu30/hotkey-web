@@ -1,4 +1,4 @@
-# HotKey Web
+# hotkey-web
 
 HotKey 是面向内容创作者的热点监控与 AI 选题助手。`hotkey-web` 是它的 **Next.js Web 创作者工作台**——在桌面端完成登录、浏览热点、理解事件、生成选题、管理收藏与通知配置。
 
@@ -63,6 +63,7 @@ npm run dev
 npm run build          # 生产构建
 npm run typecheck      # TypeScript 类型检查
 npm run test           # 仓库治理基线测试
+python3 -m unittest discover -s tests -p 'test_repository_governance.py'
 ```
 
 ## OpenAPI 客户端生成
