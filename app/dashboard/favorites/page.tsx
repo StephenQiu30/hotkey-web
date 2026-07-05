@@ -1,12 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, List, Tag, Typography, Spin, Empty, Alert, Button, Space } from "antd";
-import {
-  StarOutlined,
-  StarFilled,
-  DeleteOutlined,
-} from "@ant-design/icons";
+import { Tag, Typography, Button, Space, Alert } from "antd";
+import { ProCard, ProList } from "@ant-design/pro-components";
+import { StarOutlined, StarFilled, DeleteOutlined } from "@ant-design/icons";
 import { listMonitors } from "@/services/hotkey/hotkey-server/monitors";
 import { listPosts } from "@/services/hotkey/hotkey-server/content";
 
@@ -61,7 +58,9 @@ export default function FavoritesPage() {
 
   if (error) {
     return (
-      <Card title={<><StarOutlined style={{ marginRight: 8 }} />收藏关注</>}>
+      <ProCard
+        title={<><StarOutlined style={{ marginRight: 8 }} />收藏关注</>}
+      >
         <Alert
           message="加载失败"
           description={error}
@@ -69,12 +68,12 @@ export default function FavoritesPage() {
           showIcon
           action={<Button onClick={loadFavorites}>重试</Button>}
         />
-      </Card>
+      </ProCard>
     );
   }
 
   return (
-    <Card
+    <ProCard
       title={
         <>
           <StarOutlined style={{ marginRight: 8 }} />
@@ -82,56 +81,55 @@ export default function FavoritesPage() {
         </>
       }
     >
-      {loading ? (
-        <div style={{ textAlign: "center", padding: 60 }}>
-          <Spin size="large" />
-        </div>
-      ) : favorites.length === 0 ? (
-        <Empty description="还没有收藏的热点，快去热点榜单收藏吧" />
-      ) : (
-        <List
-          dataSource={favorites}
-          renderItem={(item) => (
-            <List.Item
-              actions={[
-                <Button
-                  key="delete"
-                  type="text"
-                  danger
-                  icon={<DeleteOutlined />}
-                  onClick={() => item.id != null && removeFavorite(item.id)}
-                />,
-              ]}
-            >
-              <List.Item.Meta
-                avatar={<StarFilled style={{ fontSize: 20, color: "#faad14" }} />}
-                title={
-                  <Text strong>
-                    {item.content_text?.slice(0, 100) ?? `Post #${item.id}`}
+      <ProList<HotKeyAPI.PostSummary>
+        rowKey="id"
+        loading={loading}
+        dataSource={favorites}
+        showActions="hover"
+        locale={{ emptyText: "还没有收藏的热点，快去热点榜单收藏吧" }}
+        metas={{
+          avatar: {
+            render: () => <StarFilled style={{ fontSize: 20, color: "#faad14" }} />,
+          },
+          title: {
+            render: (_, item) => (
+              <Text strong>
+                {item.content_text?.slice(0, 100) ?? `Post #${item.id}`}
+              </Text>
+            ),
+          },
+          description: {
+            render: (_, item) => (
+              <Space size={4}>
+                <Text type="secondary" style={{ fontSize: 12 }}>
+                  {(item.author_name || item.author_handle) ?? "未知"}
+                </Text>
+                {item.heat_score != null && (
+                  <Tag color="blue" style={{ fontSize: 11 }}>
+                    热度 {Math.round(item.heat_score * 100)}
+                  </Tag>
+                )}
+                {item.published_at && (
+                  <Text type="secondary" style={{ fontSize: 12 }}>
+                    {new Date(item.published_at).toLocaleDateString("zh-CN")}
                   </Text>
-                }
-                description={
-                  <Space size={4}>
-                    <Text type="secondary" style={{ fontSize: 12 }}>
-                      {(item.author_name || item.author_handle) ?? "未知"}
-                    </Text>
-                    {item.heat_score != null && (
-                      <Tag color="blue" style={{ fontSize: 11 }}>
-                        热度 {Math.round(item.heat_score * 100)}
-                      </Tag>
-                    )}
-                    {item.published_at && (
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        {new Date(item.published_at).toLocaleDateString("zh-CN")}
-                      </Text>
-                    )}
-                  </Space>
-                }
-              />
-            </List.Item>
-          )}
-        />
-      )}
-    </Card>
+                )}
+              </Space>
+            ),
+          },
+          actions: {
+            render: (_, item) => [
+              <Button
+                key="delete"
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+                onClick={() => item.id != null && removeFavorite(item.id)}
+              />,
+            ],
+          },
+        }}
+      />
+    </ProCard>
   );
 }

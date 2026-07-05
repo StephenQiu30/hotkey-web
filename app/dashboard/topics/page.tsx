@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, Row, Col, Tag, Typography, Spin, Empty, Alert, Space } from "antd";
+import { Tag, Typography, Spin, Empty, Alert, Space } from "antd";
+import { ProCard } from "@ant-design/pro-components";
 import { FileTextOutlined } from "@ant-design/icons";
 import { listMonitors } from "@/services/hotkey/hotkey-server/monitors";
 import { listTopics } from "@/services/hotkey/hotkey-server/topics";
@@ -43,24 +44,24 @@ export default function TopicsPage() {
 
   if (error) {
     return (
-      <Card title={<><FileTextOutlined style={{ marginRight: 8 }} />内容选题</>}>
+      <ProCard title={<><FileTextOutlined style={{ marginRight: 8 }} />内容选题</>}>
         <Alert message="加载失败" description={error} type="error" showIcon />
-      </Card>
+      </ProCard>
     );
   }
 
   if (loading) {
     return (
-      <Card title={<><FileTextOutlined style={{ marginRight: 8 }} />内容选题</>}>
+      <ProCard title={<><FileTextOutlined style={{ marginRight: 8 }} />内容选题</>}>
         <div style={{ textAlign: "center", padding: 60 }}>
           <Spin size="large" />
         </div>
-      </Card>
+      </ProCard>
     );
   }
 
   return (
-    <Card
+    <ProCard
       title={
         <>
           <FileTextOutlined style={{ marginRight: 8 }} />
@@ -71,53 +72,52 @@ export default function TopicsPage() {
       {topics.length === 0 ? (
         <Empty description="暂无选题数据，请先在设置中创建监控并等待数据采集" />
       ) : (
-        <Row gutter={[16, 16]}>
+        <ProCard.Group gutter={[16, 16]}>
           {topics.map((topic) => (
-            <Col xs={24} sm={12} lg={8} key={topic.id}>
-              <Card
-                size="small"
-                hoverable
-                style={{ height: "100%" }}
+            <ProCard
+              key={topic.id}
+              colSpan={{ xs: 24, sm: 12, lg: 8 }}
+              size="small"
+              hoverable
+            >
+              <Title level={5} style={{ fontSize: 14, marginTop: 0 }}>
+                {topic.title}
+              </Title>
+              <Paragraph
+                type="secondary"
+                style={{ fontSize: 12, marginBottom: 8 }}
+                ellipsis={{ rows: 2 }}
               >
-                <Title level={5} style={{ fontSize: 14, marginTop: 0 }}>
-                  {topic.title}
-                </Title>
-                <Paragraph
-                  type="secondary"
-                  style={{ fontSize: 12, marginBottom: 8 }}
-                  ellipsis={{ rows: 2 }}
-                >
-                  {topic.summary}
-                </Paragraph>
-                <Space size={4}>
-                  <Tag
-                    color={
-                      topic.trend_direction === "up"
-                        ? "red"
-                        : topic.trend_direction === "down"
-                          ? "green"
-                          : "default"
-                    }
-                    style={{ fontSize: 11 }}
-                  >
-                    {topic.trend_direction === "up"
-                      ? "↑ 上升"
+                {topic.summary}
+              </Paragraph>
+              <Space size={4}>
+                <Tag
+                  color={
+                    topic.trend_direction === "up"
+                      ? "red"
                       : topic.trend_direction === "down"
-                        ? "↓ 下降"
-                        : "→ 平稳"}
-                  </Tag>
-                  <Tag color="blue" style={{ fontSize: 11 }}>
-                    热度 {Math.round(topic.current_heat ?? 0)}
-                  </Tag>
-                  <Tag color="default" style={{ fontSize: 11 }}>
-                    {(topic.post_count ?? 0)} 篇
-                  </Tag>
-                </Space>
-              </Card>
-            </Col>
+                        ? "green"
+                        : "default"
+                  }
+                  style={{ fontSize: 11 }}
+                >
+                  {topic.trend_direction === "up"
+                    ? "↑ 上升"
+                    : topic.trend_direction === "down"
+                      ? "↓ 下降"
+                      : "→ 平稳"}
+                </Tag>
+                <Tag color="blue" style={{ fontSize: 11 }}>
+                  热度 {Math.round(topic.current_heat ?? 0)}
+                </Tag>
+                <Tag color="default" style={{ fontSize: 11 }}>
+                  {(topic.post_count ?? 0)} 篇
+                </Tag>
+              </Space>
+            </ProCard>
           ))}
-        </Row>
+        </ProCard.Group>
       )}
-    </Card>
+    </ProCard>
   );
 }
