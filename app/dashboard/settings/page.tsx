@@ -17,7 +17,7 @@ import {
   Switch,
   InputNumber,
   Select,
-  message,
+  App,
 } from "antd";
 import {
   SettingOutlined,
@@ -35,6 +35,7 @@ export default function SettingsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [form] = Form.useForm();
+  const { message } = App.useApp();
 
   const fetchMonitors = async () => {
     setLoading(true);
@@ -160,7 +161,7 @@ export default function SettingsPage() {
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         footer={null}
-        destroyOnHidden
+        destroyOnClose
       >
         <Form
           form={form}

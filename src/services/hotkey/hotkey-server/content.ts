@@ -15,7 +15,7 @@ export async function listPosts(
       method: "GET",
       params: {
         // limit has a default value: 20
-        limit: "20",
+        limit: 20,
         ...queryParams,
       },
       ...(options || {}),

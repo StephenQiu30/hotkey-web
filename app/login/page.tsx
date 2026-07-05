@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, Form, Input, Button, Typography, message } from "antd";
+import { Card, Form, Input, Button, Typography, App } from "antd";
 import { MailOutlined, LockOutlined, FireOutlined } from "@ant-design/icons";
 import { useAuthStore } from "@/stores/authStore";
 import { login } from "@/services/hotkey/hotkey-server/auth";
@@ -16,6 +16,7 @@ interface LoginForm {
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const { setAuth } = useAuthStore();
+  const { message } = App.useApp();
 
   const onFinish = async (values: LoginForm) => {
     setLoading(true);
