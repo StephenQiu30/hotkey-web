@@ -2,11 +2,9 @@
 /* eslint-disable */
 import { request } from "@/lib/request";
 
-/** Health Check GET /api/health */
-export async function healthCheckApiHealthGet(options?: {
-  [key: string]: any;
-}) {
-  return request<Record<string, any>>("/api/health", {
+/** Health check GET /healthz */
+export async function healthCheck(options?: { [key: string]: any }) {
+  return request<HotKeyAPI.HealthResponse>("/healthz", {
     method: "GET",
     ...(options || {}),
   });
