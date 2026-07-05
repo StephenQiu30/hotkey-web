@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Card, Form, Input, Button, Typography, message } from "antd";
 import { MailOutlined, LockOutlined, FireOutlined } from "@ant-design/icons";
 import { useAuthStore } from "@/stores/authStore";
+import { login } from "@/services/hotkey/hotkey-server/auth";
 
 const { Title, Text } = Typography;
 
@@ -19,13 +20,23 @@ export default function LoginPage() {
   const onFinish = async (values: LoginForm) => {
     setLoading(true);
     try {
-      // Mock login — will be replaced with actual API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setAuth("mock-token", { email: values.email });
-      message.success(`欢迎回来，${values.email}`);
-      window.location.href = "/dashboard";
-    } catch {
-      message.error("登录失败，请检查邮箱和密码");
+      const res = await login({
+        email: values.email,
+        password: values.password,
+      });
+      if (res.data?.token && res.data?.user) {
+        const user = res.data.user;
+        setAuth(res.data.token, {
+          email: user.email ?? values.email,
+          displayName: user.display_name,
+        });
+        message.success(`欢迎回来，${user.display_name || user.email}`);
+        window.location.href = "/dashboard";
+      } else {
+        throw new Error("登录响应缺少 token 或用户信息");
+      }
+    } catch (err: any) {
+      message.error(err?.message || "登录失败，请检查邮箱和密码");
     } finally {
       setLoading(false);
     }
@@ -67,7 +78,6 @@ export default function LoginPage() {
           layout="vertical"
           onFinish={onFinish}
           autoComplete="off"
-          initialValues={{ email: "creator@hotkey.local", password: "hotkey-demo" }}
         >
           <Form.Item
             name="email"
