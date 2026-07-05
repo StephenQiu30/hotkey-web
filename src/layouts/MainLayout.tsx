@@ -45,16 +45,20 @@ const menuItems = [
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { isAuthenticated, logout } = useAuthStore();
+  const { isAuthenticated, isLoading, logout, hydrate } = useAuthStore();
   const actionRef = useRef<any>(null);
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    hydrate();
+  }, [hydrate]);
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
       window.location.href = "/login";
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isLoading]);
 
-  if (!isAuthenticated) {
+  if (isLoading || !isAuthenticated) {
     return null;
   }
 

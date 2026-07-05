@@ -44,5 +44,8 @@ temp/
 !.env.example
 **/.claude/settings.local.json
 
+# Playwright MCP 测试产物
+.playwright-mcp/
+
 # 日志文件
 *.log
