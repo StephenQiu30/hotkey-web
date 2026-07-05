@@ -100,7 +100,9 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           menu={{
             items: userMenuItems,
             onClick: ({ key }) => {
-              if (key === "logout") {
+              if (key === "profile") {
+                window.location.href = "/dashboard/profile";
+              } else if (key === "logout") {
                 logout();
                 window.location.href = "/login";
               }
