@@ -12,7 +12,11 @@
 
 ### 技术栈
 - Next.js 16 + React 19
-- Tailwind CSS 4 + shadcn/ui
+- Ant Design 5 + ProLayout（顶部导航布局）
+- @ant-design/icons
+- axios（HTTP 客户端）
+- zustand（状态管理）
+- recharts（图表）
 - TypeScript
 
 ### 项目结构
