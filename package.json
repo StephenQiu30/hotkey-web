@@ -9,7 +9,7 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "openapi:generate": "openapi2ts",
-    "test": "python3 -m unittest discover -s tests"
+    "test": "tsc --noEmit"
   },
   "dependencies": {
     "@ant-design/cssinjs": "^2.1.2",

@@ -19,18 +19,23 @@
 ```
 hotkey-web/
 ├── app/                # Next.js App Router
-│   ├── layout.tsx      # 根布局
-│   └── page.tsx        # 主页面
+│   ├── layout.tsx      # Ant Design ConfigProvider + 蓝白主题
+│   └── login/          # 登录页
+│   └── dashboard/      # 创作者工作台（ProLayout 包裹）
 ├── src/
-│   ├── components/     # 组件
-│   │   └── CreatorWorkbench.tsx  # 主 UI 组件
+│   ├── layouts/        # 页面布局（MainLayout.tsx）
+│   ├── stores/         # zustand 状态管理
+│   ├── components/     # 业务组件
+│   ├── lib/
+│   │   ├── axios.ts    # axios 实例配置
+│   │   └── request.ts  # API 生成适配层
 │   └── services/
 │       └── hotkey/
 │           └── hotkey-server/    # 自动生成的 API 客户端
 ├── public/             # 静态资源
 ├── package.json        # 依赖配置
 ├── tsconfig.json       # TypeScript 配置
-└── tailwind.config.ts  # Tailwind 配置
+└── openapi2ts.config.ts  # @umijs/openapi 生成配置
 ```
 
 ### 常用命令
@@ -38,8 +43,7 @@ hotkey-web/
 npm run dev           # 开发服务器
 npm run build         # 生产构建
 npx tsc --noEmit      # 类型检查
-npx openapi2ts        # 从服务器 OpenAPI 重新生成 API 客户端
-python3 -m unittest discover -s tests   # 治理/契约测试
+npm run openapi:generate   # 从后端 Swagger 重新生成 API 客户端
 ```
 
 ### API 客户端生成

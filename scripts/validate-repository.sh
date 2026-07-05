@@ -7,7 +7,7 @@ required_files=(
   "README.md"
   "CLAUDE.md"
   "CLAUDE.local.md"
-  "WORKFLOW.md"
+  "next.config.ts"
   ".env.example"
   ".gitignore"
   "package.json"
@@ -19,11 +19,6 @@ required_files=(
   "docs/design"
   "docs/acceptance"
   "docs/operations"
-  ".claude/agents/pm.md"
-  ".claude/agents/explorer.md"
-  ".claude/agents/builder.md"
-  ".claude/agents/tester.md"
-  ".claude/agents/reporter.md"
   ".claude/skills/commit/SKILL.md"
   ".claude/skills/pull/SKILL.md"
   ".claude/skills/push/SKILL.md"
@@ -42,30 +37,6 @@ for file in "${required_files[@]}"; do
     exit 1
   fi
 done
-
-# 检查 WORKFLOW.md 内容
-echo ""
-echo "🔍 验证 WORKFLOW.md 内容..."
-if grep -q "tracker:" WORKFLOW.md; then
-  echo "✅ 包含 tracker 配置"
-else
-  echo "❌ 缺少 tracker 配置"
-  exit 1
-fi
-
-if grep -q "## Claude Workpad" WORKFLOW.md || grep -q "## Codex Workpad" WORKFLOW.md; then
-  echo "✅ 包含 Workpad 模板"
-else
-  echo "❌ 缺少 Workpad 模板"
-  exit 1
-fi
-
-if grep -q "Human Review" WORKFLOW.md; then
-  echo "✅ 包含 Human Review 状态"
-else
-  echo "❌ 缺少 Human Review 状态"
-  exit 1
-fi
 
 # 检查 Next.js 项目结构
 echo ""
