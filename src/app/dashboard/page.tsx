@@ -289,7 +289,7 @@ export default function DashboardPage() {
           title={
             <Space size={8}>
               <FireOutlined style={{ color: "#888", fontSize: 16 }} />
-              <Text strong style={{ fontSize: 14 }}>
+              <Text strong>
                 热点榜单
               </Text>
             </Space>
@@ -311,7 +311,7 @@ export default function DashboardPage() {
                     item.id === selected?.id ? "#f5f5f5" : "transparent",
                   borderLeft:
                     item.id === selected?.id
-                      ? "3px solid #111"
+                      ? "3px solid var(--ant-color-primary)"
                       : "3px solid transparent",
                   transition: "all 0.1s ease",
                 }}
@@ -406,7 +406,7 @@ export default function DashboardPage() {
           bordered
           bodyStyle={{ padding: 20 }}
           title={
-            <Text strong style={{ fontSize: 14 }}>
+            <Text strong>
               快速理解
             </Text>
           }
@@ -541,7 +541,7 @@ export default function DashboardPage() {
           title={
             <Space size={8}>
               <RiseOutlined style={{ color: "#888", fontSize: 16 }} />
-              <Text strong style={{ fontSize: 14 }}>
+              <Text strong>
                 趋势分析
               </Text>
             </Space>
@@ -569,10 +569,10 @@ export default function DashboardPage() {
                     style={{
                       flex: 1,
                       height: `${Math.max(pct, 4)}%`,
-                      background: "#111",
+                      background: "var(--ant-color-primary)",
                       borderRadius: "4px 4px 0 0",
                       minHeight: 4,
-                      opacity: 0.15 + (pct / 100) * 0.85,
+                      opacity: 0.3 + (pct / 100) * 0.7,
                       position: "relative",
                       transition: "opacity 0.2s ease",
                     }}
@@ -581,7 +581,7 @@ export default function DashboardPage() {
                       e.currentTarget.style.opacity = "1";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.opacity = String(0.15 + (pct / 100) * 0.85);
+                      e.currentTarget.style.opacity = String(0.3 + (pct / 100) * 0.7);
                     }}
                   >
                     {trends.length <= 14 && (
@@ -616,7 +616,7 @@ export default function DashboardPage() {
           title={
             <Space size={8}>
               <BarChartOutlined style={{ color: "#888", fontSize: 16 }} />
-              <Text strong style={{ fontSize: 14 }}>
+              <Text strong>
                 来源分布
               </Text>
             </Space>
@@ -646,7 +646,7 @@ export default function DashboardPage() {
                       style={{
                         width: `${source.value}%`,
                         height: "100%",
-                        background: "#111",
+                        background: "var(--ant-color-primary)",
                         borderRadius: 3,
                         opacity: 0.4 + (source.value / 100) * 0.6,
                       }}
@@ -669,7 +669,7 @@ export default function DashboardPage() {
         title={
           <Space size={8}>
             <BellOutlined style={{ color: "#888", fontSize: 16 }} />
-            <Text strong style={{ fontSize: 14 }}>
+            <Text strong>
               通知列表
             </Text>
           </Space>

@@ -36,7 +36,7 @@ export default function WelcomeHeader() {
             color: "inherit",
           }}
         >
-          <FireOutlined style={{ fontSize: 20, color: "#1677FF" }} />
+          <FireOutlined style={{ fontSize: 20, color: "var(--ant-color-primary)" }} />
           <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: "-0.02em" }}>
             HotKey
           </span>
@@ -51,15 +51,6 @@ export default function WelcomeHeader() {
               textDecoration: "none",
               fontSize: 14,
               borderRadius: 6,
-              transition: "all 0.15s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "#f5f5f5";
-              e.currentTarget.style.color = "#111";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "transparent";
-              e.currentTarget.style.color = "#666";
             }}
           >
             功能
@@ -72,15 +63,6 @@ export default function WelcomeHeader() {
               textDecoration: "none",
               fontSize: 14,
               borderRadius: 6,
-              transition: "all 0.15s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "#f5f5f5";
-              e.currentTarget.style.color = "#111";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "transparent";
-              e.currentTarget.style.color = "#666";
             }}
           >
             登录
@@ -90,19 +72,12 @@ export default function WelcomeHeader() {
             style={{
               marginLeft: 8,
               padding: "8px 20px",
-              background: "#111",
+              background: "var(--ant-color-primary)",
               color: "#fff",
               borderRadius: 6,
               textDecoration: "none",
               fontSize: 14,
               fontWeight: 500,
-              transition: "all 0.15s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "#000";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "#111";
             }}
           >
             开始使用

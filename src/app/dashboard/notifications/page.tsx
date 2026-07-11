@@ -142,7 +142,7 @@ export default function NotificationsPage() {
                 <List.Item.Meta
                   avatar={
                     item.delivery_status === "pending" ? (
-                      <ClockCircleOutlined style={{ fontSize: 20, color: "#1677FF" }} />
+                      <ClockCircleOutlined style={{ fontSize: 20, color: "var(--ant-color-primary)" }} />
                     ) : (
                       <CheckCircleOutlined style={{ fontSize: 20, color: "#52c41a" }} />
                     )

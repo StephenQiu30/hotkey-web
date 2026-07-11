@@ -28,7 +28,7 @@ interface BasicLayoutProps {
 }
 
 const defaultLogo = (
-  <FireOutlined style={{ fontSize: 24, color: "#1677FF" }} />
+  <FireOutlined style={{ fontSize: 24, color: "var(--ant-color-primary)" }} />
 );
 
 export default function BasicLayout({
@@ -75,7 +75,7 @@ export default function BasicLayout({
       <Avatar
         style={{
           cursor: "pointer",
-          backgroundColor: "#1677FF",
+          backgroundColor: "var(--ant-color-primary)",
           verticalAlign: "middle",
         }}
         icon={<UserOutlined />}

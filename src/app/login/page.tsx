@@ -73,7 +73,7 @@ export default function LoginPage() {
               marginBottom: 24,
             }}
           >
-            <FireOutlined style={{ fontSize: 24, color: "#1677FF" }} />
+            <FireOutlined style={{ fontSize: 24, color: "var(--ant-color-primary)" }} />
             <span
               style={{
                 fontSize: 20,
@@ -153,15 +153,6 @@ export default function LoginPage() {
               loading={loading}
               block
               size="large"
-              style={{
-                height: 44,
-                borderRadius: 8,
-                background: "#111",
-                borderColor: "#111",
-                fontWeight: 500,
-                fontSize: 15,
-                boxShadow: "none",
-              }}
             >
               进入工作台
             </Button>

@@ -42,19 +42,12 @@ export default function WelcomeCTA() {
             display: "inline-flex",
             alignItems: "center",
             padding: "12px 32px",
-            background: "#111",
+            background: "var(--ant-color-primary)",
             color: "#fff",
             borderRadius: 8,
             textDecoration: "none",
             fontSize: 15,
             fontWeight: 500,
-            transition: "all 0.15s ease",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = "#000";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = "#111";
           }}
         >
           免费开始使用

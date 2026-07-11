@@ -8,6 +8,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     <ConfigProvider
       locale={zhCN}
       theme={{
+        cssVar: true,
         token: {
           colorPrimary: "#1677FF",
           borderRadius: 6,

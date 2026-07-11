@@ -34,7 +34,7 @@ export default function WelcomeHero() {
               width: 6,
               height: 6,
               borderRadius: "50%",
-              background: "#1677FF",
+              background: "var(--ant-color-primary)",
             }}
           />
           内容创作者热点平台
@@ -82,20 +82,13 @@ export default function WelcomeHero() {
               display: "inline-flex",
               alignItems: "center",
               padding: "12px 28px",
-              background: "#111",
+              background: "var(--ant-color-primary)",
               color: "#fff",
               borderRadius: 8,
               textDecoration: "none",
               fontSize: 15,
               fontWeight: 500,
               letterSpacing: "-0.01em",
-              transition: "all 0.15s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "#000";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "#111";
             }}
           >
             免费开始使用
@@ -127,15 +120,6 @@ export default function WelcomeHero() {
               textDecoration: "none",
               fontSize: 15,
               fontWeight: 500,
-              transition: "all 0.15s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "#ccc";
-              e.currentTarget.style.color = "#111";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "#eaeaea";
-              e.currentTarget.style.color = "#444";
             }}
           >
             了解更多

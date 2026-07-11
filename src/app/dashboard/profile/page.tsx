@@ -188,7 +188,6 @@ export default function ProfilePage() {
             type="primary"
             icon={<SettingOutlined />}
             onClick={() => { window.location.href = "/dashboard/settings"; }}
-            style={{ background: "#111", borderColor: "#111", boxShadow: "none" }}
           >
             管理监控
           </Button>

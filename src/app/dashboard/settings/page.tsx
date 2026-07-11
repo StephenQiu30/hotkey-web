@@ -185,7 +185,7 @@ export default function SettingsPage() {
               }}
             >
               <Flex align="center" gap={8} style={{ marginBottom: 8 }}>
-                <Text strong style={{ fontSize: 14 }}>
+                <Text strong>
                   {item.name ?? "未命名"}
                 </Text>
                 <Tag color={statusColor[item.status ?? ""] ?? "default"}>
