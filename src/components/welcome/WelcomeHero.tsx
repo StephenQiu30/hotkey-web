@@ -1,8 +1,22 @@
 "use client";
 
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+
 export default function WelcomeHero() {
+  const containerRef = useRef<HTMLElement>(null);
+
+  useGSAP(() => {
+    gsap.from(".hh-badge", { y: -16, autoAlpha: 0, duration: 0.5, delay: 0.15, ease: "power2.out" });
+    gsap.from(".hh-title", { y: 30, autoAlpha: 0, duration: 0.6, delay: 0.3, ease: "power2.out" });
+    gsap.from(".hh-desc", { y: 20, autoAlpha: 0, duration: 0.5, delay: 0.5, ease: "power2.out" });
+    gsap.from(".hh-btn", { y: 16, autoAlpha: 0, duration: 0.4, stagger: 0.1, delay: 0.65, ease: "power2.out" });
+  }, { scope: containerRef });
+
   return (
     <section
+      ref={containerRef}
       style={{
         padding: "120px 24px 80px",
       }}
@@ -16,6 +30,7 @@ export default function WelcomeHero() {
       >
         {/* Eyebrow badge */}
         <div
+          className="hh-badge"
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -41,6 +56,7 @@ export default function WelcomeHero() {
         </div>
 
         <h1
+          className="hh-title"
           style={{
             fontSize: 56,
             fontWeight: 650,
@@ -56,6 +72,7 @@ export default function WelcomeHero() {
         </h1>
 
         <p
+          className="hh-desc"
           style={{
             fontSize: 18,
             lineHeight: 1.7,
@@ -78,6 +95,7 @@ export default function WelcomeHero() {
         >
           <a
             href="/login"
+            className="hh-btn"
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -110,6 +128,7 @@ export default function WelcomeHero() {
           </a>
           <a
             href="#features"
+            className="hh-btn"
             style={{
               display: "inline-flex",
               alignItems: "center",

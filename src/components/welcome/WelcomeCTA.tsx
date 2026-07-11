@@ -1,8 +1,20 @@
 "use client";
 
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+
 export default function WelcomeCTA() {
+  const containerRef = useRef<HTMLElement>(null);
+
+  useGSAP(() => {
+    gsap.from(".hc-content", { y: 30, autoAlpha: 0, duration: 0.6, ease: "power2.out" });
+  }, { scope: containerRef });
+
   return (
     <section
+      ref={containerRef}
+      className="hc-content"
       style={{
         padding: "100px 24px",
         borderTop: "1px solid #eaeaea",

@@ -1,10 +1,21 @@
 "use client";
 
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 import { FireOutlined } from "@ant-design/icons";
 
 export default function WelcomeHeader() {
+  const containerRef = useRef<HTMLElement>(null);
+
+  useGSAP(() => {
+    gsap.from(".hh-logo", { y: -20, autoAlpha: 0, duration: 0.5, ease: "power2.out" });
+    gsap.from(".hh-nav", { y: -20, autoAlpha: 0, duration: 0.5, delay: 0.1, ease: "power2.out" });
+  }, { scope: containerRef });
+
   return (
     <header
+      ref={containerRef}
       style={{
         position: "sticky",
         top: 0,
@@ -28,6 +39,7 @@ export default function WelcomeHeader() {
       >
         <a
           href="/"
+          className="hh-logo"
           style={{
             display: "flex",
             alignItems: "center",
@@ -42,7 +54,7 @@ export default function WelcomeHeader() {
           </span>
         </a>
 
-        <nav style={{ display: "flex", alignItems: "center", gap: 4 }}>
+        <nav className="hh-nav" style={{ display: "flex", alignItems: "center", gap: 4 }}>
           <a
             href="#features"
             style={{

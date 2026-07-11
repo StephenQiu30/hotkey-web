@@ -1,16 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Card,
   Tag,
   Typography,
-  Flex,
   Button,
   Spin,
   Empty,
   Alert,
+  Flex,
 } from "antd";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 import {
   ModalForm,
   ProFormText,
@@ -34,6 +36,18 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [monitors, setMonitors] = useState<HotKeyAPI.MonitorData[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    if (monitors.length === 0) return;
+    gsap.from(".st-item", {
+      y: 16,
+      autoAlpha: 0,
+      duration: 0.4,
+      stagger: 0.07,
+      ease: "power2.out",
+    });
+  }, { dependencies: [loading, monitors.length], scope: containerRef, revertOnUpdate: true });
 
   const fetchMonitors = async () => {
     setLoading(true);
@@ -142,66 +156,69 @@ export default function SettingsPage() {
   }
 
   return (
-    <Flex vertical gap={16}>
-      <Card bordered>
-        <Flex align="center" justify="space-between">
-          <Flex align="center" gap={8}>
-            <SettingOutlined style={{ fontSize: 16, color: "#888" }} />
-            <Text strong>监控管理</Text>
-          </Flex>
-          {monitorCreateForm(
-            <Button type="primary" icon={<PlusOutlined />}>
-              新建监控
-            </Button>,
-          )}
-        </Flex>
-      </Card>
-
-      {loading && (
-        <Card bordered styles={{ body: { textAlign: "center", padding: 80 } }}>
-          <Spin size="large" />
-        </Card>
-      )}
-
-      {!loading && monitors.length === 0 && (
-        <Card bordered styles={{ body: { textAlign: "center", padding: 80 } }}>
-          <Empty description="暂无监控配置">
-            {monitorCreateForm(
-              <Button type="primary">新建监控</Button>,
-            )}
-          </Empty>
-        </Card>
-      )}
-
-      {!loading && monitors.length > 0 && (
-        <Card bordered styles={{ body: { padding: 0 } }}>
-          {monitors.map((item, idx) => (
-            <Flex
-              key={item.id}
-              vertical
-              style={{
-                padding: "20px 24px",
-                borderBottom: idx < monitors.length - 1 ? "1px solid #f0f0f0" : "none",
-              }}
-            >
-              <Flex align="center" gap={8} style={{ marginBottom: 8 }}>
-                <Text strong>
-                  {item.name ?? "未命名"}
-                </Text>
-                <Tag color={statusColor[item.status ?? ""] ?? "default"}>
-                  {item.status}
-                </Tag>
-              </Flex>
-              <Tag style={{ fontFamily: "monospace", fontSize: 12, marginBottom: 6, width: "fit-content" }}>
-                {item.query_text}
-              </Tag>
-              <Text type="secondary" style={{ fontSize: 12 }}>
-                {item.region} · {item.language} · 每 {item.poll_interval_minutes} 分钟 · ID: {item.id}
-              </Text>
+    <div ref={containerRef}>
+      <Flex vertical gap={16}>
+        <Card bordered>
+          <Flex align="center" justify="space-between">
+            <Flex align="center" gap={8}>
+              <SettingOutlined style={{ fontSize: 16, color: "#888" }} />
+              <Text strong>监控管理</Text>
             </Flex>
-          ))}
+            {monitorCreateForm(
+              <Button type="primary" icon={<PlusOutlined />}>
+                新建监控
+              </Button>,
+            )}
+          </Flex>
         </Card>
-      )}
-    </Flex>
+
+        {loading && (
+          <Card bordered styles={{ body: { textAlign: "center", padding: 80 } }}>
+            <Spin size="large" />
+          </Card>
+        )}
+
+        {!loading && monitors.length === 0 && (
+          <Card bordered styles={{ body: { textAlign: "center", padding: 80 } }}>
+            <Empty description="暂无监控配置">
+              {monitorCreateForm(
+                <Button type="primary">新建监控</Button>,
+              )}
+            </Empty>
+          </Card>
+        )}
+
+        {!loading && monitors.length > 0 && (
+          <Card bordered styles={{ body: { padding: 0 } }}>
+            {monitors.map((item, idx) => (
+              <Flex
+                key={item.id}
+                vertical
+                className="st-item"
+                style={{
+                  padding: "20px 24px",
+                  borderBottom: idx < monitors.length - 1 ? "1px solid #f0f0f0" : "none",
+                }}
+              >
+                <Flex align="center" gap={8} style={{ marginBottom: 8 }}>
+                  <Text strong>
+                    {item.name ?? "未命名"}
+                  </Text>
+                  <Tag color={statusColor[item.status ?? ""] ?? "default"}>
+                    {item.status}
+                  </Tag>
+                </Flex>
+                <Tag style={{ fontFamily: "monospace", fontSize: 12, marginBottom: 6, width: "fit-content" }}>
+                  {item.query_text}
+                </Tag>
+                <Text type="secondary" style={{ fontSize: 12 }}>
+                  {item.region} · {item.language} · 每 {item.poll_interval_minutes} 分钟 · ID: {item.id}
+                </Text>
+              </Flex>
+            ))}
+          </Card>
+        )}
+      </Flex>
+    </div>
   );
 }

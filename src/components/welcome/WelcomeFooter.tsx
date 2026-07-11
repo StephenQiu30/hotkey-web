@@ -1,8 +1,20 @@
 "use client";
 
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+
 export default function WelcomeFooter() {
+  const containerRef = useRef<HTMLElement>(null);
+
+  useGSAP(() => {
+    gsap.from(".hf-inner", { y: 16, autoAlpha: 0, duration: 0.5, delay: 0.2, ease: "power2.out" });
+  }, { scope: containerRef });
+
   return (
     <footer
+      ref={containerRef}
+      className="hf-inner"
       style={{
         borderTop: "1px solid #eaeaea",
         padding: "24px",

@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Form, Input, Button, Typography, App } from "antd";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 import { MailOutlined, LockOutlined, FireOutlined } from "@ant-design/icons";
 import { useAuthStore } from "@/stores/authStore";
 import { login } from "@/services/auth";
@@ -17,6 +19,15 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const { setAuth } = useAuthStore();
   const { message } = App.useApp();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    gsap.from(".lg-logo-title", { y: -20, autoAlpha: 0, duration: 0.5, ease: "power2.out" });
+    gsap.from(".lg-heading", { y: -10, autoAlpha: 0, duration: 0.4, delay: 0.15, ease: "power2.out" });
+    gsap.from(".lg-subtitle", { y: -10, autoAlpha: 0, duration: 0.4, delay: 0.25, ease: "power2.out" });
+    gsap.from(".lg-form", { y: 20, autoAlpha: 0, duration: 0.5, delay: 0.4, ease: "power2.out" });
+    gsap.from(".lg-footer", { autoAlpha: 0, duration: 0.4, delay: 0.6, ease: "power2.out" });
+  }, { scope: containerRef });
 
   const onFinish = async (values: LoginForm) => {
     setLoading(true);
@@ -45,6 +56,7 @@ export default function LoginPage() {
 
   return (
     <div
+      ref={containerRef}
       style={{
         minHeight: "100vh",
         display: "flex",
@@ -61,7 +73,7 @@ export default function LoginPage() {
         }}
       >
         {/* Logo + Title */}
-        <div style={{ textAlign: "center", marginBottom: 40 }}>
+        <div className="lg-logo-title" style={{ textAlign: "center", marginBottom: 40 }}>
           <a
             href="/"
             style={{
@@ -85,6 +97,7 @@ export default function LoginPage() {
             </span>
           </a>
           <h1
+            className="lg-heading"
             style={{
               fontSize: 22,
               fontWeight: 600,
@@ -95,71 +108,74 @@ export default function LoginPage() {
           >
             登录工作台
           </h1>
-          <Text style={{ color: "#666", fontSize: 14 }}>
+          <Text className="lg-subtitle" style={{ color: "#666", fontSize: 14 }}>
             内容创作者热点工作台
           </Text>
         </div>
 
         {/* Form */}
-        <Form
-          name="login"
-          layout="vertical"
-          onFinish={onFinish}
-          autoComplete="off"
-          style={{ width: "100%" }}
-        >
-          <Form.Item
-            name="email"
-            label={<span style={{ fontWeight: 500, fontSize: 14, color: "#111" }}>邮箱</span>}
-            rules={[{ required: true, message: "请输入邮箱" }]}
+        <div className="lg-form">
+          <Form
+            name="login"
+            layout="vertical"
+            onFinish={onFinish}
+            autoComplete="off"
+            style={{ width: "100%" }}
           >
-            <Input
-              prefix={<MailOutlined style={{ color: "#999" }} />}
-              placeholder="name@example.com"
-              size="large"
-              variant="filled"
-              style={{
-                background: "#f5f5f5",
-                border: "1px solid #eaeaea",
-                borderRadius: 8,
-                padding: "8px 12px",
-              }}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="password"
-            label={<span style={{ fontWeight: 500, fontSize: 14, color: "#111" }}>密码</span>}
-            rules={[{ required: true, message: "请输入密码" }]}
-          >
-            <Input.Password
-              prefix={<LockOutlined style={{ color: "#999" }} />}
-              placeholder="输入密码"
-              size="large"
-              variant="filled"
-              style={{
-                background: "#f5f5f5",
-                border: "1px solid #eaeaea",
-                borderRadius: 8,
-                padding: "8px 12px",
-              }}
-            />
-          </Form.Item>
-
-          <Form.Item style={{ marginBottom: 0, marginTop: 28 }}>
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={loading}
-              block
-              size="large"
+            <Form.Item
+              name="email"
+              label={<span style={{ fontWeight: 500, fontSize: 14, color: "#111" }}>邮箱</span>}
+              rules={[{ required: true, message: "请输入邮箱" }]}
             >
-              进入工作台
-            </Button>
-          </Form.Item>
-        </Form>
+              <Input
+                prefix={<MailOutlined style={{ color: "#999" }} />}
+                placeholder="name@example.com"
+                size="large"
+                variant="filled"
+                style={{
+                  background: "#f5f5f5",
+                  border: "1px solid #eaeaea",
+                  borderRadius: 8,
+                  padding: "8px 12px",
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="password"
+              label={<span style={{ fontWeight: 500, fontSize: 14, color: "#111" }}>密码</span>}
+              rules={[{ required: true, message: "请输入密码" }]}
+            >
+              <Input.Password
+                prefix={<LockOutlined style={{ color: "#999" }} />}
+                placeholder="输入密码"
+                size="large"
+                variant="filled"
+                style={{
+                  background: "#f5f5f5",
+                  border: "1px solid #eaeaea",
+                  borderRadius: 8,
+                  padding: "8px 12px",
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item style={{ marginBottom: 0, marginTop: 28 }}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={loading}
+                block
+                size="large"
+              >
+                进入工作台
+              </Button>
+            </Form.Item>
+          </Form>
+        </div>
 
         <div
+          className="lg-footer"
           style={{
             textAlign: "center",
             marginTop: 32,

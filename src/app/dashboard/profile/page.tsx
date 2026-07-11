@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Card,
   Statistic,
@@ -12,6 +12,8 @@ import {
   Flex,
   Descriptions,
 } from "antd";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 import {
   UserOutlined,
   FireOutlined,
@@ -36,6 +38,18 @@ export default function ProfilePage() {
     totalPosts: 0,
     notificationCount: 0,
   });
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    if (loading) return;
+    gsap.from(".pf-item", {
+      y: 24,
+      autoAlpha: 0,
+      duration: 0.45,
+      stagger: 0.1,
+      ease: "power2.out",
+    });
+  }, { dependencies: [loading], scope: containerRef, revertOnUpdate: true });
 
   useEffect(() => {
     let cancelled = false;
@@ -111,100 +125,110 @@ export default function ProfilePage() {
   }
 
   return (
-    <Flex vertical gap={16}>
-      {/* User Header */}
-      <Card bordered>
-        <Flex align="center" gap={20} wrap="wrap">
-          <div
-            style={{
-              width: 64,
-              height: 64,
-              borderRadius: "50%",
-              border: "2px solid #eaeaea",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-              background: "#fafafa",
-            }}
-          >
-            <UserOutlined style={{ fontSize: 28, color: "#888" }} />
-          </div>
-          <div style={{ flex: 1, minWidth: 200 }}>
-            <Text strong style={{ fontSize: 20, display: "block", marginBottom: 4 }}>
-              {user?.displayName || user?.email || "用户"}
-            </Text>
-            <Space>
-              <UserOutlined style={{ color: "#999" }} />
-              <Text type="secondary">{user?.email || "未设置邮箱"}</Text>
-            </Space>
-          </div>
-        </Flex>
-      </Card>
-
-      {/* Stats Cards */}
-      <Flex gap={12} wrap="wrap">
-        {[
-          { title: "监控配置", value: stats.monitorCount, icon: <FireOutlined /> },
-          { title: "收录帖子", value: stats.totalPosts, icon: <FileTextOutlined /> },
-          { title: "未读通知", value: stats.notificationCount, icon: <BellOutlined /> },
-          { title: "收藏内容", value: savedCount, icon: <StarOutlined /> },
-        ].map((item) => (
-          <Card
-            key={item.title}
-            bordered
-            style={{ flex: "1 1 180px", textAlign: "center" }}
-            styles={{ body: { padding: "24px 16px" } }}
-          >
-            <Statistic
-              title={item.title}
-              value={item.value}
-              valueStyle={{ fontSize: 28, fontWeight: 600, color: "#111" }}
-              prefix={<span style={{ color: "#888", marginRight: 4, fontSize: 20 }}>{item.icon}</span>}
-            />
+    <div ref={containerRef}>
+      <Flex vertical gap={16}>
+        {/* User Header */}
+        <div className="pf-item">
+          <Card bordered>
+            <Flex align="center" gap={20} wrap="wrap">
+              <div
+                style={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: "50%",
+                  border: "2px solid #eaeaea",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                  background: "#fafafa",
+                }}
+              >
+                <UserOutlined style={{ fontSize: 28, color: "#888" }} />
+              </div>
+              <div style={{ flex: 1, minWidth: 200 }}>
+                <Text strong style={{ fontSize: 20, display: "block", marginBottom: 4 }}>
+                  {user?.displayName || user?.email || "用户"}
+                </Text>
+                <Space>
+                  <UserOutlined style={{ color: "#999" }} />
+                  <Text type="secondary">{user?.email || "未设置邮箱"}</Text>
+                </Space>
+              </div>
+            </Flex>
           </Card>
-        ))}
+        </div>
+
+        {/* Stats Cards */}
+        <div className="pf-item">
+          <Flex gap={12} wrap="wrap">
+            {[
+              { title: "监控配置", value: stats.monitorCount, icon: <FireOutlined /> },
+              { title: "收录帖子", value: stats.totalPosts, icon: <FileTextOutlined /> },
+              { title: "未读通知", value: stats.notificationCount, icon: <BellOutlined /> },
+              { title: "收藏内容", value: savedCount, icon: <StarOutlined /> },
+            ].map((item) => (
+              <Card
+                key={item.title}
+                bordered
+                style={{ flex: "1 1 180px", textAlign: "center" }}
+                styles={{ body: { padding: "24px 16px" } }}
+              >
+                <Statistic
+                  title={item.title}
+                  value={item.value}
+                  valueStyle={{ fontSize: 28, fontWeight: 600, color: "#111" }}
+                  prefix={<span style={{ color: "#888", marginRight: 4, fontSize: 20 }}>{item.icon}</span>}
+                />
+              </Card>
+            ))}
+          </Flex>
+        </div>
+
+        {/* Account Details */}
+        <div className="pf-item">
+          <Card bordered title="账号详情">
+            <Descriptions column={{ xs: 1, sm: 1, md: 1 }} size="default">
+              <Descriptions.Item label="显示名称">
+                {user?.displayName || "未设置"}
+              </Descriptions.Item>
+              <Descriptions.Item label="电子邮箱">
+                {user?.email || "未设置"}
+              </Descriptions.Item>
+              <Descriptions.Item label="注册时间">
+                — <Text type="secondary">（无数据）</Text>
+              </Descriptions.Item>
+            </Descriptions>
+          </Card>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="pf-item">
+          <Card bordered title="快捷操作">
+            <Space wrap size={12}>
+              <Button
+                type="primary"
+                icon={<SettingOutlined />}
+                onClick={() => { window.location.href = "/dashboard/settings"; }}
+              >
+                管理监控
+              </Button>
+              <Button
+                icon={<BellOutlined />}
+                onClick={() => { window.location.href = "/dashboard/notifications"; }}
+              >
+                查看通知
+              </Button>
+              <Button
+                icon={<StarOutlined />}
+                onClick={() => { window.location.href = "/dashboard/favorites"; }}
+              >
+                我的收藏
+              </Button>
+            </Space>
+          </Card>
+        </div>
       </Flex>
-
-      {/* Account Details */}
-      <Card bordered title="账号详情">
-        <Descriptions column={{ xs: 1, sm: 1, md: 1 }} size="default">
-          <Descriptions.Item label="显示名称">
-            {user?.displayName || "未设置"}
-          </Descriptions.Item>
-          <Descriptions.Item label="电子邮箱">
-            {user?.email || "未设置"}
-          </Descriptions.Item>
-          <Descriptions.Item label="注册时间">
-            — <Text type="secondary">（无数据）</Text>
-          </Descriptions.Item>
-        </Descriptions>
-      </Card>
-
-      {/* Quick Actions */}
-      <Card bordered title="快捷操作">
-        <Space wrap size={12}>
-          <Button
-            type="primary"
-            icon={<SettingOutlined />}
-            onClick={() => { window.location.href = "/dashboard/settings"; }}
-          >
-            管理监控
-          </Button>
-          <Button
-            icon={<BellOutlined />}
-            onClick={() => { window.location.href = "/dashboard/notifications"; }}
-          >
-            查看通知
-          </Button>
-          <Button
-            icon={<StarOutlined />}
-            onClick={() => { window.location.href = "/dashboard/favorites"; }}
-          >
-            我的收藏
-          </Button>
-        </Space>
-      </Card>
-    </Flex>
+    </div>
   );
 }

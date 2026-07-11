@@ -1,3 +1,9 @@
+"use client";
+
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+
 const features = [
   {
     title: "多平台热点追踪",
@@ -112,8 +118,23 @@ const features = [
 ];
 
 export default function WelcomeFeatures() {
+  const containerRef = useRef<HTMLElement>(null);
+
+  useGSAP(() => {
+    gsap.from(".hf-title", { y: 24, autoAlpha: 0, duration: 0.5, ease: "power2.out" });
+    gsap.from(".hf-card", {
+      y: 40,
+      autoAlpha: 0,
+      duration: 0.5,
+      stagger: 0.12,
+      delay: 0.2,
+      ease: "power2.out",
+    });
+  }, { scope: containerRef });
+
   return (
     <section
+      ref={containerRef}
       id="features"
       style={{
         padding: "100px 24px",
@@ -125,7 +146,7 @@ export default function WelcomeFeatures() {
           margin: "0 auto",
         }}
       >
-        <div style={{ textAlign: "center", marginBottom: 64 }}>
+        <div className="hf-title" style={{ textAlign: "center", marginBottom: 64 }}>
           <h2
             style={{
               fontSize: 36,
@@ -163,6 +184,7 @@ export default function WelcomeFeatures() {
           {features.map((feature) => (
             <article
               key={feature.title}
+              className="hf-card"
               style={{
                 background: "#fff",
                 padding: 40,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Card,
   List,
@@ -12,6 +12,8 @@ import {
   Empty,
   Alert,
 } from "antd";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 import {
   StarOutlined,
   StarFilled,
@@ -26,6 +28,18 @@ export default function FavoritesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [favorites, setFavorites] = useState<HotKeyAPI.PostSummary[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    if (favorites.length === 0) return;
+    gsap.from(".fv-item", {
+      y: 20,
+      autoAlpha: 0,
+      duration: 0.4,
+      stagger: 0.06,
+      ease: "power2.out",
+    });
+  }, { dependencies: [favorites.length], scope: containerRef, revertOnUpdate: true });
 
   const loadFavorites = async () => {
     setLoading(true);
@@ -86,79 +100,82 @@ export default function FavoritesPage() {
   }
 
   return (
-    <Flex vertical gap={16}>
-      <Card bordered>
-        <Flex align="center" gap={8}>
-          <StarOutlined style={{ fontSize: 16, color: "#888" }} />
-          <Text strong>收藏关注</Text>
-        </Flex>
-      </Card>
-
-      {loading && (
-        <Card bordered styles={{ body: { textAlign: "center", padding: 80 } }}>
-          <Spin size="large" />
+    <div ref={containerRef}>
+      <Flex vertical gap={16}>
+        <Card bordered>
+          <Flex align="center" gap={8}>
+            <StarOutlined style={{ fontSize: 16, color: "#888" }} />
+            <Text strong>收藏关注</Text>
+          </Flex>
         </Card>
-      )}
 
-      {!loading && favorites.length === 0 && (
-        <Card bordered styles={{ body: { textAlign: "center", padding: 80 } }}>
-          <Empty description="还没有收藏的热点，快去热点榜单收藏吧" />
-        </Card>
-      )}
+        {loading && (
+          <Card bordered styles={{ body: { textAlign: "center", padding: 80 } }}>
+            <Spin size="large" />
+          </Card>
+        )}
 
-      {!loading && favorites.length > 0 && (
-        <Card
-          bordered
-          styles={{ body: { padding: 0 } }}
-        >
-          <List
-            dataSource={favorites}
-            renderItem={(item) => (
-              <List.Item
-                key={item.id}
-                actions={[
-                  <Button
-                    key="delete"
-                    type="text"
-                    size="small"
-                    danger
-                    icon={<DeleteOutlined />}
-                    onClick={() => item.id != null && removeFavorite(item.id)}
-                  />,
-                ]}
-              >
-                <List.Item.Meta
-                  avatar={
-                    <StarFilled style={{ fontSize: 18, color: "#faad14" }} />
-                  }
-                  title={
-                    <Text style={{ fontSize: 13 }}>
-                      {item.content_text?.slice(0, 100) ?? `Post #${item.id}`}
-                    </Text>
-                  }
-                  description={
-                    <Flex align="center" gap={8} style={{ marginTop: 4 }}>
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        {(item.author_name || item.author_handle) ?? "未知"}
+        {!loading && favorites.length === 0 && (
+          <Card bordered styles={{ body: { textAlign: "center", padding: 80 } }}>
+            <Empty description="还没有收藏的热点，快去热点榜单收藏吧" />
+          </Card>
+        )}
+
+        {!loading && favorites.length > 0 && (
+          <Card
+            bordered
+            styles={{ body: { padding: 0 } }}
+          >
+            <List
+              dataSource={favorites}
+              renderItem={(item) => (
+                <List.Item
+                  key={item.id}
+                  className="fv-item"
+                  actions={[
+                    <Button
+                      key="delete"
+                      type="text"
+                      size="small"
+                      danger
+                      icon={<DeleteOutlined />}
+                      onClick={() => item.id != null && removeFavorite(item.id)}
+                    />,
+                  ]}
+                >
+                  <List.Item.Meta
+                    avatar={
+                      <StarFilled style={{ fontSize: 18, color: "#faad14" }} />
+                    }
+                    title={
+                      <Text style={{ fontSize: 13 }}>
+                        {item.content_text?.slice(0, 100) ?? `Post #${item.id}`}
                       </Text>
-                      {item.heat_score != null && (
-                        <Tag style={{ fontSize: 11, lineHeight: "18px" }}>
-                          {Math.round(item.heat_score * 100)}
-                        </Tag>
-                      )}
-                      {item.published_at && (
+                    }
+                    description={
+                      <Flex align="center" gap={8} style={{ marginTop: 4 }}>
                         <Text type="secondary" style={{ fontSize: 12 }}>
-                          {new Date(item.published_at).toLocaleDateString("zh-CN")}
+                          {(item.author_name || item.author_handle) ?? "未知"}
                         </Text>
-                      )}
-                    </Flex>
-                  }
-                />
-              </List.Item>
-            )}
-          />
-        </Card>
-      )}
-    </Flex>
+                        {item.heat_score != null && (
+                          <Tag style={{ fontSize: 11, lineHeight: "18px" }}>
+                            {Math.round(item.heat_score * 100)}
+                          </Tag>
+                        )}
+                        {item.published_at && (
+                          <Text type="secondary" style={{ fontSize: 12 }}>
+                            {new Date(item.published_at).toLocaleDateString("zh-CN")}
+                          </Text>
+                        )}
+                      </Flex>
+                    }
+                  />
+                </List.Item>
+              )}
+            />
+          </Card>
+        )}
+      </Flex>
+    </div>
   );
 }
