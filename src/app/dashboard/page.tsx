@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import {
+  Card,
   Statistic,
   List,
   Tag,
@@ -11,6 +12,8 @@ import {
   Empty,
   Alert,
   Spin,
+  Descriptions,
+  Flex,
 } from "antd";
 import { ProCard, ProList } from "@ant-design/pro-components";
 import ReactMarkdown from "react-markdown";
@@ -34,7 +37,7 @@ import { listTopics } from "@/services/topics";
 import { getMonitorTrends } from "@/services/trends";
 import { listNotifications } from "@/services/notifications";
 
-const { Text, Paragraph } = Typography;
+const { Text, Title, Paragraph } = Typography;
 
 type PageState = "loading" | "error" | "empty" | "data";
 
@@ -57,58 +60,6 @@ const deliveryStatusIcon: Record<string, React.ReactNode> = {
   skipped: <CloseCircleOutlined />,
   failed: <CloseCircleOutlined />,
 };
-
-function StatCard({
-  title,
-  value,
-  suffix,
-  prefix,
-}: {
-  title: string;
-  value: string | number;
-  suffix?: React.ReactNode;
-  prefix?: React.ReactNode;
-}) {
-  return (
-    <div
-      style={{
-        padding: "20px 24px",
-        border: "1px solid #eaeaea",
-        borderRadius: 8,
-      }}
-    >
-      <div
-        style={{
-          fontSize: 13,
-          color: "#666",
-          marginBottom: 8,
-          fontWeight: 500,
-        }}
-      >
-        {title}
-      </div>
-      <div
-        style={{
-          fontSize: 28,
-          fontWeight: 600,
-          color: "#111",
-          letterSpacing: "-0.02em",
-          display: "flex",
-          alignItems: "baseline",
-          gap: 4,
-        }}
-      >
-        {prefix}
-        {value}
-        {suffix && (
-          <span style={{ fontSize: 14, fontWeight: 400, color: "#999" }}>
-            {suffix}
-          </span>
-        )}
-      </div>
-    </div>
-  );
-}
 
 export default function DashboardPage() {
   const [pageState, setPageState] = useState<PageState>("loading");
@@ -217,15 +168,18 @@ export default function DashboardPage() {
       .sort((a, b) => b.value - a.value);
   }, [posts]);
 
-  const toggleSave = (id: number) => {
-    setSavedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      localStorage.setItem("savedPostIds", JSON.stringify([...next]));
-      return next;
-    });
-  };
+  const toggleSave = useCallback(
+    (id: number) => {
+      setSavedIds((prev) => {
+        const next = new Set(prev);
+        if (next.has(id)) next.delete(id);
+        else next.add(id);
+        localStorage.setItem("savedPostIds", JSON.stringify([...next]));
+        return next;
+      });
+    },
+    [],
+  );
 
   const relevantCount = useMemo(
     () => posts.filter((p) => (p.relevance_score ?? 0) > 0.7).length,
@@ -244,101 +198,89 @@ export default function DashboardPage() {
 
   if (pageState === "error") {
     return (
-      <Alert
-        message="加载失败"
-        description={errorMsg}
-        type="error"
-        showIcon
-        action={<Button onClick={() => window.location.reload()}>重试</Button>}
-      />
+      <Card bordered>
+        <Alert
+          message="加载失败"
+          description={errorMsg}
+          type="error"
+          showIcon
+          action={<Button onClick={() => window.location.reload()}>重试</Button>}
+        />
+      </Card>
     );
   }
 
   if (pageState === "loading") {
     return (
-      <div style={{ textAlign: "center", padding: 80 }}>
+      <Card bordered styles={{ body: { textAlign: "center", padding: 80 } }}>
         <Spin size="large" />
-      </div>
+      </Card>
     );
   }
 
   if (pageState === "empty") {
     return (
-      <div style={{ textAlign: "center", padding: 80 }}>
+      <Card bordered styles={{ body: { textAlign: "center", padding: 80 } }}>
         <Empty description="暂无监控配置，请先在设置中创建监控">
-          <Button
-            type="primary"
-            onClick={() => {
-              window.location.href = "/dashboard/settings";
-            }}
-          >
+          <Button type="primary" onClick={() => { window.location.href = "/dashboard/settings"; }}>
             去设置
           </Button>
         </Empty>
-      </div>
+      </Card>
     );
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+    <Flex vertical gap={16}>
       {/* Header */}
-      <div
-        style={{
-          border: "1px solid #eaeaea",
-          borderRadius: 8,
-          padding: "24px 28px",
-        }}
-      >
-        <h1
-          style={{
-            fontSize: 20,
-            fontWeight: 600,
-            color: "#111",
-            margin: "0 0 4px",
-            letterSpacing: "-0.02em",
-          }}
-        >
+      <Card bordered>
+        <Title level={4} style={{ margin: 0, fontSize: 18 }}>
           公开源热点聚合 · AI 快速理解 · 内容选题生成
-        </h1>
-        <p style={{ fontSize: 14, color: "#666", margin: 0 }}>
+        </Title>
+        <Text type="secondary">
           监控「{monitorName}」— 按热度、相关性和可创作价值排序
-        </p>
-      </div>
+        </Text>
+      </Card>
 
       {/* Stats Row */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-          gap: 12,
-        }}
-      >
-        <StatCard title="今日热点" value={posts.length} suffix="条" />
-        <StatCard
-          title="高相关热点"
-          value={relevantCount}
-          suffix={`/ ${posts.length}`}
-        />
-        <StatCard
-          title="已收藏"
-          value={savedIds.size}
-          prefix={<StarFilled style={{ color: "#faad14", fontSize: 20 }} />}
-        />
-        <StatCard
-          title="待处理通知"
-          value={pendingNotifCount}
-          suffix="条"
-        />
-      </div>
+      <Flex gap={12} wrap="wrap">
+        {[
+          { title: "今日热点", value: posts.length, suffix: "条" },
+          {
+            title: "高相关热点",
+            value: relevantCount,
+            suffix: `/ ${posts.length}`,
+          },
+          {
+            title: "已收藏",
+            value: savedIds.size,
+            prefix: <StarFilled style={{ color: "#faad14" }} />,
+          },
+          {
+            title: "待处理通知",
+            value: pendingNotifCount,
+            suffix: "条",
+          },
+        ].map((s) => (
+          <Card
+            key={s.title}
+            bordered
+            style={{ minWidth: 180, flex: "1 1 0" }}
+            styles={{ body: { padding: "20px 24px" } }}
+          >
+            <Statistic
+              title={s.title}
+              value={s.value}
+              suffix={s.suffix}
+              prefix={s.prefix}
+              valueStyle={{ fontSize: 28, fontWeight: 600, color: "#111" }}
+            />
+          </Card>
+        ))}
+      </Flex>
 
       {/* Main Content: Post List + Detail */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1.4fr",
-          gap: 12,
-        }}
-      >
+      <Flex gap={12} wrap={false}>
         {/* Left: Hot Post List */}
         <ProCard
           ghost
@@ -347,16 +289,13 @@ export default function DashboardPage() {
           title={
             <Space size={8}>
               <FireOutlined style={{ color: "#888", fontSize: 16 }} />
-              <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>
+              <Text strong style={{ fontSize: 14 }}>
                 热点榜单
-              </span>
+              </Text>
             </Space>
           }
-          extra={
-            <span style={{ fontSize: 12, color: "#999" }}>
-              按综合评分排序
-            </span>
-          }
+          extra={<Text type="secondary" style={{ fontSize: 12 }}>按综合评分排序</Text>}
+          style={{ flex: 1 }}
         >
           <List
             dataSource={sortedPosts}
@@ -430,54 +369,29 @@ export default function DashboardPage() {
                         fontWeight: item.id === selected?.id ? 600 : 400,
                       }}
                     >
-                      {item.content_text?.slice(0, 80) ??
-                        `Post #${item.id}`}
+                      {item.content_text?.slice(0, 80) ?? `Post #${item.id}`}
                     </Text>
                   }
                   description={
                     <div>
-                      <span style={{ fontSize: 12, color: "#999" }}>
+                      <Text type="secondary" style={{ fontSize: 12 }}>
                         {(item.author_name || item.author_handle) ?? "未知"} ·{" "}
                         {item.published_at
-                          ? new Date(item.published_at).toLocaleDateString(
-                              "zh-CN",
-                            )
+                          ? new Date(item.published_at).toLocaleDateString("zh-CN")
                           : ""}
-                      </span>
-                      <div style={{ marginTop: 6 }}>
+                      </Text>
+                      <Flex gap={4} style={{ marginTop: 6 }}>
                         {item.final_score != null && (
-                          <span
-                            style={{
-                              display: "inline-block",
-                              padding: "1px 8px",
-                              borderRadius: 4,
-                              fontSize: 11,
-                              fontWeight: 500,
-                              color: "#1677FF",
-                              background: "#f0f5ff",
-                              marginRight: 4,
-                            }}
-                          >
+                          <Tag color="blue" style={{ fontSize: 11, margin: 0 }}>
                             评分 {Math.round(item.final_score * 100)}
-                          </span>
+                          </Tag>
                         )}
                         {item.heat_score != null && (
-                          <span
-                            style={{
-                              display: "inline-block",
-                              padding: "1px 8px",
-                              borderRadius: 4,
-                              fontSize: 11,
-                              fontWeight: 500,
-                              color: "#666",
-                              background: "#f5f5f5",
-                              marginRight: 4,
-                            }}
-                          >
+                          <Tag color="default" style={{ fontSize: 11, margin: 0 }}>
                             {Math.round(item.heat_score * 100)}
-                          </span>
+                          </Tag>
                         )}
-                      </div>
+                      </Flex>
                     </div>
                   }
                 />
@@ -492,45 +406,29 @@ export default function DashboardPage() {
           bordered
           bodyStyle={{ padding: 20 }}
           title={
-            <Space size={8}>
-              <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>
-                快速理解
-              </span>
-            </Space>
+            <Text strong style={{ fontSize: 14 }}>
+              快速理解
+            </Text>
           }
           extra={
             selected?.matched_keywords?.length ? (
               <Space size={4}>
                 {selected.matched_keywords.map((kw) => (
-                  <span
-                    key={kw}
-                    style={{
-                      display: "inline-block",
-                      padding: "1px 8px",
-                      borderRadius: 4,
-                      fontSize: 11,
-                      color: "#1677FF",
-                      background: "#f0f5ff",
-                    }}
-                  >
+                  <Tag key={kw} color="blue" style={{ fontSize: 11 }}>
                     {kw}
-                  </span>
+                  </Tag>
                 ))}
               </Space>
             ) : (
-              <span
-                style={{
-                  fontSize: 11,
-                  color: "#999",
-                }}
-              >
+              <Text type="secondary" style={{ fontSize: 11 }}>
                 AI 摘要
-              </span>
+              </Text>
             )
           }
+          style={{ flex: 1.4 }}
         >
           {selected ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <Flex vertical gap={16}>
               {/* Markdown content */}
               <div className="markdown-body">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -538,178 +436,92 @@ export default function DashboardPage() {
                 </ReactMarkdown>
               </div>
 
-              {/* Engagement stats */}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(6, 1fr)",
-                  gap: 1,
-                  border: "1px solid #eaeaea",
-                  borderRadius: 8,
-                  overflow: "hidden",
+              {/* Engagement stats using Descriptions */}
+              <Descriptions
+                size="small"
+                column={6}
+                bordered
+                styles={{
+                  label: { fontSize: 12, color: "#999", background: "#fafafa" },
+                  content: { fontSize: 14, fontWeight: 600, color: "#111" },
                 }}
               >
-                {[
-                  { label: "阅读", value: selected.view_count },
-                  { label: "点赞", value: selected.like_count },
-                  { label: "回复", value: selected.reply_count },
-                  { label: "转发", value: selected.repost_count },
-                  { label: "引用", value: selected.quote_count },
-                  {
-                    label: "新鲜度",
-                    value: selected.freshness_score
-                      ? `${Math.round(selected.freshness_score * 100)}%`
-                      : "-",
-                  },
-                ].map((s) => (
-                  <div
-                    key={s.label}
-                    style={{
-                      padding: "12px 8px",
-                      textAlign: "center",
-                      background: "#fafafa",
-                    }}
-                  >
-                    <div
-                      style={{ fontSize: 11, color: "#999", marginBottom: 4 }}
-                    >
-                      {s.label}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 16,
-                        fontWeight: 600,
-                        color: "#111",
-                      }}
-                    >
-                      {s.value ?? "-"}
-                    </div>
-                  </div>
-                ))}
-              </div>
+                <Descriptions.Item label="阅读">{selected.view_count ?? "-"}</Descriptions.Item>
+                <Descriptions.Item label="点赞">{selected.like_count ?? "-"}</Descriptions.Item>
+                <Descriptions.Item label="回复">{selected.reply_count ?? "-"}</Descriptions.Item>
+                <Descriptions.Item label="转发">{selected.repost_count ?? "-"}</Descriptions.Item>
+                <Descriptions.Item label="引用">{selected.quote_count ?? "-"}</Descriptions.Item>
+                <Descriptions.Item label="新鲜度">
+                  {selected.freshness_score != null
+                    ? `${Math.round(selected.freshness_score * 100)}%`
+                    : "-"}
+                </Descriptions.Item>
+              </Descriptions>
 
               {/* Content Topics */}
               {topicList.length > 0 ? (
                 <div>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: 12,
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontSize: 13,
-                        fontWeight: 600,
-                        color: "#111",
-                      }}
-                    >
-                      内容选题
-                    </span>
+                  <Flex justify="space-between" align="center" style={{ marginBottom: 12 }}>
+                    <Text strong>内容选题</Text>
                     <Button
                       size="small"
                       icon={<ReloadOutlined />}
                       onClick={() => setTopicRotation((v) => v + 1)}
-                      style={{ fontSize: 12 }}
                     >
                       换一批
                     </Button>
-                  </div>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
-                      gap: 8,
-                    }}
-                  >
+                  </Flex>
+                  <Flex gap={8} wrap="wrap">
                     {topicList.slice(0, 4).map((topic) => (
-                      <div
+                      <Card
                         key={topic.id}
-                        style={{
-                          padding: 16,
-                          border: "1px solid #eaeaea",
-                          borderRadius: 8,
-                        }}
+                        bordered
+                        size="small"
+                        hoverable
+                        style={{ flex: "1 1 calc(50% - 4px)", minWidth: 180 }}
                       >
-                        <div
-                          style={{
-                            fontSize: 13,
-                            fontWeight: 600,
-                            color: "#111",
-                            marginBottom: 4,
-                          }}
-                        >
+                        <Text strong style={{ fontSize: 13 }}>
                           {topic.title}
-                        </div>
-                        <p
-                          style={{
-                            fontSize: 12,
-                            color: "#666",
-                            margin: "0 0 8px",
-                            lineHeight: 1.5,
-                            display: "-webkit-box",
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: "vertical",
-                            overflow: "hidden",
-                          }}
+                        </Text>
+                        <Paragraph
+                          type="secondary"
+                          style={{ fontSize: 12, margin: "4px 0 8px" }}
+                          ellipsis={{ rows: 2 }}
                         >
                           {topic.summary}
-                        </p>
-                        <Space size={4}>
-                          <span
-                            style={{
-                              display: "inline-block",
-                              padding: "1px 8px",
-                              borderRadius: 4,
-                              fontSize: 11,
-                              color:
-                                topic.trend_direction === "up"
-                                  ? "#cf1322"
-                                  : topic.trend_direction === "down"
-                                    ? "#389e0d"
-                                    : "#666",
-                              background:
-                                topic.trend_direction === "up"
-                                  ? "#fff1f0"
-                                  : topic.trend_direction === "down"
-                                    ? "#f6ffed"
-                                    : "#f5f5f5",
-                            }}
+                        </Paragraph>
+                        <Flex gap={4}>
+                          <Tag
+                            color={
+                              topic.trend_direction === "up"
+                                ? "red"
+                                : topic.trend_direction === "down"
+                                  ? "green"
+                                  : "default"
+                            }
+                            style={{ fontSize: 11, lineHeight: "18px" }}
                           >
                             {topic.trend_direction === "up"
                               ? "↑ 上升"
                               : topic.trend_direction === "down"
                                 ? "↓ 下降"
                                 : "→ 平稳"}
-                          </span>
-                          <span
-                            style={{
-                              display: "inline-block",
-                              padding: "1px 8px",
-                              borderRadius: 4,
-                              fontSize: 11,
-                              color: "#666",
-                              background: "#f5f5f5",
-                            }}
-                          >
-                            {Math.round(topic.current_heat ?? 0)}
-                          </span>
-                        </Space>
-                      </div>
+                          </Tag>
+                          <Tag color="blue" style={{ fontSize: 11, lineHeight: "18px" }}>
+                            热度 {Math.round(topic.current_heat ?? 0)}
+                          </Tag>
+                        </Flex>
+                      </Card>
                     ))}
-                  </div>
+                  </Flex>
                 </div>
               ) : (
-                <div style={{ padding: "20px 0" }}>
-                  <Empty
-                    description="暂无选题建议"
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  />
-                </div>
+                <Empty
+                  description="暂无选题建议"
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                />
               )}
-            </div>
+            </Flex>
           ) : (
             <Empty
               description="选择一个热点查看详情"
@@ -717,16 +529,10 @@ export default function DashboardPage() {
             />
           )}
         </ProCard>
-      </div>
+      </Flex>
 
       {/* Bottom: Trend + Source */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: 12,
-        }}
-      >
+      <Flex gap={12}>
         {/* Trend Analysis */}
         <ProCard
           ghost
@@ -735,28 +541,25 @@ export default function DashboardPage() {
           title={
             <Space size={8}>
               <RiseOutlined style={{ color: "#888", fontSize: 16 }} />
-              <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>
+              <Text strong style={{ fontSize: 14 }}>
                 趋势分析
-              </span>
+              </Text>
             </Space>
           }
           extra={
-            <span style={{ fontSize: 12, color: "#999" }}>
+            <Text type="secondary" style={{ fontSize: 12 }}>
               {trends.length > 0
                 ? `${formatTime(trends[0]?.time)} — ${formatTime(trends[trends.length - 1]?.time)}`
                 : "暂无数据"}
-            </span>
+            </Text>
           }
+          style={{ flex: 1 }}
         >
           {trends.length > 0 ? (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "flex-end",
-                gap: 4,
-                height: 160,
-                paddingTop: 8,
-              }}
+            <Flex
+              align="flex-end"
+              gap={4}
+              style={{ height: 160, paddingTop: 8 }}
             >
               {trends.map((point, index) => {
                 const pct = ((point.heat_score ?? 0) / trendMax) * 100;
@@ -778,13 +581,11 @@ export default function DashboardPage() {
                       e.currentTarget.style.opacity = "1";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.opacity = String(
-                        0.15 + (pct / 100) * 0.85,
-                      );
+                      e.currentTarget.style.opacity = String(0.15 + (pct / 100) * 0.85);
                     }}
                   >
                     {trends.length <= 14 && (
-                      <span
+                      <Text
                         style={{
                           position: "absolute",
                           bottom: -18,
@@ -796,17 +597,14 @@ export default function DashboardPage() {
                         }}
                       >
                         {formatTime(point.time)}
-                      </span>
+                      </Text>
                     )}
                   </div>
                 );
               })}
-            </div>
+            </Flex>
           ) : (
-            <Empty
-              description="暂无趋势数据"
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-            />
+            <Empty description="暂无趋势数据" image={Empty.PRESENTED_IMAGE_SIMPLE} />
           )}
         </ProCard>
 
@@ -818,41 +616,24 @@ export default function DashboardPage() {
           title={
             <Space size={8}>
               <BarChartOutlined style={{ color: "#888", fontSize: 16 }} />
-              <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>
+              <Text strong style={{ fontSize: 14 }}>
                 来源分布
-              </span>
+              </Text>
             </Space>
           }
-          extra={
-            <span style={{ fontSize: 12, color: "#999" }}>公开源</span>
-          }
+          extra={<Text type="secondary" style={{ fontSize: 12 }}>公开源</Text>}
+          style={{ flex: 1 }}
         >
           {sourceDistribution.length > 0 ? (
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: 16 }}
-            >
+            <Flex vertical gap={16}>
               {sourceDistribution.map((source) => (
                 <div key={source.label}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      marginBottom: 6,
-                    }}
-                  >
-                    <span style={{ fontSize: 13, color: "#333" }}>
-                      {source.label}
-                    </span>
-                    <span
-                      style={{
-                        fontSize: 13,
-                        fontWeight: 600,
-                        color: "#111",
-                      }}
-                    >
+                  <Flex justify="space-between" style={{ marginBottom: 6 }}>
+                    <Text style={{ fontSize: 13 }}>{source.label}</Text>
+                    <Text strong style={{ fontSize: 13 }}>
                       {source.value}%
-                    </span>
-                  </div>
+                    </Text>
+                  </Flex>
                   <div
                     style={{
                       height: 6,
@@ -873,15 +654,12 @@ export default function DashboardPage() {
                   </div>
                 </div>
               ))}
-            </div>
+            </Flex>
           ) : (
-            <Empty
-              description="暂无来源数据"
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-            />
+            <Empty description="暂无来源数据" image={Empty.PRESENTED_IMAGE_SIMPLE} />
           )}
         </ProCard>
-      </div>
+      </Flex>
 
       {/* Notifications */}
       <ProCard
@@ -891,15 +669,15 @@ export default function DashboardPage() {
         title={
           <Space size={8}>
             <BellOutlined style={{ color: "#888", fontSize: 16 }} />
-            <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>
+            <Text strong style={{ fontSize: 14 }}>
               通知列表
-            </span>
+            </Text>
           </Space>
         }
         extra={
-          <span style={{ fontSize: 12, color: "#999" }}>
+          <Text type="secondary" style={{ fontSize: 12 }}>
             {notifications.length} 条未读
-          </span>
+          </Text>
         }
       >
         {notifications.length > 0 ? (
@@ -913,17 +691,13 @@ export default function DashboardPage() {
                 render: (_, item) => (
                   <Space size={8}>
                     <Tag
-                      color={
-                        deliveryStatusColor[
-                          item.delivery_status ?? ""
-                        ] ?? "default"
-                      }
+                      color={deliveryStatusColor[item.delivery_status ?? ""] ?? "default"}
                       icon={deliveryStatusIcon[item.delivery_status ?? ""]}
                       style={{ fontSize: 11 }}
                     >
                       {item.channel === "in_app" ? "站内" : item.channel ?? "未知"}
                     </Tag>
-                    <span style={{ fontSize: 13 }}>
+                    <Text>
                       {item.delivery_status === "pending"
                         ? "待发送"
                         : item.delivery_status === "delivered"
@@ -933,45 +707,30 @@ export default function DashboardPage() {
                             : item.delivery_status === "failed"
                               ? "发送失败"
                               : item.delivery_status ?? "未知"}
-                    </span>
+                    </Text>
                   </Space>
                 ),
               },
               description: {
                 render: (_, item) => (
-                  <div>
-                    <span style={{ fontSize: 12, color: "#999" }}>
-                      {item.created_at
-                        ? new Date(item.created_at).toLocaleString("zh-CN")
-                        : ""}
-                    </span>
+                  <Flex align="center" gap={8}>
+                    <Text type="secondary" style={{ fontSize: 12 }}>
+                      {item.created_at ? new Date(item.created_at).toLocaleString("zh-CN") : ""}
+                    </Text>
                     {item.delivery_status === "pending" && (
-                      <span
-                        style={{
-                          display: "inline-block",
-                          padding: "1px 8px",
-                          borderRadius: 4,
-                          fontSize: 11,
-                          color: "#1677FF",
-                          background: "#f0f5ff",
-                          marginLeft: 8,
-                        }}
-                      >
+                      <Tag color="processing" style={{ fontSize: 11 }}>
                         排队中
-                      </span>
+                      </Tag>
                     )}
-                  </div>
+                  </Flex>
                 ),
               },
             }}
           />
         ) : (
-          <Empty
-            description="暂无未读通知"
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-          />
+          <Empty description="暂无未读通知" image={Empty.PRESENTED_IMAGE_SIMPLE} />
         )}
       </ProCard>
-    </div>
+    </Flex>
   );
 }

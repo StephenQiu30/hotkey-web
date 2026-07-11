@@ -1,10 +1,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Typography, Space, Spin, Alert, Button } from "antd";
+import {
+  Card,
+  Statistic,
+  Typography,
+  Space,
+  Spin,
+  Alert,
+  Button,
+  Flex,
+  Descriptions,
+} from "antd";
 import {
   UserOutlined,
-  MailOutlined,
   FireOutlined,
   BellOutlined,
   StarOutlined,
@@ -81,242 +90,122 @@ export default function ProfilePage() {
 
   if (error) {
     return (
-      <div style={{ border: "1px solid #eaeaea", borderRadius: 8, padding: 24 }}>
+      <Card bordered>
         <Alert
           message="加载失败"
           description={error}
           type="error"
           showIcon
-          action={
-            <Button onClick={() => window.location.reload()}>重试</Button>
-          }
+          action={<Button onClick={() => window.location.reload()}>重试</Button>}
         />
-      </div>
+      </Card>
     );
   }
 
   if (loading) {
     return (
-      <div
-        style={{
-          border: "1px solid #eaeaea",
-          borderRadius: 8,
-          padding: 60,
-          textAlign: "center",
-        }}
-      >
+      <Card bordered styles={{ body: { textAlign: "center", padding: 80 } }}>
         <Spin size="large" />
-      </div>
+      </Card>
     );
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+    <Flex vertical gap={16}>
       {/* User Header */}
-      <div
-        style={{
-          border: "1px solid #eaeaea",
-          borderRadius: 8,
-          padding: "28px 32px",
-          display: "flex",
-          alignItems: "center",
-          gap: 20,
-          flexWrap: "wrap",
-        }}
-      >
-        <div
-          style={{
-            width: 64,
-            height: 64,
-            borderRadius: "50%",
-            border: "2px solid #eaeaea",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-            background: "#fafafa",
-          }}
-        >
-          <UserOutlined style={{ fontSize: 28, color: "#888" }} />
-        </div>
-        <div style={{ flex: 1, minWidth: 200 }}>
+      <Card bordered>
+        <Flex align="center" gap={20} wrap="wrap">
           <div
             style={{
-              fontSize: 20,
-              fontWeight: 600,
-              color: "#111",
-              marginBottom: 4,
-              letterSpacing: "-0.02em",
+              width: 64,
+              height: 64,
+              borderRadius: "50%",
+              border: "2px solid #eaeaea",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+              background: "#fafafa",
             }}
           >
-            {user?.displayName || user?.email || "用户"}
+            <UserOutlined style={{ fontSize: 28, color: "#888" }} />
           </div>
-          <Space style={{ fontSize: 13, color: "#666" }}>
-            <MailOutlined style={{ marginRight: 4 }} />
-            {user?.email || "未设置邮箱"}
-          </Space>
-        </div>
-      </div>
+          <div style={{ flex: 1, minWidth: 200 }}>
+            <Text strong style={{ fontSize: 20, display: "block", marginBottom: 4 }}>
+              {user?.displayName || user?.email || "用户"}
+            </Text>
+            <Space>
+              <UserOutlined style={{ color: "#999" }} />
+              <Text type="secondary">{user?.email || "未设置邮箱"}</Text>
+            </Space>
+          </div>
+        </Flex>
+      </Card>
 
       {/* Stats Cards */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: 12,
-        }}
-      >
+      <Flex gap={12} wrap="wrap">
         {[
-          {
-            icon: <FireOutlined />,
-            value: stats.monitorCount,
-            label: "监控配置",
-          },
-          {
-            icon: <FileTextOutlined />,
-            value: stats.totalPosts,
-            label: "收录帖子",
-          },
-          {
-            icon: <BellOutlined />,
-            value: stats.notificationCount,
-            label: "未读通知",
-          },
-          {
-            icon: <StarOutlined />,
-            value: savedCount,
-            label: "收藏内容",
-          },
-        ].map((s) => (
-          <div
-            key={s.label}
-            style={{
-              padding: "20px 24px",
-              border: "1px solid #eaeaea",
-              borderRadius: 8,
-              textAlign: "center",
-            }}
+          { title: "监控配置", value: stats.monitorCount, icon: <FireOutlined /> },
+          { title: "收录帖子", value: stats.totalPosts, icon: <FileTextOutlined /> },
+          { title: "未读通知", value: stats.notificationCount, icon: <BellOutlined /> },
+          { title: "收藏内容", value: savedCount, icon: <StarOutlined /> },
+        ].map((item) => (
+          <Card
+            key={item.title}
+            bordered
+            style={{ flex: "1 1 180px", textAlign: "center" }}
+            styles={{ body: { padding: "24px 16px" } }}
           >
-            <div style={{ fontSize: 20, color: "#888", marginBottom: 8 }}>
-              {s.icon}
-            </div>
-            <div
-              style={{
-                fontSize: 28,
-                fontWeight: 600,
-                color: "#111",
-                marginBottom: 2,
-                letterSpacing: "-0.02em",
-              }}
-            >
-              {s.value}
-            </div>
-            <div style={{ fontSize: 13, color: "#666" }}>{s.label}</div>
-          </div>
+            <Statistic
+              title={item.title}
+              value={item.value}
+              valueStyle={{ fontSize: 28, fontWeight: 600, color: "#111" }}
+              prefix={<span style={{ color: "#888", marginRight: 4, fontSize: 20 }}>{item.icon}</span>}
+            />
+          </Card>
         ))}
-      </div>
+      </Flex>
 
       {/* Account Details */}
-      <div
-        style={{
-          border: "1px solid #eaeaea",
-          borderRadius: 8,
-          padding: "24px 28px",
-        }}
-      >
-        <div
-          style={{
-            fontSize: 14,
-            fontWeight: 600,
-            color: "#111",
-            marginBottom: 20,
-          }}
-        >
-          账号详情
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          {[
-            { label: "显示名称", value: user?.displayName || "未设置" },
-            { label: "电子邮箱", value: user?.email || "未设置" },
-            { label: "注册时间", value: "—（无数据）" },
-          ].map((item) => (
-            <div
-              key={item.label}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 16,
-                paddingBottom: 12,
-                borderBottom: "1px solid #f0f0f0",
-              }}
-            >
-              <span
-                style={{
-                  fontSize: 13,
-                  color: "#666",
-                  width: 80,
-                  flexShrink: 0,
-                }}
-              >
-                {item.label}
-              </span>
-              <span style={{ fontSize: 13, color: "#333" }}>
-                {item.value}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
+      <Card bordered title="账号详情">
+        <Descriptions column={{ xs: 1, sm: 1, md: 1 }} size="default">
+          <Descriptions.Item label="显示名称">
+            {user?.displayName || "未设置"}
+          </Descriptions.Item>
+          <Descriptions.Item label="电子邮箱">
+            {user?.email || "未设置"}
+          </Descriptions.Item>
+          <Descriptions.Item label="注册时间">
+            — <Text type="secondary">（无数据）</Text>
+          </Descriptions.Item>
+        </Descriptions>
+      </Card>
 
       {/* Quick Actions */}
-      <div
-        style={{
-          border: "1px solid #eaeaea",
-          borderRadius: 8,
-          padding: "24px 28px",
-        }}
-      >
-        <div
-          style={{
-            fontSize: 14,
-            fontWeight: 600,
-            color: "#111",
-            marginBottom: 16,
-          }}
-        >
-          快捷操作
-        </div>
+      <Card bordered title="快捷操作">
         <Space wrap size={12}>
           <Button
             type="primary"
             icon={<SettingOutlined />}
-            onClick={() => {
-              window.location.href = "/dashboard/settings";
-            }}
-            style={{
-              background: "#111",
-              borderColor: "#111",
-              boxShadow: "none",
-            }}
+            onClick={() => { window.location.href = "/dashboard/settings"; }}
+            style={{ background: "#111", borderColor: "#111", boxShadow: "none" }}
           >
             管理监控
           </Button>
           <Button
-            onClick={() => {
-              window.location.href = "/dashboard/notifications";
-            }}
+            icon={<BellOutlined />}
+            onClick={() => { window.location.href = "/dashboard/notifications"; }}
           >
             查看通知
           </Button>
           <Button
-            onClick={() => {
-              window.location.href = "/dashboard/favorites";
-            }}
+            icon={<StarOutlined />}
+            onClick={() => { window.location.href = "/dashboard/favorites"; }}
           >
             我的收藏
           </Button>
         </Space>
-      </div>
-    </div>
+      </Card>
+    </Flex>
   );
 }

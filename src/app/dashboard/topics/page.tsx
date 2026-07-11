@@ -1,7 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Tag, Typography, Spin, Empty, Alert, Space, Button } from "antd";
+import {
+  Card,
+  Tag,
+  Typography,
+  Spin,
+  Empty,
+  Alert,
+  Button,
+  Flex,
+} from "antd";
 import { FileTextOutlined } from "@ant-design/icons";
 import { listMonitors } from "@/services/monitors";
 import { listTopics } from "@/services/topics";
@@ -49,165 +58,89 @@ export default function TopicsPage() {
 
   if (error) {
     return (
-      <div style={{ border: "1px solid #eaeaea", borderRadius: 8, padding: 24 }}>
+      <Card bordered>
         <Alert
           message="加载失败"
           description={error}
           type="error"
           showIcon
-          action={
-            <Button onClick={() => window.location.reload()}>重试</Button>
-          }
+          action={<Button onClick={() => window.location.reload()}>重试</Button>}
         />
-      </div>
+      </Card>
     );
   }
 
   if (loading) {
     return (
-      <div style={{ border: "1px solid #eaeaea", borderRadius: 8, padding: 60, textAlign: "center" }}>
+      <Card bordered styles={{ body: { textAlign: "center", padding: 80 } }}>
         <Spin size="large" />
-      </div>
+      </Card>
     );
   }
 
   return (
-    <div>
-      <div
-        style={{
-          border: "1px solid #eaeaea",
-          borderRadius: 8,
-          padding: "20px 24px",
-          marginBottom: 16,
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            fontSize: 14,
-            fontWeight: 600,
-            color: "#111",
-          }}
-        >
+    <Flex vertical gap={16}>
+      <Card bordered>
+        <Flex align="center" gap={8}>
           <FileTextOutlined style={{ fontSize: 16, color: "#888" }} />
-          内容选题
-        </div>
-      </div>
+          <Text strong>内容选题</Text>
+        </Flex>
+      </Card>
 
       {topics.length === 0 ? (
-        <div
-          style={{
-            border: "1px solid #eaeaea",
-            borderRadius: 8,
-            padding: 60,
-            textAlign: "center",
-          }}
-        >
+        <Card bordered styles={{ body: { textAlign: "center", padding: 80 } }}>
           <Empty description="暂无选题数据，请先在设置中创建监控并等待数据采集" />
-        </div>
+        </Card>
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-            gap: 12,
-          }}
-        >
+        <Flex gap={12} wrap="wrap">
           {topics.map((topic) => (
-            <div
+            <Card
               key={topic.id}
-              style={{
-                padding: 24,
-                border: "1px solid #eaeaea",
-                borderRadius: 8,
-                display: "flex",
-                flexDirection: "column",
-                gap: 12,
-              }}
+              bordered
+              hoverable
+              size="small"
+              style={{ flex: "1 1 300px" }}
             >
-              <div
-                style={{
-                  fontSize: 15,
-                  fontWeight: 600,
-                  color: "#111",
-                  letterSpacing: "-0.01em",
-                  lineHeight: 1.4,
-                }}
-              >
-                {topic.title}
-              </div>
-              <Paragraph
-                style={{
-                  fontSize: 13,
-                  color: "#666",
-                  margin: 0,
-                  lineHeight: 1.6,
-                }}
-                ellipsis={{ rows: 2 }}
-              >
-                {topic.summary}
-              </Paragraph>
-              <Space size={6}>
-                <span
-                  style={{
-                    display: "inline-block",
-                    padding: "2px 10px",
-                    borderRadius: 4,
-                    fontSize: 12,
-                    color:
+              <Flex vertical gap={12}>
+                <Text strong style={{ fontSize: 15 }}>
+                  {topic.title}
+                </Text>
+                <Paragraph
+                  type="secondary"
+                  style={{ fontSize: 13, margin: 0 }}
+                  ellipsis={{ rows: 2 }}
+                >
+                  {topic.summary}
+                </Paragraph>
+                <Flex gap={6} wrap="wrap">
+                  <Tag
+                    color={
                       topic.trend_direction === "up"
-                        ? "#cf1322"
+                        ? "red"
                         : topic.trend_direction === "down"
-                          ? "#389e0d"
-                          : "#666",
-                    background:
-                      topic.trend_direction === "up"
-                        ? "#fff1f0"
-                        : topic.trend_direction === "down"
-                          ? "#f6ffed"
-                          : "#f5f5f5",
-                    fontWeight: 500,
-                  }}
-                >
-                  {topic.trend_direction === "up"
-                    ? "↑ 上升"
-                    : topic.trend_direction === "down"
-                      ? "↓ 下降"
-                      : "→ 平稳"}
-                </span>
-                <span
-                  style={{
-                    display: "inline-block",
-                    padding: "2px 10px",
-                    borderRadius: 4,
-                    fontSize: 12,
-                    color: "#666",
-                    background: "#f5f5f5",
-                    fontWeight: 500,
-                  }}
-                >
-                  热度 {Math.round(topic.current_heat ?? 0)}
-                </span>
-                <span
-                  style={{
-                    display: "inline-block",
-                    padding: "2px 10px",
-                    borderRadius: 4,
-                    fontSize: 12,
-                    color: "#666",
-                    background: "#f5f5f5",
-                    fontWeight: 500,
-                  }}
-                >
-                  {(topic.post_count ?? 0)} 篇
-                </span>
-              </Space>
-            </div>
+                          ? "green"
+                          : "default"
+                    }
+                    style={{ fontSize: 11, lineHeight: "20px" }}
+                  >
+                    {topic.trend_direction === "up"
+                      ? "↑ 上升"
+                      : topic.trend_direction === "down"
+                        ? "↓ 下降"
+                        : "→ 平稳"}
+                  </Tag>
+                  <Tag color="blue" style={{ fontSize: 11, lineHeight: "20px" }}>
+                    热度 {Math.round(topic.current_heat ?? 0)}
+                  </Tag>
+                  <Tag style={{ fontSize: 11, lineHeight: "20px" }}>
+                    {(topic.post_count ?? 0)} 篇
+                  </Tag>
+                </Flex>
+              </Flex>
+            </Card>
           ))}
-        </div>
+        </Flex>
       )}
-    </div>
+    </Flex>
   );
 }
