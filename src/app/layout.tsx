@@ -1,26 +1,23 @@
-"use client";
-
+import type { Metadata } from "next";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-import { ConfigProvider, App as AntApp } from "antd";
-import zhCN from "antd/locale/zh_CN";
+import AppProvider from "@/components/AppProvider";
 import "./globals.css";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export const metadata: Metadata = {
+  title: "HotKey - 内容创作者热点工作台",
+  description: "一站式热点追踪平台，助力内容创作者把握流量脉搏",
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="zh-CN">
       <body>
         <AntdRegistry>
-          <ConfigProvider
-            locale={zhCN}
-            theme={{
-              token: {
-                colorPrimary: "#1677FF",
-                borderRadius: 6,
-              },
-            }}
-          >
-            <AntApp>{children}</AntApp>
-          </ConfigProvider>
+          <AppProvider>{children}</AppProvider>
         </AntdRegistry>
       </body>
     </html>
