@@ -1,4 +1,48 @@
-import apiClient from "./axios";
+import axios, { AxiosError } from "axios";
+
+export class HotKeyAPIError extends Error {
+  code?: string;
+  status: number;
+
+  constructor(message: string, status: number, code?: string) {
+    super(message);
+    this.name = "HotKeyAPIError";
+    this.status = status;
+    this.code = code;
+  }
+}
+
+const apiClient = axios.create({
+  baseURL: "",
+  timeout: 15000,
+});
+
+apiClient.interceptors.request.use((config) => {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  return config;
+});
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError<{ error?: string; code?: string }>) => {
+    if (error.response?.status === 401 && typeof window !== "undefined") {
+      localStorage.removeItem("token");
+      if (!window.location.pathname.startsWith("/login")) {
+        window.location.href = "/login";
+      }
+    }
+    const message = error.response?.data?.error ?? error.message;
+    const code = error.response?.data?.code;
+    return Promise.reject(
+      new HotKeyAPIError(message, error.response?.status ?? 0, code),
+    );
+  },
+);
 
 export async function request<T>(url: string, options?: any): Promise<T> {
   const response = await apiClient({ url, ...options });

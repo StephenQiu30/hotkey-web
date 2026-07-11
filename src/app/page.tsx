@@ -1,8 +1,10 @@
-import WelcomeHeader from "@/components/WelcomeHeader";
-import WelcomeHero from "@/components/WelcomeHero";
-import WelcomeFeatures from "@/components/WelcomeFeatures";
-import WelcomeCTA from "@/components/WelcomeCTA";
-import WelcomeFooter from "@/components/WelcomeFooter";
+import {
+  WelcomeHeader,
+  WelcomeHero,
+  WelcomeFeatures,
+  WelcomeCTA,
+  WelcomeFooter,
+} from "@/components/welcome";
 
 export default function HomePage() {
   return (
