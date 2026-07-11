@@ -1,69 +1,146 @@
+"use client";
+
 export default function WelcomeHero() {
   return (
     <section
       style={{
-        textAlign: "center",
-        padding: "80px 24px 60px",
-        maxWidth: 800,
-        margin: "0 auto",
+        padding: "120px 24px 80px",
       }}
     >
-      <h1
+      <div
         style={{
-          fontSize: 48,
-          fontWeight: 700,
-          lineHeight: 1.2,
-          color: "#1a1a1a",
-          margin: "0 0 20px",
-          letterSpacing: "-0.02em",
+          maxWidth: 800,
+          margin: "0 auto",
+          textAlign: "center",
         }}
       >
-        热点监控 · 内容创作 · 数据洞察
-      </h1>
-      <p
-        style={{
-          fontSize: 18,
-          lineHeight: 1.6,
-          color: "#666",
-          margin: "0 auto 40px",
-          maxWidth: 600,
-        }}
-      >
-        一站式热点追踪平台，助力内容创作者把握流量脉搏，做出爆款内容
-      </p>
-      <div style={{ display: "flex", gap: 16, justifyContent: "center" }}>
-        <a
-          href="/login"
+        {/* Eyebrow badge */}
+        <div
           style={{
             display: "inline-flex",
             alignItems: "center",
-            padding: "12px 32px",
-            background: "#1677FF",
-            color: "#fff",
-            borderRadius: 8,
-            textDecoration: "none",
-            fontSize: 16,
-            fontWeight: 500,
+            gap: 6,
+            padding: "4px 14px",
+            border: "1px solid #eaeaea",
+            borderRadius: 100,
+            fontSize: 13,
+            color: "#666",
+            marginBottom: 32,
           }}
         >
-          立即开始
-        </a>
-        <a
-          href="#features"
+          <span
+            style={{
+              display: "inline-block",
+              width: 6,
+              height: 6,
+              borderRadius: "50%",
+              background: "#1677FF",
+            }}
+          />
+          内容创作者热点平台
+        </div>
+
+        <h1
           style={{
-            display: "inline-flex",
-            alignItems: "center",
-            padding: "12px 32px",
-            background: "#f5f5f5",
-            color: "#333",
-            borderRadius: 8,
-            textDecoration: "none",
-            fontSize: 16,
-            fontWeight: 500,
+            fontSize: 56,
+            fontWeight: 650,
+            lineHeight: 1.1,
+            color: "#111",
+            margin: "0 0 24px",
+            letterSpacing: "-0.03em",
           }}
         >
-          了解更多 →
-        </a>
+          把握热点脉搏
+          <br />
+          创作爆款内容
+        </h1>
+
+        <p
+          style={{
+            fontSize: 18,
+            lineHeight: 1.7,
+            color: "#666",
+            margin: "0 auto 40px",
+            maxWidth: 560,
+          }}
+        >
+          一站式热点追踪平台，实时监控微博、知乎、B站等多渠道趋势，
+          AI 智能分析推荐选题，让每一篇内容都踩在流量风口上。
+        </p>
+
+        <div
+          style={{
+            display: "flex",
+            gap: 12,
+            justifyContent: "center",
+            flexWrap: "wrap",
+          }}
+        >
+          <a
+            href="/login"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              padding: "12px 28px",
+              background: "#111",
+              color: "#fff",
+              borderRadius: 8,
+              textDecoration: "none",
+              fontSize: 15,
+              fontWeight: 500,
+              letterSpacing: "-0.01em",
+              transition: "all 0.15s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#000";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "#111";
+            }}
+          >
+            免费开始使用
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              style={{ marginLeft: 6 }}
+            >
+              <path
+                d="M6 12L10 8L6 4"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </a>
+          <a
+            href="#features"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              padding: "12px 28px",
+              border: "1px solid #eaeaea",
+              color: "#444",
+              borderRadius: 8,
+              textDecoration: "none",
+              fontSize: 15,
+              fontWeight: 500,
+              transition: "all 0.15s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "#ccc";
+              e.currentTarget.style.color = "#111";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "#eaeaea";
+              e.currentTarget.style.color = "#444";
+            }}
+          >
+            了解更多
+          </a>
+        </div>
       </div>
     </section>
   );

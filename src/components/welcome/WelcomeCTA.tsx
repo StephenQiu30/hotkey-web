@@ -1,47 +1,65 @@
+"use client";
+
 export default function WelcomeCTA() {
   return (
     <section
       style={{
-        textAlign: "center",
-        padding: "80px 24px",
-        background: "linear-gradient(135deg, #1677FF 0%, #0958d9 100%)",
+        padding: "100px 24px",
+        borderTop: "1px solid #eaeaea",
       }}
     >
-      <h2
+      <div
         style={{
-          fontSize: 32,
-          fontWeight: 600,
-          color: "#fff",
-          margin: "0 0 16px",
+          maxWidth: 640,
+          margin: "0 auto",
+          textAlign: "center",
         }}
       >
-        准备好提升你的创作效率了吗？
-      </h2>
-      <p
-        style={{
-          fontSize: 16,
-          color: "rgba(255,255,255,0.8)",
-          margin: "0 0 32px",
-        }}
-      >
-        免费使用，即刻开始追踪热点
-      </p>
-      <a
-        href="/login"
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          padding: "14px 40px",
-          background: "#fff",
-          color: "#1677FF",
-          borderRadius: 8,
-          textDecoration: "none",
-          fontSize: 16,
-          fontWeight: 600,
-        }}
-      >
-        免费开始使用 →
-      </a>
+        <h2
+          style={{
+            fontSize: 36,
+            fontWeight: 650,
+            color: "#111",
+            margin: "0 0 16px",
+            letterSpacing: "-0.03em",
+          }}
+        >
+          准备好开始创作了吗？
+        </h2>
+        <p
+          style={{
+            fontSize: 16,
+            lineHeight: 1.7,
+            color: "#666",
+            margin: "0 0 40px",
+          }}
+        >
+          免费注册，即刻体验热点追踪、选题推荐与数据洞察
+        </p>
+        <a
+          href="/login"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            padding: "12px 32px",
+            background: "#111",
+            color: "#fff",
+            borderRadius: 8,
+            textDecoration: "none",
+            fontSize: 15,
+            fontWeight: 500,
+            transition: "all 0.15s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "#000";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "#111";
+          }}
+        >
+          免费开始使用
+        </a>
+      </div>
     </section>
   );
 }

@@ -1,4 +1,4 @@
-/* Global styles - Ant Design handles component styles */
+/* Global styles */
 html {
   scroll-behavior: smooth;
 }
@@ -8,4 +8,13 @@ body {
   padding: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Override Ant Design default styles for Vercel-minimal aesthetic */
+.ant-btn-primary {
+  box-shadow: none !important;
+}
+
+.ant-form-item {
+  margin-bottom: 20px;
 }

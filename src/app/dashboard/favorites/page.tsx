@@ -1,9 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Tag, Typography, Button, Space, Alert } from "antd";
-import { ProCard, ProList } from "@ant-design/pro-components";
-import { StarOutlined, StarFilled, DeleteOutlined } from "@ant-design/icons";
+import { Typography, Button, Space, Alert, Spin, Empty, Tag } from "antd";
+import {
+  StarOutlined,
+  StarFilled,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import { listMonitors } from "@/services/monitors";
 import { listPosts } from "@/services/content";
 
@@ -36,7 +39,9 @@ export default function FavoritesPage() {
         allPosts.push(...(postsRes.data ?? []));
       }
 
-      setFavorites(allPosts.filter((p) => p.id != null && savedSet.has(p.id)));
+      setFavorites(
+        allPosts.filter((p) => p.id != null && savedSet.has(p.id)),
+      );
     } catch (err: any) {
       setError(err?.message ?? "加载失败");
     } finally {
@@ -58,9 +63,7 @@ export default function FavoritesPage() {
 
   if (error) {
     return (
-      <ProCard
-        title={<><StarOutlined style={{ marginRight: 8 }} />收藏关注</>}
-      >
+      <div style={{ border: "1px solid #eaeaea", borderRadius: 8, padding: 24 }}>
         <Alert
           message="加载失败"
           description={error}
@@ -68,68 +71,141 @@ export default function FavoritesPage() {
           showIcon
           action={<Button onClick={loadFavorites}>重试</Button>}
         />
-      </ProCard>
+      </div>
     );
   }
 
   return (
-    <ProCard
-      title={
-        <>
-          <StarOutlined style={{ marginRight: 8 }} />
+    <div>
+      <div
+        style={{
+          border: "1px solid #eaeaea",
+          borderRadius: 8,
+          padding: "20px 24px",
+          marginBottom: 16,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            fontSize: 14,
+            fontWeight: 600,
+            color: "#111",
+          }}
+        >
+          <StarOutlined style={{ fontSize: 16, color: "#888" }} />
           收藏关注
-        </>
-      }
-    >
-      <ProList<HotKeyAPI.PostSummary>
-        rowKey="id"
-        loading={loading}
-        dataSource={favorites}
-        showActions="hover"
-        locale={{ emptyText: "还没有收藏的热点，快去热点榜单收藏吧" }}
-        metas={{
-          avatar: {
-            render: () => <StarFilled style={{ fontSize: 20, color: "#faad14" }} />,
-          },
-          title: {
-            render: (_, item) => (
-              <Text strong>
-                {item.content_text?.slice(0, 100) ?? `Post #${item.id}`}
-              </Text>
-            ),
-          },
-          description: {
-            render: (_, item) => (
-              <Space size={4}>
-                <Text type="secondary" style={{ fontSize: 12 }}>
-                  {(item.author_name || item.author_handle) ?? "未知"}
+        </div>
+      </div>
+
+      {loading && (
+        <div
+          style={{
+            border: "1px solid #eaeaea",
+            borderRadius: 8,
+            padding: 60,
+            textAlign: "center",
+          }}
+        >
+          <Spin size="large" />
+        </div>
+      )}
+
+      {!loading && favorites.length === 0 && (
+        <div
+          style={{
+            border: "1px solid #eaeaea",
+            borderRadius: 8,
+            padding: 60,
+            textAlign: "center",
+          }}
+        >
+          <Empty description="还没有收藏的热点，快去热点榜单收藏吧" />
+        </div>
+      )}
+
+      {!loading && favorites.length > 0 && (
+        <div
+          style={{
+            border: "1px solid #eaeaea",
+            borderRadius: 8,
+            overflow: "hidden",
+          }}
+        >
+          {favorites.map((item) => (
+            <div
+              key={item.id}
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                gap: 12,
+                padding: "16px 20px",
+                borderBottom: "1px solid #eaeaea",
+              }}
+            >
+              <StarFilled
+                style={{
+                  fontSize: 16,
+                  color: "#faad14",
+                  marginTop: 2,
+                  flexShrink: 0,
+                }}
+              />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <Text
+                  style={{ fontSize: 13, lineHeight: 1.5 }}
+                >
+                  {item.content_text?.slice(0, 100) ??
+                    `Post #${item.id}`}
                 </Text>
-                {item.heat_score != null && (
-                  <Tag color="blue" style={{ fontSize: 11 }}>
-                    热度 {Math.round(item.heat_score * 100)}
-                  </Tag>
-                )}
-                {item.published_at && (
-                  <Text type="secondary" style={{ fontSize: 12 }}>
-                    {new Date(item.published_at).toLocaleDateString("zh-CN")}
-                  </Text>
-                )}
-              </Space>
-            ),
-          },
-          actions: {
-            render: (_, item) => [
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    marginTop: 6,
+                  }}
+                >
+                  <span style={{ fontSize: 12, color: "#999" }}>
+                    {(item.author_name || item.author_handle) ?? "未知"}
+                  </span>
+                  {item.heat_score != null && (
+                    <span
+                      style={{
+                        display: "inline-block",
+                        padding: "1px 8px",
+                        borderRadius: 4,
+                        fontSize: 11,
+                        color: "#666",
+                        background: "#f5f5f5",
+                      }}
+                    >
+                      {Math.round(item.heat_score * 100)}
+                    </span>
+                  )}
+                  {item.published_at && (
+                    <span style={{ fontSize: 12, color: "#999" }}>
+                      {new Date(item.published_at).toLocaleDateString(
+                        "zh-CN",
+                      )}
+                    </span>
+                  )}
+                </div>
+              </div>
               <Button
-                key="delete"
                 type="text"
+                size="small"
                 danger
                 icon={<DeleteOutlined />}
                 onClick={() => item.id != null && removeFavorite(item.id)}
-              />,
-            ],
-          },
-        }}
-      />
-    </ProCard>
+                style={{ flexShrink: 0 }}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

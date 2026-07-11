@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Card, Form, Input, Button, Typography, App } from "antd";
+import { Form, Input, Button, Typography, App } from "antd";
 import { MailOutlined, LockOutlined, FireOutlined } from "@ant-design/icons";
 import { useAuthStore } from "@/stores/authStore";
 import { login } from "@/services/auth";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 interface LoginForm {
   email: string;
@@ -50,74 +50,137 @@ export default function LoginPage() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "#f0f5ff",
+        background: "#fff",
       }}
     >
-      <Card
+      <div
         style={{
-          width: "90%",
-          maxWidth: 400,
-          boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+          width: "100%",
+          maxWidth: 360,
+          padding: "0 24px",
         }}
       >
-        <div
-          style={{
-            textAlign: "center",
-            marginBottom: 32,
-          }}
-        >
-          <FireOutlined
-            style={{ fontSize: 36, color: "#1677FF", marginBottom: 16 }}
-          />
-          <Title level={3} style={{ margin: 0 }}>
-            HotKey
-          </Title>
-          <Text type="secondary">内容创作者热点工作台</Text>
+        {/* Logo + Title */}
+        <div style={{ textAlign: "center", marginBottom: 40 }}>
+          <a
+            href="/"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              textDecoration: "none",
+              color: "inherit",
+              marginBottom: 24,
+            }}
+          >
+            <FireOutlined style={{ fontSize: 24, color: "#1677FF" }} />
+            <span
+              style={{
+                fontSize: 20,
+                fontWeight: 600,
+                letterSpacing: "-0.02em",
+              }}
+            >
+              HotKey
+            </span>
+          </a>
+          <h1
+            style={{
+              fontSize: 22,
+              fontWeight: 600,
+              color: "#111",
+              margin: "0 0 8px",
+              letterSpacing: "-0.02em",
+            }}
+          >
+            登录工作台
+          </h1>
+          <Text style={{ color: "#666", fontSize: 14 }}>
+            内容创作者热点工作台
+          </Text>
         </div>
 
+        {/* Form */}
         <Form
           name="login"
           layout="vertical"
           onFinish={onFinish}
           autoComplete="off"
+          style={{ width: "100%" }}
         >
           <Form.Item
             name="email"
-            label="邮箱"
+            label={<span style={{ fontWeight: 500, fontSize: 14, color: "#111" }}>邮箱</span>}
             rules={[{ required: true, message: "请输入邮箱" }]}
           >
             <Input
-              prefix={<MailOutlined />}
+              prefix={<MailOutlined style={{ color: "#999" }} />}
               placeholder="name@example.com"
               size="large"
+              variant="filled"
+              style={{
+                background: "#f5f5f5",
+                border: "1px solid #eaeaea",
+                borderRadius: 8,
+                padding: "8px 12px",
+              }}
             />
           </Form.Item>
 
           <Form.Item
             name="password"
-            label="密码"
+            label={<span style={{ fontWeight: 500, fontSize: 14, color: "#111" }}>密码</span>}
             rules={[{ required: true, message: "请输入密码" }]}
           >
             <Input.Password
-              prefix={<LockOutlined />}
-              placeholder="********"
+              prefix={<LockOutlined style={{ color: "#999" }} />}
+              placeholder="输入密码"
               size="large"
+              variant="filled"
+              style={{
+                background: "#f5f5f5",
+                border: "1px solid #eaeaea",
+                borderRadius: 8,
+                padding: "8px 12px",
+              }}
             />
           </Form.Item>
 
-          <Form.Item style={{ marginBottom: 0 }}>
+          <Form.Item style={{ marginBottom: 0, marginTop: 28 }}>
             <Button
               type="primary"
               htmlType="submit"
               loading={loading}
               block
               size="large"
+              style={{
+                height: 44,
+                borderRadius: 8,
+                background: "#111",
+                borderColor: "#111",
+                fontWeight: 500,
+                fontSize: 15,
+                boxShadow: "none",
+              }}
             >
               进入工作台
             </Button>
           </Form.Item>
         </Form>
-      </Card>
+
+        <div
+          style={{
+            textAlign: "center",
+            marginTop: 32,
+            fontSize: 13,
+            color: "#999",
+          }}
+        >
+          <a href="/" style={{ color: "#666", textDecoration: "none" }}>
+            返回首页
+          </a>
+        </div>
+      </div>
     </div>
   );
 }
