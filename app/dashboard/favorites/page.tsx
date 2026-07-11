@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { Tag, Typography, Button, Space, Alert } from "antd";
 import { ProCard, ProList } from "@ant-design/pro-components";
 import { StarOutlined, StarFilled, DeleteOutlined } from "@ant-design/icons";
-import { listMonitors } from "@/services/hotkey/hotkey-server/monitors";
-import { listPosts } from "@/services/hotkey/hotkey-server/content";
+import { listMonitors } from "@/services/monitors";
+import { listPosts } from "@/services/content";
 
 const { Text } = Typography;
 

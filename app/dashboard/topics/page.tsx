@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { Tag, Typography, Spin, Empty, Alert, Space } from "antd";
 import { ProCard } from "@ant-design/pro-components";
 import { FileTextOutlined } from "@ant-design/icons";
-import { listMonitors } from "@/services/hotkey/hotkey-server/monitors";
-import { listTopics } from "@/services/hotkey/hotkey-server/topics";
+import { listMonitors } from "@/services/monitors";
+import { listTopics } from "@/services/topics";
 
 const { Title, Text, Paragraph } = Typography;
 

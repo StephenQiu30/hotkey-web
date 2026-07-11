@@ -13,9 +13,9 @@ import {
   FileTextOutlined,
 } from "@ant-design/icons";
 import { useAuthStore } from "@/stores/authStore";
-import { listMonitors } from "@/services/hotkey/hotkey-server/monitors";
-import { listPosts } from "@/services/hotkey/hotkey-server/content";
-import { listNotifications } from "@/services/hotkey/hotkey-server/notifications";
+import { listMonitors } from "@/services/monitors";
+import { listPosts } from "@/services/content";
+import { listNotifications } from "@/services/notifications";
 
 const { Title, Text } = Typography;
 

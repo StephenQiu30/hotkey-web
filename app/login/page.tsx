@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Card, Form, Input, Button, Typography, App } from "antd";
 import { MailOutlined, LockOutlined, FireOutlined } from "@ant-design/icons";
 import { useAuthStore } from "@/stores/authStore";
-import { login } from "@/services/hotkey/hotkey-server/auth";
+import { login } from "@/services/auth";
 
 const { Title, Text } = Typography;
 

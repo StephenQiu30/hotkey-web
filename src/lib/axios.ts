@@ -30,6 +30,12 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError<{ error?: string; code?: string }>) => {
+    if (error.response?.status === 401 && typeof window !== "undefined") {
+      localStorage.removeItem("token");
+      if (!window.location.pathname.startsWith("/login")) {
+        window.location.href = "/login";
+      }
+    }
     const message = error.response?.data?.error ?? error.message;
     const code = error.response?.data?.code;
     return Promise.reject(

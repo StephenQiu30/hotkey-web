@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Tag, Typography, Space, Alert, Button } from "antd";
 import { ProCard, ProList, ModalForm, ProFormText, ProFormSelect, ProFormDigit, ProFormSwitch } from "@ant-design/pro-components";
 import { SettingOutlined, PlusOutlined } from "@ant-design/icons";
-import { listMonitors, createMonitor } from "@/services/hotkey/hotkey-server/monitors";
+import { listMonitors, createMonitor } from "@/services/monitors";
 
 const { Text } = Typography;
 

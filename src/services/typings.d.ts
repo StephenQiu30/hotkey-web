@@ -8,10 +8,35 @@ declare namespace HotKeyAPI {
     region?: string;
   };
 
+  type CreateReportRequest = {
+    period_end?: string;
+    period_start?: string;
+    report_type?: string;
+    send?: boolean;
+  };
+
   type ErrorBody = {
     code?: string;
     error?: string;
     request_id?: string;
+  };
+
+  type EventPlatformItem = {
+    heat?: number;
+    platform?: string;
+    rank?: number;
+    title?: string;
+    url?: string;
+  };
+
+  type getHotEventParams = {
+    /** Hot Event ID */
+    id: number;
+  };
+
+  type getHotEventPostsParams = {
+    /** Hot Event ID */
+    id: number;
   };
 
   type getMonitorParams = {
@@ -24,6 +49,16 @@ declare namespace HotKeyAPI {
     id: number;
     /** RFC3339 start time */
     since?: string;
+  };
+
+  type getReportHtmlParams = {
+    /** Report ID */
+    id: number;
+  };
+
+  type getReportParams = {
+    /** Report ID */
+    id: number;
   };
 
   type getTopicTrendsParams = {
@@ -42,6 +77,62 @@ declare namespace HotKeyAPI {
     request_id?: string;
   };
 
+  type HotEventDetail = {
+    category?: string;
+    first_seen_at?: string;
+    heat_score?: number;
+    id?: number;
+    last_seen_at?: string;
+    name?: string;
+    platform?: string;
+    platforms?: EventPlatformItem[];
+    status?: string;
+    summary?: string;
+    trend?: string;
+  };
+
+  type HotEventItem = {
+    category?: string;
+    heat_score?: number;
+    id?: number;
+    name?: string;
+    platform?: string;
+    status?: string;
+    summary?: string;
+    trend?: string;
+  };
+
+  type HotEventListResponse = {
+    data?: HotEventItem[];
+    meta?: HotEventMeta;
+    request_id?: string;
+  };
+
+  type HotEventMeta = {
+    total?: number;
+  };
+
+  type HotEventPostsResponse = {
+    data?: PostBrief[];
+    request_id?: string;
+  };
+
+  type HotEventResponse = {
+    data?: HotEventDetail;
+    request_id?: string;
+  };
+
+  type listHotEventsParams = {
+    /** Status filter */
+    status?: string;
+    /** Platform filter */
+    platform?: string;
+    /** Sort field */
+    sort?: string;
+    /** Max results */
+    limit?: number;
+  };
+
   type listPostsParams = {
     /** Monitor ID */
     id: number;
@@ -51,9 +142,25 @@ declare namespace HotKeyAPI {
     offset?: number;
   };
 
+  type listReportsParams = {
+    /** Max results */
+    limit?: number;
+    /** Offset */
+    offset?: number;
+    /** Filter by report type (daily|weekly) */
+    report_type?: string;
+  };
+
   type listTopicsParams = {
     /** Monitor ID */
     id: number;
+  };
+
+  type listTrendingParams = {
+    /** Platform filter */
+    platform?: string;
+    /** Max results */
+    limit?: number;
   };
 
   type LoginData = {
@@ -122,6 +229,15 @@ declare namespace HotKeyAPI {
     request_id?: string;
   };
 
+  type PostBrief = {
+    heat?: number;
+    id?: number;
+    platform?: string;
+    seen_at?: string;
+    title?: string;
+    url?: string;
+  };
+
   type PostListResponse = {
     data?: PostSummary[];
     request_id?: string;
@@ -153,6 +269,39 @@ declare namespace HotKeyAPI {
     password?: string;
   };
 
+  type Report = {
+    content?: string;
+    created_at?: string;
+    hotspot_count?: number;
+    id?: number;
+    period_end?: string;
+    period_start?: string;
+    report_type?: string;
+    sent_at?: string;
+    status?: string;
+    subject?: string;
+    summary?: string;
+    updated_at?: string;
+  };
+
+  type ReportListResponse = {
+    data?: Report[];
+    page?: number;
+    page_size?: number;
+    request_id?: string;
+    total?: number;
+  };
+
+  type ReportResponse = {
+    data?: Report;
+    request_id?: string;
+  };
+
+  type sendReportParams = {
+    /** Report ID */
+    id: number;
+  };
+
   type TopicListResponse = {
     data?: TopicSummary[];
     request_id?: string;
@@ -165,6 +314,19 @@ declare namespace HotKeyAPI {
     summary?: string;
     title?: string;
     trend_direction?: string;
+  };
+
+  type TrendingItem = {
+    heat?: number;
+    platform?: string;
+    rank?: number;
+    title?: string;
+    url?: string;
+  };
+
+  type TrendingListResponse = {
+    data?: TrendingItem[];
+    request_id?: string;
   };
 
   type TrendListResponse = {

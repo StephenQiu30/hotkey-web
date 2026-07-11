@@ -33,11 +33,11 @@ import {
   ClockCircleOutlined,
 } from "@ant-design/icons";
 import { useAuthStore } from "@/stores/authStore";
-import { listMonitors } from "@/services/hotkey/hotkey-server/monitors";
-import { listPosts } from "@/services/hotkey/hotkey-server/content";
-import { listTopics } from "@/services/hotkey/hotkey-server/topics";
-import { getMonitorTrends } from "@/services/hotkey/hotkey-server/trends";
-import { listNotifications } from "@/services/hotkey/hotkey-server/notifications";
+import { listMonitors } from "@/services/monitors";
+import { listPosts } from "@/services/content";
+import { listTopics } from "@/services/topics";
+import { getMonitorTrends } from "@/services/trends";
+import { listNotifications } from "@/services/notifications";
 
 const { Title, Text, Paragraph } = Typography;
 

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Tag, Typography, Button, Space, Alert } from "antd";
 import { ProCard, ProList } from "@ant-design/pro-components";
 import { BellOutlined, CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
-import { listNotifications, markNotificationRead } from "@/services/hotkey/hotkey-server/notifications";
+import { listNotifications, markNotificationRead } from "@/services/notifications";
 
 const { Text } = Typography;
 
