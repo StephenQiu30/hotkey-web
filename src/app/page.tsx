@@ -1,10 +1,19 @@
-"use client";
+import WelcomeHeader from "@/components/WelcomeHeader";
+import WelcomeHero from "@/components/WelcomeHero";
+import WelcomeFeatures from "@/components/WelcomeFeatures";
+import WelcomeCTA from "@/components/WelcomeCTA";
+import WelcomeFooter from "@/components/WelcomeFooter";
 
-import { useEffect } from "react";
-
-export default function Home() {
-  useEffect(() => {
-    window.location.href = "/dashboard";
-  }, []);
-  return null;
+export default function HomePage() {
+  return (
+    <>
+      <WelcomeHeader />
+      <main>
+        <WelcomeHero />
+        <WelcomeFeatures />
+        <WelcomeCTA />
+      </main>
+      <WelcomeFooter />
+    </>
+  );
 }
