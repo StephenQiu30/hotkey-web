@@ -57,9 +57,9 @@ export default function NotificationsPage() {
     gsap.from(".nt-item", {
       y: 16,
       autoAlpha: 0,
-      duration: 0.35,
-      stagger: 0.05,
-      ease: "power2.out",
+      duration: 0.45,
+      stagger: 0.07,
+      ease: "power3.out",
     });
   }, { dependencies: [notifications.length], scope: containerRef, revertOnUpdate: true });
 

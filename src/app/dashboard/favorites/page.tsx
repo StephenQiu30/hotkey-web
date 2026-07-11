@@ -35,9 +35,9 @@ export default function FavoritesPage() {
     gsap.from(".fv-item", {
       y: 20,
       autoAlpha: 0,
-      duration: 0.4,
-      stagger: 0.06,
-      ease: "power2.out",
+      duration: 0.5,
+      stagger: 0.08,
+      ease: "power3.out",
     });
   }, { dependencies: [favorites.length], scope: containerRef, revertOnUpdate: true });
 

@@ -8,9 +8,27 @@ body {
   padding: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Display",
+    "SF Pro Text",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
 }
 
-/* Override Ant Design default styles for Vercel-minimal aesthetic */
+/* Apple-style text rendering */
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.03em;
+}
+
+/* Vercel-style thin borders on all cards */
+.ant-card-bordered {
+  border: 1px solid #eaeaea !important;
+}
+
+/* Override Ant Design default button shadow */
 .ant-btn-primary {
   box-shadow: none !important;
 }

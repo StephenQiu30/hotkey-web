@@ -11,7 +11,13 @@ export default function AppProvider({ children }: { children: React.ReactNode })
         cssVar: true,
         token: {
           colorPrimary: "#1677FF",
-          borderRadius: 6,
+          borderRadius: 8,
+          fontFamily:
+            '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif',
+          fontSizeHeading1: 48,
+          fontSizeHeading2: 36,
+          fontSizeHeading3: 24,
+          fontSizeHeading4: 20,
         },
       }}
     >

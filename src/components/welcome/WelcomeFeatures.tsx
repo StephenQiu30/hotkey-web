@@ -121,14 +121,14 @@ export default function WelcomeFeatures() {
   const containerRef = useRef<HTMLElement>(null);
 
   useGSAP(() => {
-    gsap.from(".hf-title", { y: 24, autoAlpha: 0, duration: 0.5, ease: "power2.out" });
+    gsap.from(".hf-title", { y: 24, autoAlpha: 0, duration: 0.6, ease: "power3.out" });
     gsap.from(".hf-card", {
       y: 40,
       autoAlpha: 0,
-      duration: 0.5,
-      stagger: 0.12,
-      delay: 0.2,
-      ease: "power2.out",
+      duration: 0.6,
+      stagger: 0.15,
+      delay: 0.25,
+      ease: "power3.out",
     });
   }, { scope: containerRef });
 
@@ -137,7 +137,7 @@ export default function WelcomeFeatures() {
       ref={containerRef}
       id="features"
       style={{
-        padding: "100px 24px",
+        padding: "140px 24px",
       }}
     >
       <div
@@ -146,7 +146,7 @@ export default function WelcomeFeatures() {
           margin: "0 auto",
         }}
       >
-        <div className="hf-title" style={{ textAlign: "center", marginBottom: 64 }}>
+        <div className="hf-title" style={{ textAlign: "center", marginBottom: 80 }}>
           <h2
             style={{
               fontSize: 36,
@@ -187,7 +187,7 @@ export default function WelcomeFeatures() {
               className="hf-card"
               style={{
                 background: "#fff",
-                padding: 40,
+                padding: 48,
                 display: "flex",
                 flexDirection: "column",
                 gap: 16,

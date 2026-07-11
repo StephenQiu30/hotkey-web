@@ -83,9 +83,9 @@ export default function DashboardPage() {
     gsap.from(".dp-item", {
       y: 24,
       autoAlpha: 0,
-      duration: 0.45,
-      stagger: 0.1,
-      ease: "power2.out",
+      duration: 0.55,
+      stagger: 0.12,
+      ease: "power3.out",
     });
   }, { dependencies: [pageState], scope: containerRef, revertOnUpdate: true });
 

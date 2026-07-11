@@ -9,8 +9,8 @@ export default function WelcomeHeader() {
   const containerRef = useRef<HTMLElement>(null);
 
   useGSAP(() => {
-    gsap.from(".hh-logo", { y: -20, autoAlpha: 0, duration: 0.5, ease: "power2.out" });
-    gsap.from(".hh-nav", { y: -20, autoAlpha: 0, duration: 0.5, delay: 0.1, ease: "power2.out" });
+    gsap.from(".hh-logo", { y: -20, autoAlpha: 0, duration: 0.7, ease: "power3.out" });
+    gsap.from(".hh-nav", { y: -20, autoAlpha: 0, duration: 0.7, delay: 0.15, ease: "power3.out" });
   }, { scope: containerRef });
 
   return (
@@ -21,8 +21,8 @@ export default function WelcomeHeader() {
         top: 0,
         zIndex: 50,
         background: "rgba(255,255,255,0.8)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
         borderBottom: "1px solid #eaeaea",
       }}
     >
@@ -33,7 +33,7 @@ export default function WelcomeHeader() {
           justifyContent: "space-between",
           maxWidth: 1200,
           margin: "0 auto",
-          padding: "0 24px",
+          padding: "0 32px",
           height: 56,
         }}
       >

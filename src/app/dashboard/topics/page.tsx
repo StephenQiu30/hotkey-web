@@ -30,9 +30,9 @@ export default function TopicsPage() {
     gsap.from(".tp-card", {
       y: 30,
       autoAlpha: 0,
-      duration: 0.45,
-      stagger: 0.08,
-      ease: "power2.out",
+      duration: 0.55,
+      stagger: 0.1,
+      ease: "power3.out",
     });
   }, { dependencies: [topics.length], scope: containerRef, revertOnUpdate: true });
 

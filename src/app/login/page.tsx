@@ -22,11 +22,11 @@ export default function LoginPage() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
-    gsap.from(".lg-logo-title", { y: -20, autoAlpha: 0, duration: 0.5, ease: "power2.out" });
-    gsap.from(".lg-heading", { y: -10, autoAlpha: 0, duration: 0.4, delay: 0.15, ease: "power2.out" });
-    gsap.from(".lg-subtitle", { y: -10, autoAlpha: 0, duration: 0.4, delay: 0.25, ease: "power2.out" });
-    gsap.from(".lg-form", { y: 20, autoAlpha: 0, duration: 0.5, delay: 0.4, ease: "power2.out" });
-    gsap.from(".lg-footer", { autoAlpha: 0, duration: 0.4, delay: 0.6, ease: "power2.out" });
+    gsap.from(".lg-logo-title", { y: -20, autoAlpha: 0, duration: 0.7, ease: "power3.out" });
+    gsap.from(".lg-heading", { y: -10, autoAlpha: 0, duration: 0.5, delay: 0.15, ease: "power3.out" });
+    gsap.from(".lg-subtitle", { y: -10, autoAlpha: 0, duration: 0.5, delay: 0.25, ease: "power3.out" });
+    gsap.from(".lg-form", { y: 20, autoAlpha: 0, duration: 0.6, delay: 0.4, ease: "power3.out" });
+    gsap.from(".lg-footer", { autoAlpha: 0, duration: 0.4, delay: 0.65, ease: "power3.out" });
   }, { scope: containerRef });
 
   const onFinish = async (values: LoginForm) => {

@@ -8,19 +8,19 @@ export default function WelcomeCTA() {
   const containerRef = useRef<HTMLElement>(null);
 
   useGSAP(() => {
-    gsap.from(".hc-content", { y: 30, autoAlpha: 0, duration: 0.6, ease: "power2.out" });
+    gsap.from(".hc-content", { y: 30, autoAlpha: 0, duration: 0.8, ease: "power3.out" });
   }, { scope: containerRef });
 
   return (
     <section
       ref={containerRef}
-      className="hc-content"
       style={{
-        padding: "100px 24px",
+        padding: "140px 24px",
         borderTop: "1px solid #eaeaea",
       }}
     >
       <div
+        className="hc-content"
         style={{
           maxWidth: 640,
           margin: "0 auto",
@@ -53,7 +53,7 @@ export default function WelcomeCTA() {
           style={{
             display: "inline-flex",
             alignItems: "center",
-            padding: "12px 32px",
+            padding: "14px 36px",
             background: "var(--ant-color-primary)",
             color: "#fff",
             borderRadius: 8,

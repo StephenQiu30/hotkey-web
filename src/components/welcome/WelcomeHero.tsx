@@ -8,17 +8,19 @@ export default function WelcomeHero() {
   const containerRef = useRef<HTMLElement>(null);
 
   useGSAP(() => {
-    gsap.from(".hh-badge", { y: -16, autoAlpha: 0, duration: 0.5, delay: 0.15, ease: "power2.out" });
-    gsap.from(".hh-title", { y: 30, autoAlpha: 0, duration: 0.6, delay: 0.3, ease: "power2.out" });
-    gsap.from(".hh-desc", { y: 20, autoAlpha: 0, duration: 0.5, delay: 0.5, ease: "power2.out" });
-    gsap.from(".hh-btn", { y: 16, autoAlpha: 0, duration: 0.4, stagger: 0.1, delay: 0.65, ease: "power2.out" });
+    gsap.from(".hh-badge", { y: -16, autoAlpha: 0, duration: 0.6, delay: 0.15, ease: "power3.out" });
+    gsap.from(".hh-title", { y: 30, autoAlpha: 0, duration: 0.8, delay: 0.3, ease: "power3.out" });
+    gsap.from(".hh-desc", { y: 20, autoAlpha: 0, duration: 0.6, delay: 0.55, ease: "power3.out" });
+    gsap.from(".hh-btn", { y: 16, autoAlpha: 0, duration: 0.5, stagger: 0.12, delay: 0.75, ease: "power3.out" });
   }, { scope: containerRef });
 
   return (
     <section
       ref={containerRef}
       style={{
-        padding: "120px 24px 80px",
+        padding: "160px 24px 120px",
+        background:
+          "radial-gradient(ellipse 50% 40% at 50% 40%, rgba(22,119,255,0.04) 0%, transparent 100%)",
       }}
     >
       <div
@@ -40,7 +42,7 @@ export default function WelcomeHero() {
             borderRadius: 100,
             fontSize: 13,
             color: "#666",
-            marginBottom: 32,
+            marginBottom: 36,
           }}
         >
           <span
@@ -62,7 +64,7 @@ export default function WelcomeHero() {
             fontWeight: 650,
             lineHeight: 1.1,
             color: "#111",
-            margin: "0 0 24px",
+            margin: "0 0 28px",
             letterSpacing: "-0.03em",
           }}
         >
@@ -77,8 +79,8 @@ export default function WelcomeHero() {
             fontSize: 18,
             lineHeight: 1.7,
             color: "#666",
-            margin: "0 auto 40px",
-            maxWidth: 560,
+            margin: "0 auto 48px",
+            maxWidth: 540,
           }}
         >
           一站式热点追踪平台，实时监控微博、知乎、B站等多渠道趋势，
@@ -99,7 +101,7 @@ export default function WelcomeHero() {
             style={{
               display: "inline-flex",
               alignItems: "center",
-              padding: "12px 28px",
+              padding: "14px 32px",
               background: "var(--ant-color-primary)",
               color: "#fff",
               borderRadius: 8,
@@ -107,6 +109,7 @@ export default function WelcomeHero() {
               fontSize: 15,
               fontWeight: 500,
               letterSpacing: "-0.01em",
+              transition: "opacity 0.2s ease",
             }}
           >
             免费开始使用
@@ -132,7 +135,7 @@ export default function WelcomeHero() {
             style={{
               display: "inline-flex",
               alignItems: "center",
-              padding: "12px 28px",
+              padding: "14px 32px",
               border: "1px solid #eaeaea",
               color: "#444",
               borderRadius: 8,
