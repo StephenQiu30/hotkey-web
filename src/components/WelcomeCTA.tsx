@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 export default function WelcomeCTA() {
   return (
     <section
@@ -28,7 +26,7 @@ export default function WelcomeCTA() {
       >
         免费使用，即刻开始追踪热点
       </p>
-      <Link
+      <a
         href="/login"
         style={{
           display: "inline-flex",
@@ -43,7 +41,7 @@ export default function WelcomeCTA() {
         }}
       >
         免费开始使用 →
-      </Link>
+      </a>
     </section>
   );
 }

@@ -1,6 +1,3 @@
-import Link from "next/link";
-import { FireOutlined } from "@ant-design/icons";
-
 export default function WelcomeHeader() {
   return (
     <header
@@ -22,13 +19,13 @@ export default function WelcomeHeader() {
         </span>
       </div>
       <nav style={{ display: "flex", alignItems: "center", gap: 24 }}>
-        <Link
+        <a
           href="/login"
           style={{ color: "#666", textDecoration: "none", fontSize: 14 }}
         >
           登录
-        </Link>
-        <Link
+        </a>
+        <a
           href="/login"
           style={{
             display: "inline-flex",
@@ -43,7 +40,7 @@ export default function WelcomeHeader() {
           }}
         >
           开始使用 →
-        </Link>
+        </a>
       </nav>
     </header>
   );

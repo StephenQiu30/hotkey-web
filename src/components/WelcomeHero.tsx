@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 export default function WelcomeHero() {
   return (
     <section
@@ -34,7 +32,7 @@ export default function WelcomeHero() {
         一站式热点追踪平台，助力内容创作者把握流量脉搏，做出爆款内容
       </p>
       <div style={{ display: "flex", gap: 16, justifyContent: "center" }}>
-        <Link
+        <a
           href="/login"
           style={{
             display: "inline-flex",
@@ -49,7 +47,7 @@ export default function WelcomeHero() {
           }}
         >
           立即开始
-        </Link>
+        </a>
         <a
           href="#features"
           style={{
