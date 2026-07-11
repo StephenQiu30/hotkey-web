@@ -1,3 +1,5 @@
+import { FireOutlined } from "@ant-design/icons";
+
 export default function WelcomeHeader() {
   return (
     <header
