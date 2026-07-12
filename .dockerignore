@@ -1,11 +1,10 @@
 .git
 .github
-.env
-.env.*
+.env*
 !.env.example
 node_modules
 .next
 dist
-docs/
-tests/
-*.md
+coverage
+*.tsbuildinfo
+next-env.d.ts
