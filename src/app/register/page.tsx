@@ -36,8 +36,9 @@ export default function RegisterPage() {
     gsap.from(".rg-content", { y: 20, autoAlpha: 0, duration: 0.5, ease: "power3.out" });
   }, { scope: containerRef, dependencies: [step] });
 
-  const handleConfirmed = (tkt: string) => {
+  const handleConfirmed = (tkt: string, eml: string) => {
     setTicket(tkt);
+    setEmail(eml);
     setStep("profile");
   };
 

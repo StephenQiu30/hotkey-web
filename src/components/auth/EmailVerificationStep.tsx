@@ -10,7 +10,7 @@ const { Text } = Typography;
 
 interface EmailVerificationStepProps {
   purpose: "register" | "reset_password";
-  onConfirmed: (ticket: string) => void;
+  onConfirmed: (ticket: string, email: string) => void;
 }
 
 type Step = "send" | "confirm";
@@ -57,7 +57,7 @@ export default function EmailVerificationStep({ purpose, onConfirmed }: EmailVer
     try {
       const res = await confirmVerification({ email, purpose, code });
       const ticket = res.data?.ticket;
-      if (ticket) onConfirmed(ticket);
+      if (ticket) onConfirmed(ticket, email);
     } catch (err: any) {
       setSendError(errorMessage(err.code));
     } finally {

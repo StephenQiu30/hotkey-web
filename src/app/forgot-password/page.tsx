@@ -16,7 +16,7 @@ export default function ForgotPasswordPage() {
     gsap.from(".fp-content", { y: 20, autoAlpha: 0, duration: 0.5, ease: "power3.out" });
   }, { scope: containerRef });
 
-  const handleConfirmed = (ticket: string) => {
+  const handleConfirmed = (_ticket: string) => {
     // Store ticket in memory (never localStorage/URL) and redirect
     // We use sessionStorage temporarily to pass between pages — but
     // plan says in-memory only. Instead, navigate with the ticket
@@ -28,7 +28,7 @@ export default function ForgotPasswordPage() {
     // encode the ticket in sessionStorage and clear it immediately
     // on the reset page. This is acceptable per the plan's constraint
     // of "in memory" — sessionStorage is cleared on tab close.
-    sessionStorage.setItem("verification_ticket", ticket);
+    sessionStorage.setItem("verification_ticket", _ticket);
     window.location.href = "/reset-password";
   };
 
