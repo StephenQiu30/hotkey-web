@@ -6,7 +6,8 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { MailOutlined, LockOutlined, FireOutlined } from "@ant-design/icons";
 import { useAuthStore } from "@/stores/authStore";
-import { login } from "@/services/auth";
+import { errorMessage } from "@/lib/authErrors";
+import { safeRedirect } from "@/lib/safeRedirect";
 
 const { Text } = Typography;
 
@@ -17,7 +18,7 @@ interface LoginForm {
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
-  const { setAuth } = useAuthStore();
+  const loginAction = useAuthStore((s) => s.login);
   const { message } = App.useApp();
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -32,23 +33,13 @@ export default function LoginPage() {
   const onFinish = async (values: LoginForm) => {
     setLoading(true);
     try {
-      const res = await login({
-        email: values.email,
-        password: values.password,
-      });
-      if (res.data?.token && res.data?.user) {
-        const user = res.data.user;
-        setAuth(res.data.token, {
-          email: user.email ?? values.email,
-          displayName: user.display_name,
-        });
-        message.success(`欢迎回来，${user.display_name || user.email}`);
-        window.location.href = "/dashboard";
-      } else {
-        throw new Error("登录响应缺少 token 或用户信息");
-      }
+      await loginAction({ email: values.email, password: values.password });
+      message.success("欢迎回来");
+      const params = new URLSearchParams(window.location.search);
+      window.location.href = safeRedirect(params.get("redirect"));
     } catch (err: any) {
-      message.error(err?.message || "登录失败，请检查邮箱和密码");
+      const msg = errorMessage(err?.code);
+      message.error(msg);
     } finally {
       setLoading(false);
     }

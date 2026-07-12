@@ -1,21 +1,27 @@
 "use client";
 
-import { useEffect } from "react";
 import { useAuthStore } from "@/stores/authStore";
+import { Spin, Flex } from "antd";
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading, hydrate } = useAuthStore();
+  const status = useAuthStore((s) => s.status);
 
-  useEffect(() => {
-    hydrate();
-  }, [hydrate]);
-
-  if (isLoading) {
-    return null;
+  if (status === "initializing") {
+    return (
+      <Flex
+        align="center"
+        justify="center"
+        style={{ minHeight: "100vh", background: "#fff" }}
+      >
+        <Spin size="large" />
+      </Flex>
+    );
   }
 
-  if (!isAuthenticated) {
-    window.location.href = "/login";
+  if (status === "unauthenticated") {
+    if (typeof window !== "undefined") {
+      window.location.href = "/login";
+    }
     return null;
   }
 

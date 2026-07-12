@@ -148,7 +148,7 @@ export default function ProfilePage() {
               </div>
               <div style={{ flex: 1, minWidth: 200 }}>
                 <Text strong style={{ fontSize: 20, display: "block", marginBottom: 4 }}>
-                  {user?.displayName || user?.email || "用户"}
+                  {user?.display_name || user?.email || "用户"}
                 </Text>
                 <Space>
                   <UserOutlined style={{ color: "#999" }} />
@@ -190,7 +190,7 @@ export default function ProfilePage() {
           <Card bordered title="账号详情">
             <Descriptions column={{ xs: 1, sm: 1, md: 1 }} size="default">
               <Descriptions.Item label="显示名称">
-                {user?.displayName || "未设置"}
+                {user?.display_name || "未设置"}
               </Descriptions.Item>
               <Descriptions.Item label="电子邮箱">
                 {user?.email || "未设置"}

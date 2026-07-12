@@ -1,9 +1,20 @@
 "use client";
 
-import { ConfigProvider, App as AntApp } from "antd";
+import { useEffect, useRef } from "react";
+import { ConfigProvider, App as AntApp, Spin, Flex } from "antd";
 import zhCN from "antd/locale/zh_CN";
+import { useAuthStore } from "@/stores/authStore";
 
 export default function AppProvider({ children }: { children: React.ReactNode }) {
+  const initialized = useRef(false);
+  const initialize = useAuthStore((s) => s.initialize);
+
+  useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
+    initialize();
+  }, [initialize]);
+
   return (
     <ConfigProvider
       locale={zhCN}
