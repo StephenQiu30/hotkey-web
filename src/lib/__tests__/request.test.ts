@@ -37,28 +37,38 @@ describe("authSession", () => {
 
 describe("authErrors", () => {
   it("maps known error codes to Chinese messages", async () => {
-    const { ErrorCode, errorMessage } = await import("@/lib/authErrors");
-    expect(errorMessage(ErrorCode.AUTH_INVALID_CREDENTIALS)).toBe("邮箱或密码错误");
-    expect(errorMessage(ErrorCode.AUTH_EMAIL_TAKEN)).toBe("该邮箱已注册");
-    expect(errorMessage(ErrorCode.AUTH_WEAK_PASSWORD)).toContain("密码强度不足");
+    const { errorMessage } = await import("@/lib/authErrors");
+    expect(errorMessage("AUTH_INVALID_CREDENTIALS")).toBe("邮箱或密码错误");
+    expect(errorMessage("AUTH_EMAIL_ALREADY_REGISTERED")).toBe("该邮箱已注册");
+    expect(errorMessage("AUTH_PASSWORD_POLICY_VIOLATION")).toContain("密码强度不足");
   });
 
   it("falls back to generic message for unknown codes", async () => {
     const { errorMessage } = await import("@/lib/authErrors");
-    expect(errorMessage("UNKNOWN_CODE")).toBe("操作失败，请稍后再试");
+    expect(errorMessage("UNKNOWN_CODE" as HotKeyAPI.ErrorCode)).toBe("操作失败，请稍后重试");
   });
 });
 
 // -- HotKeyAPIError ----------------------------------------------------
 
 describe("HotKeyAPIError", () => {
-  it("carries code, status, and requestId", async () => {
+  it("carries HTTP status and stable business error code", async () => {
     const { HotKeyAPIError } = await import("@/lib/request");
-    const err = new HotKeyAPIError("bad", 400, "VALIDATION_ERROR", "req-123");
-    expect(err.code).toBe("VALIDATION_ERROR");
-    expect(err.status).toBe(400);
-    expect(err.requestId).toBe("req-123");
-    expect(err.message).toBe("bad");
+    const err = new HotKeyAPIError(401, "AUTH_INVALID_CREDENTIALS");
+    expect(err.status).toBe(401);
+    expect(err.errorCode).toBe("AUTH_INVALID_CREDENTIALS");
+    expect(err.message).toBe("邮箱或密码错误");
     expect(err.name).toBe("HotKeyAPIError");
+  });
+});
+
+describe("registration contract", () => {
+  it("submits the verification ticket instead of the verified email", async () => {
+    const { createRegisterRequest } = await import("@/lib/registerRequest");
+    expect(createRegisterRequest("ticket-123", "Passw0rd!", "Alice")).toEqual({
+      verification_ticket: "ticket-123",
+      password: "Passw0rd!",
+      display_name: "Alice",
+    });
   });
 });

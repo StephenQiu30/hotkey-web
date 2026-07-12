@@ -38,7 +38,6 @@ describe("auth store state machine", () => {
     };
     vi.mocked(authService.me).mockResolvedValueOnce({
       data: userData,
-      request_id: "r1",
     } as any);
 
     await useAuthStore.getState().initialize();
@@ -72,7 +71,6 @@ describe("auth store state machine", () => {
     // Mock me response
     vi.mocked(authService.me).mockResolvedValueOnce({
       data: userData,
-      request_id: "r1",
     } as any);
 
     await useAuthStore.getState().login({
@@ -84,15 +82,30 @@ describe("auth store state machine", () => {
       email: "a@b.com",
       password: "pass123",
     });
-    expect(authSession.setAccessToken).toHaveBeenCalledWith("tok1", 3600);
+    expect(authSession.setAccessToken).toHaveBeenCalledWith("tok1", 900);
     expect(authService.me).toHaveBeenCalled();
     expect(useAuthStore.getState().status).toBe("authenticated");
     expect(useAuthStore.getState().user).toEqual(userData);
   });
 
+  it("establishes the session returned by registration without another login", async () => {
+    const userData = { id: 2, email: "new@example.com", display_name: "New" } as HotKeyAPI.AuthenticatedUserData;
+    vi.mocked(authService.me).mockResolvedValueOnce({ data: userData } as any);
+
+    await useAuthStore.getState().establishSession({
+      token: "registered-token",
+      user: { id: 2, email: "new@example.com", display_name: "New" },
+    });
+
+    expect(authService.login).not.toHaveBeenCalled();
+    expect(authSession.setAccessToken).toHaveBeenCalledWith("registered-token", 900);
+    expect(authService.me).toHaveBeenCalledOnce();
+    expect(useAuthStore.getState().user).toEqual(userData);
+  });
+
   it("login sets error on invalid credentials", async () => {
     vi.mocked(authService.login).mockRejectedValueOnce({
-      code: "AUTH_INVALID_CREDENTIALS",
+      errorCode: "AUTH_INVALID_CREDENTIALS",
       status: 401,
       message: "bad password",
     });
@@ -107,7 +120,7 @@ describe("auth store state machine", () => {
 
   it("logout calls API and clears state", async () => {
     useAuthStore.setState({ status: "authenticated", user: { id: 1, email: "a@b.com" } as any });
-    vi.mocked(authService.logout).mockResolvedValueOnce({ request_id: "r1" } as any);
+    vi.mocked(authService.logout).mockResolvedValueOnce({ code: 200, message: "success" } as any);
 
     await useAuthStore.getState().logout();
 
