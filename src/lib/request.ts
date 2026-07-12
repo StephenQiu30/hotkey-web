@@ -37,10 +37,13 @@ function isNoRefreshPath(url: string = ""): boolean {
 
 export class HotKeyAPIError extends Error {
   constructor(
-    public status: number,
+    public code: number,
     public errorCode: HotKeyAPI.ErrorCode,
+    public data: unknown = null,
   ) {
-    super(`${status}: ${errorMessage(errorCode)}`);
+    super(
+      `code: ${code}, data: ${JSON.stringify(data ?? null)}, message: "${errorMessage(errorCode)}"`,
+    );
     this.name = "HotKeyAPIError";
   }
 }
@@ -66,16 +69,17 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError<{ code?: number; error_code?: HotKeyAPI.ErrorCode; data?: unknown }>) => {
-    const status = error.response?.status ?? 0;
+    const code = error.response?.status ?? 0;
     const body = error.response?.data;
     const requestUrl = error.config?.url ?? "";
     const isRetry = (error.config as any)?.[RETRY_MARKER] === true;
 
     // Parse envelope fields
     const errorCode = body?.error_code ?? "INTERNAL_ERROR";
+    const errorData = body?.data ?? null;
 
     // 401 handling: refresh + retry (once per request)
-    if (status === 401 && !isRetry && !isNoRefreshPath(requestUrl)) {
+    if (code === 401 && !isRetry && !isNoRefreshPath(requestUrl)) {
       try {
         // Single-flight: all concurrent 401s share one refresh
         const newToken = await refreshAccessToken(async () => {
@@ -106,20 +110,20 @@ apiClient.interceptors.response.use(
           window.location.href = "/login";
         }
         return Promise.reject(
-          new HotKeyAPIError(401, "AUTH_SESSION_EXPIRED"),
+          new HotKeyAPIError(401, "AUTH_SESSION_EXPIRED", null),
         );
       }
     }
 
     // 401 on auth endpoints or retry — fail immediately
-    if (status === 401) {
+    if (code === 401) {
       clearAccessToken();
       if (typeof window !== "undefined" && !shouldSkipRedirect(window.location.pathname)) {
         window.location.href = "/login";
       }
     }
 
-    return Promise.reject(new HotKeyAPIError(status, errorCode));
+    return Promise.reject(new HotKeyAPIError(code, errorCode, errorData));
   },
 );
 

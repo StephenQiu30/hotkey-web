@@ -55,9 +55,9 @@ describe("HotKeyAPIError", () => {
   it("carries HTTP status and stable business error code", async () => {
     const { HotKeyAPIError } = await import("@/lib/request");
     const err = new HotKeyAPIError(401, "AUTH_INVALID_CREDENTIALS");
-    expect(err.status).toBe(401);
+    expect(err.code).toBe(401);
     expect(err.errorCode).toBe("AUTH_INVALID_CREDENTIALS");
-    expect(err.message).toBe("401: 邮箱或密码错误");
+    expect(err.message).toBe('code: 401, data: null, message: "邮箱或密码错误"');
     expect(err.name).toBe("HotKeyAPIError");
   });
 });
