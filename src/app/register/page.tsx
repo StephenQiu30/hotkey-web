@@ -61,7 +61,7 @@ export default function RegisterPage() {
       await establishSession(response.data);
       router.push("/dashboard");
     } catch (err: any) {
-      setError(errorMessage(err?.errorCode));
+      setError(err.message ?? errorMessage(err.errorCode));
     } finally {
       setLoading(false);
     }

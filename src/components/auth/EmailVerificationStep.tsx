@@ -45,7 +45,7 @@ export default function EmailVerificationStep({ purpose, onConfirmed }: EmailVer
       setStep("confirm");
       setCountdown(60);
     } catch (err: any) {
-      setSendError(errorMessage(err.code));
+      setSendError(err.message ?? errorMessage(err.errorCode));
     } finally {
       setLoading(false);
     }
@@ -59,7 +59,7 @@ export default function EmailVerificationStep({ purpose, onConfirmed }: EmailVer
       const ticket = res.data?.ticket;
       if (ticket) onConfirmed(ticket, email);
     } catch (err: any) {
-      setSendError(errorMessage(err.code));
+      setSendError(err.message ?? errorMessage(err.errorCode));
     } finally {
       setLoading(false);
     }

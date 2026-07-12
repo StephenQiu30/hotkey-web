@@ -45,7 +45,7 @@ export default function ResetPasswordPage() {
       });
       setSuccess(true);
     } catch (err: any) {
-      setError(errorMessage(err.code));
+      setError(err.message ?? errorMessage(err.errorCode));
     } finally {
       setLoading(false);
     }

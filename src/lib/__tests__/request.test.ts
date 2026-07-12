@@ -57,7 +57,7 @@ describe("HotKeyAPIError", () => {
     const err = new HotKeyAPIError(401, "AUTH_INVALID_CREDENTIALS");
     expect(err.status).toBe(401);
     expect(err.errorCode).toBe("AUTH_INVALID_CREDENTIALS");
-    expect(err.message).toBe("邮箱或密码错误");
+    expect(err.message).toBe("401: 邮箱或密码错误");
     expect(err.name).toBe("HotKeyAPIError");
   });
 });

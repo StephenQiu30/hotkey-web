@@ -40,7 +40,7 @@ export class HotKeyAPIError extends Error {
     public status: number,
     public errorCode: HotKeyAPI.ErrorCode,
   ) {
-    super(errorMessage(errorCode));
+    super(`${status}: ${errorMessage(errorCode)}`);
     this.name = "HotKeyAPIError";
   }
 }
