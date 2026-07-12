@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import { Input, Button, Typography, Flex } from "antd";
 import { MailOutlined } from "@ant-design/icons";
 import { sendVerification, confirmVerification } from "@/services/auth";
-import { errorMessage } from "@/lib/authErrors";
 
 const { Text } = Typography;
 
@@ -45,7 +44,7 @@ export default function EmailVerificationStep({ purpose, onConfirmed }: EmailVer
       setStep("confirm");
       setCountdown(60);
     } catch (err: any) {
-      setSendError(err.message ?? errorMessage(err.errorCode));
+      setSendError(err.message ?? "操作失败，请稍后重试");
     } finally {
       setLoading(false);
     }
@@ -59,7 +58,7 @@ export default function EmailVerificationStep({ purpose, onConfirmed }: EmailVer
       const ticket = res.data?.ticket;
       if (ticket) onConfirmed(ticket, email);
     } catch (err: any) {
-      setSendError(err.message ?? errorMessage(err.errorCode));
+      setSendError(err.message ?? "操作失败，请稍后重试");
     } finally {
       setLoading(false);
     }

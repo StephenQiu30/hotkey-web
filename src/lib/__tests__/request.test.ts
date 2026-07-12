@@ -33,31 +33,14 @@ describe("authSession", () => {
   });
 });
 
-// -- authErrors.ts unit tests -----------------------------------------
-
-describe("authErrors", () => {
-  it("maps known error codes to Chinese messages", async () => {
-    const { errorMessage } = await import("@/lib/authErrors");
-    expect(errorMessage("AUTH_INVALID_CREDENTIALS")).toBe("邮箱或密码错误");
-    expect(errorMessage("AUTH_EMAIL_ALREADY_REGISTERED")).toBe("该邮箱已注册");
-    expect(errorMessage("AUTH_PASSWORD_POLICY_VIOLATION")).toContain("密码强度不足");
-  });
-
-  it("falls back to generic message for unknown codes", async () => {
-    const { errorMessage } = await import("@/lib/authErrors");
-    expect(errorMessage("UNKNOWN_CODE" as HotKeyAPI.ErrorCode)).toBe("操作失败，请稍后重试");
-  });
-});
-
 // -- HotKeyAPIError ----------------------------------------------------
 
 describe("HotKeyAPIError", () => {
-  it("carries HTTP status and stable business error code", async () => {
+  it("carries HTTP status and Chinese message", async () => {
     const { HotKeyAPIError } = await import("@/lib/request");
-    const err = new HotKeyAPIError(401, "AUTH_INVALID_CREDENTIALS");
+    const err = new HotKeyAPIError(401, "邮箱或密码错误");
     expect(err.code).toBe(401);
-    expect(err.errorCode).toBe("AUTH_INVALID_CREDENTIALS");
-    expect(err.message).toBe('code: 401, data: null, message: "邮箱或密码错误"');
+    expect(err.message).toBe("邮箱或密码错误");
     expect(err.name).toBe("HotKeyAPIError");
   });
 });

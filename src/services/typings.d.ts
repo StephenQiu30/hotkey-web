@@ -12,7 +12,7 @@ declare namespace HotKeyAPI {
   type AuthenticatedUserResponse = {
     code?: number;
     data?: AuthenticatedUserData;
-    error_code?: ErrorCode;
+    message?: string;
   };
 
   type AuthTokenData = {
@@ -25,7 +25,7 @@ declare namespace HotKeyAPI {
   type AuthTokenResponse = {
     code?: number;
     data?: AuthTokenData;
-    error_code?: ErrorCode;
+    message?: string;
   };
 
   type CreateMonitorRequest = {
@@ -53,33 +53,8 @@ declare namespace HotKeyAPI {
   type ErrorBody = {
     code?: number;
     data?: any;
-    error_code?: ErrorCode;
+    message?: string;
   };
-
-  type ErrorCode =
-    | "SUCCESS"
-    | "BAD_REQUEST"
-    | "UNAUTHORIZED"
-    | "FORBIDDEN"
-    | "NOT_FOUND"
-    | "CONFLICT"
-    | "INTERNAL_ERROR"
-    | "RATE_LIMITED"
-    | "SERVICE_UNAVAILABLE"
-    | "METHOD_NOT_ALLOWED"
-    | "AUTH_INVALID_INPUT"
-    | "AUTH_INVALID_CREDENTIALS"
-    | "AUTH_EMAIL_ALREADY_REGISTERED"
-    | "AUTH_VERIFICATION_INVALID"
-    | "AUTH_VERIFICATION_EXPIRED"
-    | "AUTH_VERIFICATION_TOO_MANY_ATTEMPTS"
-    | "AUTH_VERIFICATION_SEND_TOO_FREQUENT"
-    | "AUTH_SESSION_EXPIRED"
-    | "AUTH_SESSION_REVOKED"
-    | "AUTH_TOKEN_INVALID"
-    | "AUTH_TOKEN_REUSED"
-    | "AUTH_ACCOUNT_DISABLED"
-    | "AUTH_PASSWORD_POLICY_VIOLATION";
 
   type EventPlatformItem = {
     heat?: number;
@@ -135,7 +110,7 @@ declare namespace HotKeyAPI {
   type HealthResponse = {
     code?: number;
     data?: HealthBody;
-    error_code?: ErrorCode;
+    message?: string;
   };
 
   type HotEventDetail = {
@@ -166,7 +141,7 @@ declare namespace HotKeyAPI {
   type HotEventListResponse = {
     code?: number;
     data?: HotEventItem[];
-    error_code?: ErrorCode;
+    message?: string;
     meta?: HotEventMeta;
   };
 
@@ -177,13 +152,13 @@ declare namespace HotKeyAPI {
   type HotEventPostsResponse = {
     code?: number;
     data?: PostBrief[];
-    error_code?: ErrorCode;
+    message?: string;
   };
 
   type HotEventResponse = {
     code?: number;
     data?: HotEventDetail;
-    error_code?: ErrorCode;
+    message?: string;
   };
 
   type listHotEventsParams = {
@@ -240,7 +215,7 @@ declare namespace HotKeyAPI {
   type LoginResponse = {
     code?: number;
     data?: LoginData;
-    error_code?: ErrorCode;
+    message?: string;
   };
 
   type MarkNotificationReadData = {
@@ -255,7 +230,7 @@ declare namespace HotKeyAPI {
   type MarkNotificationReadResponse = {
     code?: number;
     data?: MarkNotificationReadData;
-    error_code?: ErrorCode;
+    message?: string;
   };
 
   type MonitorData = {
@@ -273,13 +248,13 @@ declare namespace HotKeyAPI {
   type MonitorListResponse = {
     code?: number;
     data?: MonitorData[];
-    error_code?: ErrorCode;
+    message?: string;
   };
 
   type MonitorResponse = {
     code?: number;
     data?: MonitorData;
-    error_code?: ErrorCode;
+    message?: string;
   };
 
   type NotificationData = {
@@ -295,7 +270,7 @@ declare namespace HotKeyAPI {
   type NotificationListResponse = {
     code?: number;
     data?: NotificationData[];
-    error_code?: ErrorCode;
+    message?: string;
   };
 
   type PasswordResetRequest = {
@@ -315,7 +290,7 @@ declare namespace HotKeyAPI {
   type PostListResponse = {
     code?: number;
     data?: PostSummary[];
-    error_code?: ErrorCode;
+    message?: string;
   };
 
   type PostSummary = {
@@ -365,7 +340,7 @@ declare namespace HotKeyAPI {
   type ReportResponse = {
     code?: number;
     data?: Report;
-    error_code?: ErrorCode;
+    message?: string;
   };
 
   type sendReportParams = {
@@ -376,7 +351,7 @@ declare namespace HotKeyAPI {
   type TopicListResponse = {
     code?: number;
     data?: TopicSummary[];
-    error_code?: ErrorCode;
+    message?: string;
   };
 
   type TopicSummary = {
@@ -399,13 +374,13 @@ declare namespace HotKeyAPI {
   type TrendingListResponse = {
     code?: number;
     data?: TrendingItem[];
-    error_code?: ErrorCode;
+    message?: string;
   };
 
   type TrendListResponse = {
     code?: number;
     data?: TrendPoint[];
-    error_code?: ErrorCode;
+    message?: string;
   };
 
   type TrendPoint = {
@@ -450,12 +425,12 @@ declare namespace HotKeyAPI {
   type VerificationSendResponse = {
     code?: number;
     data?: { email?: string };
-    error_code?: ErrorCode;
+    message?: string;
   };
 
   type VerificationTicketResponse = {
     code?: number;
     data?: { ticket?: string };
-    error_code?: ErrorCode;
+    message?: string;
   };
 }

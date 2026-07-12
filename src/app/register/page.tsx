@@ -11,7 +11,6 @@ import EmailVerificationStep from "@/components/auth/EmailVerificationStep";
 import PasswordFields from "@/components/auth/PasswordFields";
 import { register as apiRegister } from "@/services/auth";
 import { useAuthStore } from "@/stores/authStore";
-import { errorMessage } from "@/lib/authErrors";
 import { createRegisterRequest } from "@/lib/registerRequest";
 
 const { Text } = Typography;
@@ -61,7 +60,7 @@ export default function RegisterPage() {
       await establishSession(response.data);
       router.push("/dashboard");
     } catch (err: any) {
-      setError(err.message ?? errorMessage(err.errorCode));
+      setError(err.message ?? "注册失败，请稍后重试");
     } finally {
       setLoading(false);
     }

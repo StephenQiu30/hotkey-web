@@ -105,9 +105,8 @@ describe("auth store state machine", () => {
 
   it("login sets error on invalid credentials", async () => {
     vi.mocked(authService.login).mockRejectedValueOnce({
-      errorCode: "AUTH_INVALID_CREDENTIALS",
-      status: 401,
-      message: "bad password",
+      message: "邮箱或密码错误",
+      code: 401,
     });
 
     await expect(
@@ -115,7 +114,7 @@ describe("auth store state machine", () => {
     ).rejects.toThrow();
 
     expect(useAuthStore.getState().status).toBe("unauthenticated");
-    expect(useAuthStore.getState().error).toBe("AUTH_INVALID_CREDENTIALS");
+    expect(useAuthStore.getState().error).toBe("邮箱或密码错误");
   });
 
   it("logout calls API and clears state", async () => {

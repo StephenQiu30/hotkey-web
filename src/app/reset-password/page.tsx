@@ -7,7 +7,6 @@ import gsap from "gsap";
 import AuthShell from "@/components/auth/AuthShell";
 import PasswordFields from "@/components/auth/PasswordFields";
 import { resetPassword } from "@/services/auth";
-import { errorMessage } from "@/lib/authErrors";
 
 const { Text } = Typography;
 
@@ -45,7 +44,7 @@ export default function ResetPasswordPage() {
       });
       setSuccess(true);
     } catch (err: any) {
-      setError(err.message ?? errorMessage(err.errorCode));
+      setError(err.message ?? "密码重置失败，请稍后重试");
     } finally {
       setLoading(false);
     }

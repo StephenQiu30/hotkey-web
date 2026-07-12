@@ -47,8 +47,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       await get().establishSession({ token, user: userData });
     } catch (err: any) {
-      const code = err.errorCode ?? "AUTH_INVALID_CREDENTIALS";
-      set({ status: "unauthenticated", user: null, error: code });
+      set({ status: "unauthenticated", user: null, error: err.message ?? null });
       throw err;
     }
   },

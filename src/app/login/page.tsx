@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useAuthStore } from "@/stores/authStore";
-import { errorMessage } from "@/lib/authErrors";
 import { safeRedirect } from "@/lib/safeRedirect";
 
 const { Text } = Typography;
@@ -40,7 +39,7 @@ export default function LoginPage() {
       const params = new URLSearchParams(window.location.search);
       router.push(safeRedirect(params.get("redirect")));
     } catch (err: any) {
-      message.error(err.message ?? errorMessage(err.errorCode));
+      message.error(err.message ?? "邮箱或密码错误");
     } finally {
       setLoading(false);
     }
