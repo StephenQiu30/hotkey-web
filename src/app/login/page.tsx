@@ -40,7 +40,7 @@ export default function LoginPage() {
       const params = new URLSearchParams(window.location.search);
       router.push(safeRedirect(params.get("redirect")));
     } catch (err: any) {
-      const msg = errorMessage(err?.code);
+      const msg = errorMessage(err?.errorCode);
       message.error(msg);
     } finally {
       setLoading(false);

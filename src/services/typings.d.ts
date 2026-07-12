@@ -10,8 +10,9 @@ declare namespace HotKeyAPI {
   };
 
   type AuthenticatedUserResponse = {
+    code?: number;
     data?: AuthenticatedUserData;
-    request_id?: string;
+    error_code?: ErrorCode;
   };
 
   type AuthTokenData = {
@@ -22,8 +23,9 @@ declare namespace HotKeyAPI {
   };
 
   type AuthTokenResponse = {
+    code?: number;
     data?: AuthTokenData;
-    request_id?: string;
+    error_code?: ErrorCode;
   };
 
   type CreateMonitorRequest = {
@@ -42,12 +44,42 @@ declare namespace HotKeyAPI {
     send?: boolean;
   };
 
-  type ErrorBody = {
-    code?: string;
-    data?: any;
-    message?: string;
-    request_id?: string;
+  type EmailRegisterRequest = {
+    display_name: string;
+    password: string;
+    verification_ticket: string;
   };
+
+  type ErrorBody = {
+    code?: number;
+    data?: any;
+    error_code?: ErrorCode;
+  };
+
+  type ErrorCode =
+    | "SUCCESS"
+    | "BAD_REQUEST"
+    | "UNAUTHORIZED"
+    | "FORBIDDEN"
+    | "NOT_FOUND"
+    | "CONFLICT"
+    | "INTERNAL_ERROR"
+    | "RATE_LIMITED"
+    | "SERVICE_UNAVAILABLE"
+    | "METHOD_NOT_ALLOWED"
+    | "AUTH_INVALID_INPUT"
+    | "AUTH_INVALID_CREDENTIALS"
+    | "AUTH_EMAIL_ALREADY_REGISTERED"
+    | "AUTH_VERIFICATION_INVALID"
+    | "AUTH_VERIFICATION_EXPIRED"
+    | "AUTH_VERIFICATION_TOO_MANY_ATTEMPTS"
+    | "AUTH_VERIFICATION_SEND_TOO_FREQUENT"
+    | "AUTH_SESSION_EXPIRED"
+    | "AUTH_SESSION_REVOKED"
+    | "AUTH_TOKEN_INVALID"
+    | "AUTH_TOKEN_REUSED"
+    | "AUTH_ACCOUNT_DISABLED"
+    | "AUTH_PASSWORD_POLICY_VIOLATION";
 
   type EventPlatformItem = {
     heat?: number;
@@ -101,8 +133,9 @@ declare namespace HotKeyAPI {
   };
 
   type HealthResponse = {
+    code?: number;
     data?: HealthBody;
-    request_id?: string;
+    error_code?: ErrorCode;
   };
 
   type HotEventDetail = {
@@ -131,9 +164,10 @@ declare namespace HotKeyAPI {
   };
 
   type HotEventListResponse = {
+    code?: number;
     data?: HotEventItem[];
+    error_code?: ErrorCode;
     meta?: HotEventMeta;
-    request_id?: string;
   };
 
   type HotEventMeta = {
@@ -141,13 +175,15 @@ declare namespace HotKeyAPI {
   };
 
   type HotEventPostsResponse = {
+    code?: number;
     data?: PostBrief[];
-    request_id?: string;
+    error_code?: ErrorCode;
   };
 
   type HotEventResponse = {
+    code?: number;
     data?: HotEventDetail;
-    request_id?: string;
+    error_code?: ErrorCode;
   };
 
   type listHotEventsParams = {
@@ -197,13 +233,14 @@ declare namespace HotKeyAPI {
   };
 
   type LoginRequest = {
-    email?: string;
-    password?: string;
+    email: string;
+    password: string;
   };
 
   type LoginResponse = {
+    code?: number;
     data?: LoginData;
-    request_id?: string;
+    error_code?: ErrorCode;
   };
 
   type MarkNotificationReadData = {
@@ -216,8 +253,9 @@ declare namespace HotKeyAPI {
   };
 
   type MarkNotificationReadResponse = {
+    code?: number;
     data?: MarkNotificationReadData;
-    request_id?: string;
+    error_code?: ErrorCode;
   };
 
   type MonitorData = {
@@ -233,13 +271,15 @@ declare namespace HotKeyAPI {
   };
 
   type MonitorListResponse = {
+    code?: number;
     data?: MonitorData[];
-    request_id?: string;
+    error_code?: ErrorCode;
   };
 
   type MonitorResponse = {
+    code?: number;
     data?: MonitorData;
-    request_id?: string;
+    error_code?: ErrorCode;
   };
 
   type NotificationData = {
@@ -253,8 +293,9 @@ declare namespace HotKeyAPI {
   };
 
   type NotificationListResponse = {
+    code?: number;
     data?: NotificationData[];
-    request_id?: string;
+    error_code?: ErrorCode;
   };
 
   type PasswordResetRequest = {
@@ -272,8 +313,9 @@ declare namespace HotKeyAPI {
   };
 
   type PostListResponse = {
+    code?: number;
     data?: PostSummary[];
-    request_id?: string;
+    error_code?: ErrorCode;
   };
 
   type PostSummary = {
@@ -296,12 +338,6 @@ declare namespace HotKeyAPI {
     view_count?: number;
   };
 
-  type RegisterRequest = {
-    display_name?: string;
-    email?: string;
-    password?: string;
-  };
-
   type Report = {
     content?: string;
     created_at?: string;
@@ -318,16 +354,18 @@ declare namespace HotKeyAPI {
   };
 
   type ReportListResponse = {
+    code?: number;
     data?: Report[];
+    message?: string;
     page?: number;
     page_size?: number;
-    request_id?: string;
     total?: number;
   };
 
   type ReportResponse = {
+    code?: number;
     data?: Report;
-    request_id?: string;
+    error_code?: ErrorCode;
   };
 
   type sendReportParams = {
@@ -336,8 +374,9 @@ declare namespace HotKeyAPI {
   };
 
   type TopicListResponse = {
+    code?: number;
     data?: TopicSummary[];
-    request_id?: string;
+    error_code?: ErrorCode;
   };
 
   type TopicSummary = {
@@ -358,13 +397,15 @@ declare namespace HotKeyAPI {
   };
 
   type TrendingListResponse = {
+    code?: number;
     data?: TrendingItem[];
-    request_id?: string;
+    error_code?: ErrorCode;
   };
 
   type TrendListResponse = {
+    code?: number;
     data?: TrendPoint[];
-    request_id?: string;
+    error_code?: ErrorCode;
   };
 
   type TrendPoint = {
@@ -395,11 +436,6 @@ declare namespace HotKeyAPI {
     id?: number;
   };
 
-  type UserResponse = {
-    data?: UserData;
-    request_id?: string;
-  };
-
   type VerificationConfirmRequest = {
     code: string;
     email: string;
@@ -412,12 +448,14 @@ declare namespace HotKeyAPI {
   };
 
   type VerificationSendResponse = {
-    data?: { email?: string; message?: string };
-    request_id?: string;
+    code?: number;
+    data?: { email?: string };
+    error_code?: ErrorCode;
   };
 
   type VerificationTicketResponse = {
+    code?: number;
     data?: { ticket?: string };
-    request_id?: string;
+    error_code?: ErrorCode;
   };
 }

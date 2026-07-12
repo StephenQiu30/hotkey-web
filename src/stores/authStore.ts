@@ -10,6 +10,7 @@ interface AuthState {
   error: string | null;
 
   initialize(): Promise<void>;
+  establishSession(data: HotKeyAPI.LoginData): Promise<void>;
   login(input: { email: string; password: string }): Promise<void>;
   logout(): Promise<void>;
   clearSession(): void;
@@ -29,6 +30,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
+  establishSession: async (data) => {
+    const token = data.token;
+    if (!token) throw new Error("登录响应无效");
+    setAccessToken(token, 900);
+    const meRes = await apiMe();
+    set({ status: "authenticated", user: meRes.data ?? null, error: null });
+  },
+
   login: async (input) => {
     try {
       const res = await apiLogin(input);
@@ -36,13 +45,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const userData = res.data?.user;
       if (!token || !userData) throw new Error("登录响应无效");
 
-      setAccessToken(token, 3600);
-
-      // Fetch full profile
-      const meRes = await apiMe();
-      set({ status: "authenticated", user: meRes.data ?? null, error: null });
+      await get().establishSession({ token, user: userData });
     } catch (err: any) {
-      const code = err.code ?? "AUTH_INVALID_CREDENTIALS";
+      const code = err.errorCode ?? "AUTH_INVALID_CREDENTIALS";
       set({ status: "unauthenticated", user: null, error: code });
       throw err;
     }

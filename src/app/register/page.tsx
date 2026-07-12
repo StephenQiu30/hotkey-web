@@ -12,6 +12,7 @@ import PasswordFields from "@/components/auth/PasswordFields";
 import { register as apiRegister } from "@/services/auth";
 import { useAuthStore } from "@/stores/authStore";
 import { errorMessage } from "@/lib/authErrors";
+import { createRegisterRequest } from "@/lib/registerRequest";
 
 const { Text } = Typography;
 
@@ -30,7 +31,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const loginAction = useAuthStore((s) => s.login);
+  const establishSession = useAuthStore((s) => s.establishSession);
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -51,16 +52,16 @@ export default function RegisterPage() {
     setLoading(true);
     setError("");
     try {
-      await apiRegister({
-        email,
-        password: values.register_password,
-        display_name: values.display_name,
-      });
-      // Auto-login after registration
-      await loginAction({ email, password: values.register_password });
+      const response = await apiRegister(createRegisterRequest(
+        ticket,
+        values.register_password,
+        values.display_name,
+      ));
+      if (!response.data) throw new Error("注册响应无效");
+      await establishSession(response.data);
       router.push("/dashboard");
     } catch (err: any) {
-      setError(errorMessage(err?.code));
+      setError(errorMessage(err?.errorCode));
     } finally {
       setLoading(false);
     }

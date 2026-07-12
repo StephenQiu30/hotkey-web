@@ -50,10 +50,10 @@ export async function resetPassword(
 
 /** Register a new user POST /api/v1/auth/register */
 export async function register(
-  body: HotKeyAPI.RegisterRequest,
+  body: HotKeyAPI.EmailRegisterRequest,
   options?: { [key: string]: any }
 ) {
-  return request<HotKeyAPI.UserResponse>("/api/v1/auth/register", {
+  return request<HotKeyAPI.LoginResponse>("/api/v1/auth/register", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

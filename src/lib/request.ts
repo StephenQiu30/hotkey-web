@@ -5,6 +5,7 @@ import {
   refreshAccessToken,
   resetRefreshPromise,
 } from "./authSession";
+import { errorMessage } from "./authErrors";
 
 /** Pages that do NOT require authentication — skip redirect-to-login on 401. */
 const PUBLIC_PATHS = ["/", "/login", "/register", "/forgot-password", "/reset-password"];
@@ -23,7 +24,7 @@ const RETRY_MARKER = "_retry" as const;
 const NO_REFRESH_PATHS = [
   "/api/v1/auth/login",
   "/api/v1/auth/register",
-  "/api/v1/auth/refresh",
+  "/api/v1/auth/token/refresh",
   "/api/v1/auth/logout",
   "/api/v1/auth/password/reset",
   "/api/v1/auth/verifications",
@@ -35,16 +36,12 @@ function isNoRefreshPath(url: string = ""): boolean {
 }
 
 export class HotKeyAPIError extends Error {
-  code?: string;
-  status: number;
-  requestId?: string;
-
-  constructor(message: string, status: number, code?: string, requestId?: string) {
-    super(message);
+  constructor(
+    public status: number,
+    public errorCode: HotKeyAPI.ErrorCode,
+  ) {
+    super(errorMessage(errorCode));
     this.name = "HotKeyAPIError";
-    this.status = status;
-    this.code = code;
-    this.requestId = requestId;
   }
 }
 
@@ -68,16 +65,14 @@ apiClient.interceptors.request.use((config) => {
 
 apiClient.interceptors.response.use(
   (response) => response,
-  async (error: AxiosError<{ code?: string; message?: string; request_id?: string }>) => {
+  async (error: AxiosError<{ code?: number; error_code?: HotKeyAPI.ErrorCode; data?: unknown }>) => {
     const status = error.response?.status ?? 0;
     const body = error.response?.data;
     const requestUrl = error.config?.url ?? "";
     const isRetry = (error.config as any)?.[RETRY_MARKER] === true;
 
     // Parse envelope fields
-    const code = body?.code;
-    const message = body?.message ?? error.message;
-    const requestId = body?.request_id;
+    const errorCode = body?.error_code ?? "INTERNAL_ERROR";
 
     // 401 handling: refresh + retry (once per request)
     if (status === 401 && !isRetry && !isNoRefreshPath(requestUrl)) {
@@ -93,7 +88,7 @@ apiClient.interceptors.response.use(
         });
 
         // Update the stored token
-        (await import("./authSession")).setAccessToken(newToken, 3600);
+        (await import("./authSession")).setAccessToken(newToken, 900);
 
         // Retry the original request with the new token
         const retryConfig: Record<string, any> = {
@@ -111,7 +106,7 @@ apiClient.interceptors.response.use(
           window.location.href = "/login";
         }
         return Promise.reject(
-          new HotKeyAPIError("登录已过期，请重新登录", 401, "AUTH_SESSION_EXPIRED"),
+          new HotKeyAPIError(401, "AUTH_SESSION_EXPIRED"),
         );
       }
     }
@@ -124,7 +119,7 @@ apiClient.interceptors.response.use(
       }
     }
 
-    return Promise.reject(new HotKeyAPIError(message, status, code, requestId));
+    return Promise.reject(new HotKeyAPIError(status, errorCode));
   },
 );
 
