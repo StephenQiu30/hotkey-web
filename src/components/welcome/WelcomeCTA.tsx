@@ -49,7 +49,7 @@ export default function WelcomeCTA() {
           免费注册，即刻体验热点追踪、选题推荐与数据洞察
         </p>
         <a
-          href="/login"
+          href="/register"
           style={{
             display: "inline-flex",
             alignItems: "center",

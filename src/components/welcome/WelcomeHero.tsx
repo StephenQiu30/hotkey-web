@@ -96,7 +96,7 @@ export default function WelcomeHero() {
           }}
         >
           <a
-            href="/login"
+            href="/register"
             className="hh-btn"
             style={{
               display: "inline-flex",

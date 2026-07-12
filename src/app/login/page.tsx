@@ -162,6 +162,29 @@ export default function LoginPage() {
                 进入工作台
               </Button>
             </Form.Item>
+
+            <div
+              style={{
+                marginTop: 20,
+                textAlign: "center",
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
+              }}
+            >
+              <a
+                href="/forgot-password"
+                style={{ color: "#666", textDecoration: "none", fontSize: 13 }}
+              >
+                忘记密码？
+              </a>
+              <Text style={{ fontSize: 13, color: "#999" }}>
+                还没有账号？{" "}
+                <a href="/register" style={{ color: "var(--ant-color-primary)", textDecoration: "none" }}>
+                  创建账号
+                </a>
+              </Text>
+            </div>
           </Form>
         </div>
 

@@ -80,7 +80,7 @@ export default function WelcomeHeader() {
             登录
           </a>
           <a
-            href="/login"
+            href="/register"
             style={{
               marginLeft: 8,
               padding: "8px 20px",
