@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import ProLayout from "@ant-design/pro-layout";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -41,7 +41,8 @@ export default function BasicLayout({
 }: BasicLayoutProps) {
   const pathname = usePathname();
   const actionRef = useRef<any>(null);
-  const { logout } = useAuthStore();
+  const logout = useAuthStore((s) => s.logout);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const userMenuItems = [
     {
@@ -55,14 +56,16 @@ export default function BasicLayout({
       icon: <SettingOutlined />,
       label: "退出登录",
       danger: true,
+      disabled: loggingOut,
     },
   ];
 
-  const handleMenuClick = ({ key }: { key: string }) => {
+  const handleMenuClick = async ({ key }: { key: string }) => {
     if (key === "profile") {
       window.location.href = "/dashboard/profile";
     } else if (key === "logout") {
-      logout();
+      setLoggingOut(true);
+      await logout();
       window.location.href = "/login";
     }
   };
