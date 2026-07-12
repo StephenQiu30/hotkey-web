@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { Form, Input, Button, Typography, Flex } from "antd";
 import { UserOutlined } from "@ant-design/icons";
+import { useRouter } from "next/navigation";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import AuthShell from "@/components/auth/AuthShell";
@@ -30,6 +31,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const loginAction = useAuthStore((s) => s.login);
+  const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
@@ -56,6 +58,7 @@ export default function RegisterPage() {
       });
       // Auto-login after registration
       await loginAction({ email, password: values.register_password });
+      router.push("/dashboard");
     } catch (err: any) {
       setError(errorMessage(err?.code));
     } finally {

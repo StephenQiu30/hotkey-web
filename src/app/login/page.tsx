@@ -2,9 +2,10 @@
 
 import { useState, useRef } from "react";
 import { Form, Input, Button, Typography, App } from "antd";
+import { MailOutlined, LockOutlined, FireOutlined } from "@ant-design/icons";
+import { useRouter } from "next/navigation";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { MailOutlined, LockOutlined, FireOutlined } from "@ant-design/icons";
 import { useAuthStore } from "@/stores/authStore";
 import { errorMessage } from "@/lib/authErrors";
 import { safeRedirect } from "@/lib/safeRedirect";
@@ -19,6 +20,7 @@ interface LoginForm {
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const loginAction = useAuthStore((s) => s.login);
+  const router = useRouter();
   const { message } = App.useApp();
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -36,7 +38,7 @@ export default function LoginPage() {
       await loginAction({ email: values.email, password: values.password });
       message.success("欢迎回来");
       const params = new URLSearchParams(window.location.search);
-      window.location.href = safeRedirect(params.get("redirect"));
+      router.push(safeRedirect(params.get("redirect")));
     } catch (err: any) {
       const msg = errorMessage(err?.code);
       message.error(msg);
@@ -116,7 +118,10 @@ export default function LoginPage() {
             <Form.Item
               name="email"
               label={<span style={{ fontWeight: 500, fontSize: 14, color: "#111" }}>邮箱</span>}
-              rules={[{ required: true, message: "请输入邮箱" }]}
+              rules={[
+                { required: true, message: "请输入邮箱" },
+                { type: "email", message: "邮箱格式不正确" },
+              ]}
             >
               <Input
                 prefix={<MailOutlined style={{ color: "#999" }} />}
