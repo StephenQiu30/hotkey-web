@@ -24,6 +24,10 @@ export default function PasswordFields({ prefix = "password" }: PasswordFieldsPr
         rules={[
           { required: true, message: "请输入密码" },
           { min: 8, message: "密码至少 8 位" },
+          {
+            pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
+            message: "密码需包含大小写字母和数字",
+          },
         ]}
       >
         <Input.Password

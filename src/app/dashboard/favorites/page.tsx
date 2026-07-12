@@ -87,7 +87,7 @@ export default function FavoritesPage() {
 
   if (error) {
     return (
-      <Card bordered>
+      <Card variant="outlined">
         <Alert
           message="加载失败"
           description={error}
@@ -102,7 +102,7 @@ export default function FavoritesPage() {
   return (
     <div ref={containerRef}>
       <Flex vertical gap={16}>
-        <Card bordered>
+        <Card variant="outlined">
           <Flex align="center" gap={8}>
             <StarOutlined style={{ fontSize: 16, color: "#888" }} />
             <Text strong>收藏关注</Text>
@@ -110,20 +110,20 @@ export default function FavoritesPage() {
         </Card>
 
         {loading && (
-          <Card bordered styles={{ body: { textAlign: "center", padding: 80 } }}>
+          <Card variant="outlined" styles={{ body: { textAlign: "center", padding: 80 } }}>
             <Spin size="large" />
           </Card>
         )}
 
         {!loading && favorites.length === 0 && (
-          <Card bordered styles={{ body: { textAlign: "center", padding: 80 } }}>
+          <Card variant="outlined" styles={{ body: { textAlign: "center", padding: 80 } }}>
             <Empty description="还没有收藏的热点，快去热点榜单收藏吧" />
           </Card>
         )}
 
         {!loading && favorites.length > 0 && (
           <Card
-            bordered
+            variant="outlined"
             styles={{ body: { padding: 0 } }}
           >
             <List

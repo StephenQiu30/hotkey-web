@@ -10,6 +10,7 @@ import EmailVerificationStep from "@/components/auth/EmailVerificationStep";
 import PasswordFields from "@/components/auth/PasswordFields";
 import { register as apiRegister } from "@/services/auth";
 import { useAuthStore } from "@/stores/authStore";
+import { errorMessage } from "@/lib/authErrors";
 
 const { Text } = Typography;
 
@@ -55,7 +56,7 @@ export default function RegisterPage() {
       // Auto-login after registration
       await loginAction({ email, password: values.register_password });
     } catch (err: any) {
-      setError(err?.message || "注册失败，请稍后再试");
+      setError(errorMessage(err?.code));
     } finally {
       setLoading(false);
     }

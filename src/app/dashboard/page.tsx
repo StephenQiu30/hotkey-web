@@ -212,7 +212,7 @@ export default function DashboardPage() {
 
   if (pageState === "error") {
     return (
-      <Card bordered>
+      <Card variant="outlined">
         <Alert
           message="加载失败"
           description={errorMsg}
@@ -226,7 +226,7 @@ export default function DashboardPage() {
 
   if (pageState === "loading") {
     return (
-      <Card bordered styles={{ body: { textAlign: "center", padding: 80 } }}>
+      <Card variant="outlined" styles={{ body: { textAlign: "center", padding: 80 } }}>
         <Spin size="large" />
       </Card>
     );
@@ -234,7 +234,7 @@ export default function DashboardPage() {
 
   if (pageState === "empty") {
     return (
-      <Card bordered styles={{ body: { textAlign: "center", padding: 80 } }}>
+      <Card variant="outlined" styles={{ body: { textAlign: "center", padding: 80 } }}>
         <Empty description="暂无监控配置，请先在设置中创建监控">
           <Button type="primary" onClick={() => { window.location.href = "/dashboard/settings"; }}>
             去设置
@@ -249,7 +249,7 @@ export default function DashboardPage() {
       <Flex vertical gap={16}>
         {/* Header */}
         <div className="dp-item">
-          <Card bordered>
+          <Card variant="outlined">
             <Title level={4} style={{ margin: 0, fontSize: 18 }}>
               公开源热点聚合 · AI 快速理解 · 内容选题生成
             </Title>
@@ -282,7 +282,7 @@ export default function DashboardPage() {
             ].map((s) => (
               <Card
                 key={s.title}
-                bordered
+                variant="outlined"
                 style={{ minWidth: 180, flex: "1 1 0" }}
                 styles={{ body: { padding: "20px 24px" } }}
               >
@@ -495,7 +495,7 @@ export default function DashboardPage() {
                         {topicList.slice(0, 4).map((topic) => (
                           <Card
                             key={topic.id}
-                            bordered
+                            variant="outlined"
                             size="small"
                             hoverable
                             style={{ flex: "1 1 calc(50% - 4px)", minWidth: 180 }}

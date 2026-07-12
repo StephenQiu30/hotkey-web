@@ -143,7 +143,7 @@ export default function SettingsPage() {
 
   if (error) {
     return (
-      <Card bordered>
+      <Card variant="outlined">
         <Alert
           message="加载失败"
           description={error}
@@ -158,7 +158,7 @@ export default function SettingsPage() {
   return (
     <div ref={containerRef}>
       <Flex vertical gap={16}>
-        <Card bordered>
+        <Card variant="outlined">
           <Flex align="center" justify="space-between">
             <Flex align="center" gap={8}>
               <SettingOutlined style={{ fontSize: 16, color: "#888" }} />
@@ -173,13 +173,13 @@ export default function SettingsPage() {
         </Card>
 
         {loading && (
-          <Card bordered styles={{ body: { textAlign: "center", padding: 80 } }}>
+          <Card variant="outlined" styles={{ body: { textAlign: "center", padding: 80 } }}>
             <Spin size="large" />
           </Card>
         )}
 
         {!loading && monitors.length === 0 && (
-          <Card bordered styles={{ body: { textAlign: "center", padding: 80 } }}>
+          <Card variant="outlined" styles={{ body: { textAlign: "center", padding: 80 } }}>
             <Empty description="暂无监控配置">
               {monitorCreateForm(
                 <Button type="primary">新建监控</Button>,
@@ -189,7 +189,7 @@ export default function SettingsPage() {
         )}
 
         {!loading && monitors.length > 0 && (
-          <Card bordered styles={{ body: { padding: 0 } }}>
+          <Card variant="outlined" styles={{ body: { padding: 0 } }}>
             {monitors.map((item, idx) => (
               <Flex
                 key={item.id}

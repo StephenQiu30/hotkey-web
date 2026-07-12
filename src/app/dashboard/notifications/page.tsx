@@ -91,7 +91,7 @@ export default function NotificationsPage() {
 
   if (error) {
     return (
-      <Card bordered>
+      <Card variant="outlined">
         <Alert
           message="加载失败"
           description={error}
@@ -106,7 +106,7 @@ export default function NotificationsPage() {
   return (
     <div ref={containerRef}>
       <Flex vertical gap={16}>
-        <Card bordered>
+        <Card variant="outlined">
           <Flex align="center" justify="space-between">
             <Flex align="center" gap={8}>
               <BellOutlined style={{ fontSize: 16, color: "#888" }} />
@@ -121,19 +121,19 @@ export default function NotificationsPage() {
         </Card>
 
         {loading && (
-          <Card bordered styles={{ body: { textAlign: "center", padding: 80 } }}>
+          <Card variant="outlined" styles={{ body: { textAlign: "center", padding: 80 } }}>
             <Spin size="large" />
           </Card>
         )}
 
         {!loading && notifications.length === 0 && (
-          <Card bordered styles={{ body: { textAlign: "center", padding: 80 } }}>
+          <Card variant="outlined" styles={{ body: { textAlign: "center", padding: 80 } }}>
             <Empty description="暂无未读通知" />
           </Card>
         )}
 
         {!loading && notifications.length > 0 && (
-          <Card bordered styles={{ body: { padding: 0 } }}>
+          <Card variant="outlined" styles={{ body: { padding: 0 } }}>
             <List
               dataSource={notifications}
               renderItem={(item) => (

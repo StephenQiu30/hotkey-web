@@ -72,7 +72,7 @@ export default function TopicsPage() {
 
   if (error) {
     return (
-      <Card bordered>
+      <Card variant="outlined">
         <Alert
           message="加载失败"
           description={error}
@@ -86,7 +86,7 @@ export default function TopicsPage() {
 
   if (loading) {
     return (
-      <Card bordered styles={{ body: { textAlign: "center", padding: 80 } }}>
+      <Card variant="outlined" styles={{ body: { textAlign: "center", padding: 80 } }}>
         <Spin size="large" />
       </Card>
     );
@@ -95,7 +95,7 @@ export default function TopicsPage() {
   return (
     <div ref={containerRef}>
       <Flex vertical gap={16}>
-        <Card bordered>
+        <Card variant="outlined">
           <Flex align="center" gap={8}>
             <FileTextOutlined style={{ fontSize: 16, color: "#888" }} />
             <Text strong>内容选题</Text>
@@ -103,7 +103,7 @@ export default function TopicsPage() {
         </Card>
 
         {topics.length === 0 ? (
-          <Card bordered styles={{ body: { textAlign: "center", padding: 80 } }}>
+          <Card variant="outlined" styles={{ body: { textAlign: "center", padding: 80 } }}>
             <Empty description="暂无选题数据，请先在设置中创建监控并等待数据采集" />
           </Card>
         ) : (
@@ -111,7 +111,7 @@ export default function TopicsPage() {
             {topics.map((topic) => (
               <Card
                 key={topic.id}
-                bordered
+                variant="outlined"
                 hoverable
                 size="small"
                 className="tp-card"

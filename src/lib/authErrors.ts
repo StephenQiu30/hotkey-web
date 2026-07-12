@@ -62,6 +62,8 @@ export function errorMessage(code?: string): string {
     case ErrorCode.VERIFICATION_RATE_LIMITED:
     case ErrorCode.VERIFICATION_HOURLY_LIMIT:
       return "验证码发送过于频繁，请稍后再试";
+    case "BAD_REQUEST":
+      return "输入格式有误，请检查后重试";
     default:
       return "操作失败，请稍后再试";
   }

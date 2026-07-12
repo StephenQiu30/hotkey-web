@@ -22,7 +22,7 @@ export default function AuthShell({ title, subtitle, children }: AuthShellProps)
       }}
     >
       <Card
-        bordered
+        variant="outlined"
         styles={{ body: { padding: "40px 32px" } }}
         style={{ width: "100%", maxWidth: 400 }}
       >

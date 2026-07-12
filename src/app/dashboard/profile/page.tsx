@@ -104,7 +104,7 @@ export default function ProfilePage() {
 
   if (error) {
     return (
-      <Card bordered>
+      <Card variant="outlined">
         <Alert
           message="加载失败"
           description={error}
@@ -118,7 +118,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <Card bordered styles={{ body: { textAlign: "center", padding: 80 } }}>
+      <Card variant="outlined" styles={{ body: { textAlign: "center", padding: 80 } }}>
         <Spin size="large" />
       </Card>
     );
@@ -129,7 +129,7 @@ export default function ProfilePage() {
       <Flex vertical gap={16}>
         {/* User Header */}
         <div className="pf-item">
-          <Card bordered>
+          <Card variant="outlined">
             <Flex align="center" gap={20} wrap="wrap">
               <div
                 style={{
@@ -170,7 +170,7 @@ export default function ProfilePage() {
             ].map((item) => (
               <Card
                 key={item.title}
-                bordered
+                variant="outlined"
                 style={{ flex: "1 1 180px", textAlign: "center" }}
                 styles={{ body: { padding: "24px 16px" } }}
               >
@@ -187,7 +187,7 @@ export default function ProfilePage() {
 
         {/* Account Details */}
         <div className="pf-item">
-          <Card bordered title="账号详情">
+          <Card variant="outlined" title="账号详情">
             <Descriptions column={{ xs: 1, sm: 1, md: 1 }} size="default">
               <Descriptions.Item label="显示名称">
                 {user?.display_name || "未设置"}
@@ -204,7 +204,7 @@ export default function ProfilePage() {
 
         {/* Quick Actions */}
         <div className="pf-item">
-          <Card bordered title="快捷操作">
+          <Card variant="outlined" title="快捷操作">
             <Space wrap size={12}>
               <Button
                 type="primary"
