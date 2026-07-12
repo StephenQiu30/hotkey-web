@@ -1,4 +1,31 @@
 declare namespace HotKeyAPI {
+  type AuthenticatedUserData = {
+    created_at?: string;
+    display_name?: string;
+    email?: string;
+    email_verified_at?: string;
+    id?: number;
+    plan_type?: string;
+    status?: string;
+  };
+
+  type AuthenticatedUserResponse = {
+    data?: AuthenticatedUserData;
+    request_id?: string;
+  };
+
+  type AuthTokenData = {
+    access_token?: string;
+    expires_in?: number;
+    refresh_token?: string;
+    token_type?: string;
+  };
+
+  type AuthTokenResponse = {
+    data?: AuthTokenData;
+    request_id?: string;
+  };
+
   type CreateMonitorRequest = {
     alert_enabled?: boolean;
     language?: string;
@@ -17,7 +44,8 @@ declare namespace HotKeyAPI {
 
   type ErrorBody = {
     code?: string;
-    error?: string;
+    data?: any;
+    message?: string;
     request_id?: string;
   };
 
@@ -229,6 +257,11 @@ declare namespace HotKeyAPI {
     request_id?: string;
   };
 
+  type PasswordResetRequest = {
+    new_password: string;
+    reset_token: string;
+  };
+
   type PostBrief = {
     heat?: number;
     id?: number;
@@ -364,6 +397,27 @@ declare namespace HotKeyAPI {
 
   type UserResponse = {
     data?: UserData;
+    request_id?: string;
+  };
+
+  type VerificationConfirmRequest = {
+    code: string;
+    email: string;
+    purpose: "register" | "reset_password";
+  };
+
+  type VerificationSendRequest = {
+    email: string;
+    purpose: "register" | "reset_password";
+  };
+
+  type VerificationSendResponse = {
+    data?: { email?: string; message?: string };
+    request_id?: string;
+  };
+
+  type VerificationTicketResponse = {
+    data?: { ticket?: string };
     request_id?: string;
   };
 }
