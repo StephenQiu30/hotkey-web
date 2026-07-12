@@ -6,6 +6,13 @@ import {
   resetRefreshPromise,
 } from "./authSession";
 
+/** Pages that do NOT require authentication — skip redirect-to-login on 401. */
+const PUBLIC_PATHS = ["/", "/login", "/register", "/forgot-password", "/reset-password"];
+
+function shouldSkipRedirect(pathname: string): boolean {
+  return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p));
+}
+
 /**
  * Internal marker to prevent infinite refresh loops.
  * Requests already retried carry _retry: true on their config.
@@ -18,6 +25,7 @@ const NO_REFRESH_PATHS = [
   "/api/v1/auth/register",
   "/api/v1/auth/refresh",
   "/api/v1/auth/logout",
+  "/api/v1/auth/me",
   "/api/v1/auth/password/reset",
   "/api/v1/auth/verifications",
   "/api/v1/auth/verifications/confirm",
@@ -100,7 +108,7 @@ apiClient.interceptors.response.use(
         // Refresh failed — clear session
         clearAccessToken();
         resetRefreshPromise();
-        if (typeof window !== "undefined" && !window.location.pathname.startsWith("/login")) {
+        if (typeof window !== "undefined" && !shouldSkipRedirect(window.location.pathname)) {
           window.location.href = "/login";
         }
         return Promise.reject(
@@ -112,7 +120,7 @@ apiClient.interceptors.response.use(
     // 401 on auth endpoints or retry — fail immediately
     if (status === 401) {
       clearAccessToken();
-      if (typeof window !== "undefined" && !window.location.pathname.startsWith("/login")) {
+      if (typeof window !== "undefined" && !shouldSkipRedirect(window.location.pathname)) {
         window.location.href = "/login";
       }
     }
