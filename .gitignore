@@ -9,7 +9,6 @@ __pycache__/
 # Node.js 相关
 node_modules/
 npm-debug.log*
-package-lock.json
 
 # Next.js 相关
 .next/
