@@ -315,7 +315,7 @@ export default function DashboardPage() {
                       className="shrink-0 rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary"
                     >
                       {savedIds.has(item.id) ? (
-                        <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
+                        <Star className="h-4 w-4 fill-primary text-primary" />
                       ) : (
                         <Star className="h-4 w-4" />
                       )}
@@ -531,7 +531,7 @@ export default function DashboardPage() {
                     {item.delivery_status === "pending" ? (
                       <Clock className="h-5 w-5 shrink-0 text-primary" />
                     ) : (
-                      <CheckCircle className="h-5 w-5 shrink-0 text-emerald-500" />
+                      <CheckCircle className="h-5 w-5 shrink-0 text-primary" />
                     )}
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">

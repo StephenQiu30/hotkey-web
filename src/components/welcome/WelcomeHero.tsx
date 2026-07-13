@@ -24,11 +24,8 @@ export default function WelcomeHero() {
       ref={containerRef}
       className="relative overflow-hidden px-6 pt-32 pb-24 sm:pt-40 sm:pb-32"
     >
-      {/* Background gradient */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-40 left-1/2 h-[600px] w-[800px] -translate-x-1/2 rounded-full bg-gradient-to-b from-blue-50/60 via-blue-100/30 to-transparent blur-3xl" />
-        <div className="absolute -bottom-40 left-1/2 h-[400px] w-[600px] -translate-x-1/2 rounded-full bg-gradient-to-t from-purple-50/40 via-transparent to-transparent blur-3xl" />
-      </div>
+      {/* Background decoration */}
+      <div className="pointer-events-none absolute inset-0 bg-secondary/30" />
 
       <div className="relative mx-auto max-w-4xl text-center">
         {/* Eyebrow badge */}
@@ -41,7 +38,7 @@ export default function WelcomeHero() {
         <h1 className="wh-title mx-auto mb-6 max-w-3xl text-balance text-5xl font-bold leading-[1.05] tracking-tight text-foreground sm:text-6xl md:text-7xl">
           把握热点脉搏
           <br />
-          <span className="bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
+          <span className="text-primary">
             创作爆款内容
           </span>
         </h1>

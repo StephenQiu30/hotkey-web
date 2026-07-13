@@ -69,7 +69,7 @@ export default function ResetPasswordPage() {
     return (
       <AuthShell title="密码已重置" subtitle="请使用新密码登录">
         <div className="text-center">
-          <CheckCircle className="mx-auto mb-4 h-12 w-12 text-emerald-500" />
+          <CheckCircle className="mx-auto mb-4 h-12 w-12 text-primary" />
           <p className="mb-6 text-sm text-muted-foreground">
             密码重置成功
           </p>

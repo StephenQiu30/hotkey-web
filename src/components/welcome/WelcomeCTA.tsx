@@ -28,10 +28,7 @@ export default function WelcomeCTA() {
       className="relative overflow-hidden border-t border-border/50 px-6 py-32 sm:py-40"
     >
       {/* Background */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-50/30 to-white" />
-        <div className="absolute left-1/2 top-1/2 h-[300px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-primary/5 to-purple-500/5 blur-3xl" />
-      </div>
+      <div className="pointer-events-none absolute inset-0 bg-secondary/30" />
 
       <div className="wc-content relative mx-auto max-w-xl text-center">
         <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-primary/5 px-4 py-1.5 text-sm text-primary">

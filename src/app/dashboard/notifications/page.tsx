@@ -143,7 +143,7 @@ export default function NotificationsPage() {
                   {item.delivery_status === "pending" ? (
                     <Clock className="h-5 w-5 text-primary" />
                   ) : (
-                    <CheckCircle className="h-5 w-5 text-emerald-500" />
+                    <CheckCircle className="h-5 w-5 text-primary" />
                   )}
                 </div>
 

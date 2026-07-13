@@ -127,7 +127,7 @@ export default function FavoritesPage() {
           {favorites.map((item) => (
             <Card key={item.id} className="fv-item">
               <CardContent className="flex items-start gap-4 p-5">
-                <StarIcon className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
+                <StarIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                 <div className="min-w-0 flex-1">
                   <p className="mb-1 text-sm leading-snug">
                     {item.content_text?.slice(0, 100) ?? `Post #${item.id}`}

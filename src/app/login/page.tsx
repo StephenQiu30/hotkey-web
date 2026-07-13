@@ -51,12 +51,10 @@ export default function LoginPage() {
   return (
     <div
       ref={containerRef}
-      className="relative flex min-h-screen items-center justify-center bg-gradient-to-b from-blue-50/30 to-white px-6"
+      className="relative flex min-h-screen items-center justify-center bg-background px-6"
     >
       {/* Background decoration */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 left-1/2 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-gradient-to-b from-blue-100/40 to-transparent blur-3xl" />
-      </div>
+      <div className="pointer-events-none absolute inset-0 bg-secondary/20" />
 
       <div className="relative w-full max-w-sm">
         {/* Logo + Title */}
