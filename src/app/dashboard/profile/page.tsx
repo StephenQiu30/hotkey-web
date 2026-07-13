@@ -159,7 +159,7 @@ export default function ProfilePage() {
         ].map((item) => {
           const Icon = item.icon;
           return (
-            <Card key={item.title} className="text-center">
+            <Card key={item.title} className="card-lift text-center">
               <CardContent className="p-6">
                 <Icon className="mx-auto mb-3 h-5 w-5 text-muted-foreground" />
                 <p className="mb-1 text-xs font-medium text-muted-foreground">

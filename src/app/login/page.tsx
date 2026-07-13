@@ -51,10 +51,14 @@ export default function LoginPage() {
   return (
     <div
       ref={containerRef}
-      className="relative flex min-h-screen items-center justify-center bg-background px-6"
+      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-6"
     >
-      {/* Background decoration */}
-      <div className="pointer-events-none absolute inset-0 bg-secondary/20" />
+      {/* Dot grid background */}
+      <div className="pointer-events-none absolute inset-0 bg-dot-grid" />
+
+      {/* Decorative blurs */}
+      <div className="deco-blur right-0 top-0 h-[400px] w-[400px]" />
+      <div className="deco-blur-sm bottom-0 left-0 h-[250px] w-[250px]" />
 
       <div className="relative w-full max-w-sm">
         {/* Logo + Title */}
@@ -74,8 +78,8 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Form */}
-        <div className="lg-form">
+        {/* Glass card form */}
+        <div className="lg-form rounded-2xl border border-border/50 bg-white/70 p-8 backdrop-blur-xl shadow-elevated">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium text-foreground">
@@ -89,7 +93,7 @@ export default function LoginPage() {
                   placeholder="name@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="h-11 rounded-xl border-border/80 bg-white/80 pl-10 text-sm backdrop-blur-sm placeholder:text-muted-foreground/60"
+                  className="h-11 rounded-xl border-border/80 bg-white/80 pl-10 text-sm backdrop-blur-sm placeholder:text-muted-foreground/60 transition-all duration-200 focus:border-primary/50 focus:shadow-[0_0_0_3px_rgba(0,122,255,0.1)]"
                 />
               </div>
             </div>
@@ -106,7 +110,7 @@ export default function LoginPage() {
                   placeholder="输入密码"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-11 rounded-xl border-border/80 bg-white/80 pl-10 text-sm backdrop-blur-sm placeholder:text-muted-foreground/60"
+                  className="h-11 rounded-xl border-border/80 bg-white/80 pl-10 text-sm backdrop-blur-sm placeholder:text-muted-foreground/60 transition-all duration-200 focus:border-primary/50 focus:shadow-[0_0_0_3px_rgba(0,122,255,0.1)]"
                 />
               </div>
             </div>
@@ -114,7 +118,7 @@ export default function LoginPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="h-11 w-full rounded-xl text-base shadow-lg shadow-primary/20"
+              className="h-11 w-full rounded-xl text-base shadow-lg shadow-primary/20 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,122,255,0.25)] active:scale-[0.98]"
             >
               {loading ? "登录中..." : "进入工作台"}
             </Button>

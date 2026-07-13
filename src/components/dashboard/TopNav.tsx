@@ -68,9 +68,9 @@ export default function TopNav({ menuItems, title = "HotKey" }: TopNavProps) {
                 <Link
                   key={item.path}
                   href={item.path}
-                  className={`inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium no-underline transition-colors ${
+                  className={`inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium no-underline transition-all duration-200 ${
                     isActive
-                      ? "bg-secondary text-foreground"
+                      ? "bg-secondary text-foreground shadow-sm"
                       : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
                   }`}
                 >

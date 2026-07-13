@@ -270,7 +270,7 @@ export default function SettingsPage() {
       {!loading && monitors.length > 0 && (
         <div className="space-y-2">
           {monitors.map((item, idx) => (
-            <Card key={item.id} className="st-item">
+            <Card key={item.id} className="st-item card-lift">
               <CardContent className="p-5">
                 <div className="mb-2 flex items-center gap-2">
                   <Search className="h-4 w-4 text-muted-foreground" />

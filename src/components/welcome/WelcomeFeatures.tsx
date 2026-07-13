@@ -67,10 +67,13 @@ export default function WelcomeFeatures() {
     <section
       ref={containerRef}
       id="features"
-      className="relative px-6 py-32 sm:py-40"
+      className="relative overflow-hidden px-6 py-32 sm:py-40"
     >
-      {/* Background decoration */}
-      <div className="pointer-events-none absolute inset-0 bg-secondary/20" />
+      {/* Dot grid background */}
+      <div className="pointer-events-none absolute inset-0 bg-dot-grid" />
+
+      {/* Decorative blur */}
+      <div className="deco-blur-sm right-0 top-1/4 h-72 w-72" />
 
       <div className="relative mx-auto max-w-5xl">
         {/* Section header */}
@@ -90,9 +93,9 @@ export default function WelcomeFeatures() {
             return (
               <article
                 key={feature.title}
-                className="wf-card group rounded-2xl border border-border/60 bg-white p-8 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
+                className="wf-card card-lift group rounded-2xl border border-border/60 bg-white p-8 shadow-card"
               >
-                <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-secondary">
+                <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 transition-all duration-300 group-hover:bg-primary/15 group-hover:shadow-[0_0_16px_rgba(0,122,255,0.15)]">
                   <Icon className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="mb-3 text-lg font-semibold tracking-tight text-foreground">

@@ -21,7 +21,7 @@ export default function WelcomeHeader() {
   return (
     <header
       ref={containerRef}
-      className="sticky top-0 z-50 border-b border-border/50 bg-white/70 backdrop-blur-xl"
+      className="sticky top-0 z-50 border-b border-border/30 bg-white/70 backdrop-blur-xl"
     >
       <div className="wh-header-inner mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
         {/* Logo */}
@@ -37,19 +37,19 @@ export default function WelcomeHeader() {
         <nav className="flex items-center gap-1">
           <a
             href="#features"
-            className="rounded-lg px-4 py-2 text-sm text-muted-foreground no-underline transition-colors hover:text-foreground"
+            className="rounded-lg px-4 py-2 text-sm text-muted-foreground no-underline transition-all duration-200 hover:text-foreground hover:bg-secondary/50"
           >
             功能
           </a>
           <a
             href="/login"
-            className="rounded-lg px-4 py-2 text-sm text-muted-foreground no-underline transition-colors hover:text-foreground"
+            className="rounded-lg px-4 py-2 text-sm text-muted-foreground no-underline transition-all duration-200 hover:text-foreground hover:bg-secondary/50"
           >
             登录
           </a>
           <div className="ml-2">
             <a href="/register">
-              <Button size="sm" className="rounded-lg">
+              <Button size="sm" className="rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
                 开始使用
               </Button>
             </a>

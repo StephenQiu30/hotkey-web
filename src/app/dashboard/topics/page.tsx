@@ -123,7 +123,7 @@ export default function TopicsPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {topics.map((topic) => (
-            <Card key={topic.id} className="tp-card">
+            <Card key={topic.id} className="tp-card card-lift">
               <CardContent className="space-y-3 p-5">
                 <h3 className="text-sm font-semibold leading-snug tracking-tight">
                   {topic.title}

@@ -244,7 +244,7 @@ export default function DashboardPage() {
           { title: "已收藏", value: savedIds.size },
           { title: "待处理通知", value: pendingNotifCount, suffix: "条" },
         ].map((s) => (
-          <Card key={s.title}>
+          <Card key={s.title} className="transition-all duration-200 hover:shadow-card-hover hover:-translate-y-0.5">
             <CardContent className="p-5">
               <p className="mb-1 text-xs font-medium text-muted-foreground">{s.title}</p>
               <p className="text-2xl font-bold tracking-tight text-foreground">
@@ -260,7 +260,7 @@ export default function DashboardPage() {
       <div className="dp-item">
         <div className="flex gap-3">
           {/* Left: Hot Post List */}
-          <div className="flex-1 rounded-xl border border-border/60 bg-card shadow-sm">
+          <div className="flex-1 rounded-xl border border-border/60 bg-card shadow-sm transition-all duration-200 hover:shadow-card-hover">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-border/40 px-5 py-4">
               <div className="flex items-center gap-2">
@@ -327,7 +327,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Right: Detail Panel */}
-          <div className="flex-[1.4] rounded-xl border border-border/60 bg-card shadow-sm">
+          <div className="flex-[1.4] rounded-xl border border-border/60 bg-card shadow-sm transition-all duration-200 hover:shadow-card-hover">
             {/* Detail header */}
             <div className="flex items-center justify-between border-b border-border/40 px-5 py-4">
               <span className="text-sm font-semibold">快速理解</span>
@@ -427,7 +427,7 @@ export default function DashboardPage() {
       <div className="dp-item">
         <div className="flex gap-3">
           {/* Trend Analysis */}
-          <div className="flex-1 rounded-xl border border-border/60 bg-card shadow-sm">
+          <div className="flex-1 rounded-xl border border-border/60 bg-card shadow-sm transition-all duration-200 hover:shadow-card-hover">
             <div className="flex items-center justify-between border-b border-border/40 px-5 py-4">
               <div className="flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -472,7 +472,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Source Distribution */}
-          <div className="flex-1 rounded-xl border border-border/60 bg-card shadow-sm">
+          <div className="flex-1 rounded-xl border border-border/60 bg-card shadow-sm transition-all duration-200 hover:shadow-card-hover">
             <div className="flex items-center justify-between border-b border-border/40 px-5 py-4">
               <div className="flex items-center gap-2">
                 <BarChart3 className="h-4 w-4 text-muted-foreground" />
@@ -512,7 +512,7 @@ export default function DashboardPage() {
 
       {/* Notifications */}
       <div className="dp-item">
-        <div className="rounded-xl border border-border/60 bg-card shadow-sm">
+        <div className="rounded-xl border border-border/60 bg-card shadow-sm transition-all duration-200 hover:shadow-card-hover">
           <div className="flex items-center justify-between border-b border-border/40 px-5 py-4">
             <div className="flex items-center gap-2">
               <Bell className="h-4 w-4 text-muted-foreground" />
