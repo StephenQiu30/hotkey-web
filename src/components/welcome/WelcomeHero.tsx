@@ -54,7 +54,7 @@ export default function WelcomeHero() {
 
       <div className="relative mx-auto max-w-4xl text-center">
         {/* Eyebrow badge */}
-        <div className="wh-badge mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-white/70 px-5 py-1.5 text-sm text-muted-foreground backdrop-blur-md shadow-sm">
+        <div className="wh-badge mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-5 py-1.5 text-sm text-muted-foreground backdrop-blur-md shadow-sm">
           <Sparkles className="h-3.5 w-3.5 text-primary" />
           内容创作者热点平台
         </div>
@@ -89,7 +89,7 @@ export default function WelcomeHero() {
             <Button
               variant="outline"
               size="lg"
-              className="h-12 rounded-xl border-border bg-white/60 px-8 text-base backdrop-blur-sm transition-all duration-300 hover:bg-white/80 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
+              className="h-12 rounded-xl border-border bg-background/60 px-8 text-base backdrop-blur-sm transition-all duration-300 hover:bg-background/80 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
             >
               了解更多
             </Button>
@@ -97,7 +97,7 @@ export default function WelcomeHero() {
         </div>
 
         {/* Stats — modern glass cards */}
-        <div className="wh-stats mx-auto mb-16 inline-flex items-center gap-2 rounded-2xl border border-border/50 bg-white/60 p-2 backdrop-blur-md shadow-sm">
+        <div className="wh-stats mx-auto mb-16 inline-flex items-center gap-2 rounded-2xl border border-border/50 bg-card/60 p-2 backdrop-blur-md shadow-sm">
           {[
             { value: "10+", label: "平台覆盖" },
             { value: "99%", label: "准确率" },
@@ -119,7 +119,7 @@ export default function WelcomeHero() {
 
         {/* Floating preview mockup */}
         <div className="wh-mockup mx-auto max-w-2xl">
-          <div className="animate-float rounded-2xl border border-border/40 bg-white p-5 shadow-elevated">
+          <div className="animate-float rounded-2xl border border-border/40 bg-card p-5 shadow-elevated">
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="h-2.5 w-2.5 rounded-full bg-primary/70" />

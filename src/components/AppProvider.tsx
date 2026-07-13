@@ -20,6 +20,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
       <Toaster
         position="top-center"
         richColors
+        theme="dark"
         closeButton
         toastOptions={{
           style: {

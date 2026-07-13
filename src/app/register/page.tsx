@@ -97,7 +97,7 @@ export default function RegisterPage() {
                     placeholder="您的昵称"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
-                    className="h-11 rounded-xl border-border/80 bg-white/80 pl-10 text-sm backdrop-blur-sm"
+                    className="h-11 rounded-xl border-border/80 bg-card/80 pl-10 text-sm backdrop-blur-sm"
                   />
                 </div>
               </div>

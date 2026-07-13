@@ -64,7 +64,7 @@ export default function PasswordFields({
             autoComplete="new-password"
             value={onPasswordChange ? password : localPassword}
             onChange={(e) => handlePasswordChange(e.target.value)}
-            className="h-11 rounded-xl border-border/80 bg-white/80 pl-10 text-sm backdrop-blur-sm"
+            className="h-11 rounded-xl border-border/80 bg-card/80 pl-10 text-sm backdrop-blur-sm"
           />
         </div>
       </div>
@@ -82,7 +82,7 @@ export default function PasswordFields({
             autoComplete="new-password"
             value={onConfirmChange ? confirmPassword : localConfirm}
             onChange={(e) => handleConfirmChange(e.target.value)}
-            className={`h-11 rounded-xl border-border/80 bg-white/80 pl-10 text-sm backdrop-blur-sm ${
+            className={`h-11 rounded-xl border-border/80 bg-card/80 pl-10 text-sm backdrop-blur-sm ${
               displayError ? "border-destructive" : ""
             }`}
           />

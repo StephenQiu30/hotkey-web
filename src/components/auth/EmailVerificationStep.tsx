@@ -73,7 +73,7 @@ export default function EmailVerificationStep({ purpose, onConfirmed }: EmailVer
               autoComplete="email"
               value={email}
               onChange={(e) => { setEmail(e.target.value); setSendError(""); }}
-              className={`h-11 rounded-xl border-border/80 bg-white/80 pl-10 text-sm backdrop-blur-sm ${
+              className={`h-11 rounded-xl border-border/80 bg-card/80 pl-10 text-sm backdrop-blur-sm ${
                 sendError ? "border-destructive" : ""
               }`}
             />
@@ -112,7 +112,7 @@ export default function EmailVerificationStep({ purpose, onConfirmed }: EmailVer
           autoComplete="one-time-code"
           value={code}
           onChange={(e) => { setCode(e.target.value.replace(/\D/g, "")); setSendError(""); }}
-          className={`h-11 rounded-xl border-border/80 bg-white/80 text-center font-mono text-lg tracking-[0.3em] backdrop-blur-sm ${
+          className={`h-11 rounded-xl border-border/80 bg-card/80 text-center font-mono text-lg tracking-[0.3em] backdrop-blur-sm ${
             sendError ? "border-destructive" : ""
           }`}
         />

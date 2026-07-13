@@ -46,7 +46,7 @@ export default function TopNav({ menuItems, title = "HotKey" }: TopNavProps) {
   const user = useAuthStore((s) => s.user);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/50 bg-white/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
         {/* Left: Logo + Desktop Nav */}
         <div className="flex items-center gap-6">
@@ -137,7 +137,7 @@ export default function TopNav({ menuItems, title = "HotKey" }: TopNavProps) {
 
       {/* Mobile Navigation */}
       {mobileOpen && (
-        <nav className="border-t border-border/50 bg-white px-4 py-3 md:hidden">
+        <nav className="border-t border-border/50 bg-background px-4 py-3 md:hidden">
           <div className="flex flex-col gap-1">
             {menuItems.map((item) => {
               const isActive = pathname === item.path ||

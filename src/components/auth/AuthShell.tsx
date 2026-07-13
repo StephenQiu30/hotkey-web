@@ -17,7 +17,7 @@ export default function AuthShell({ title, subtitle, children }: AuthShellProps)
       <div className="deco-blur right-0 top-0 h-[350px] w-[350px]" />
       <div className="deco-blur-sm bottom-0 left-0 h-[200px] w-[200px]" />
 
-      <div className="relative w-full max-w-sm rounded-2xl border border-border/50 bg-white/70 p-8 backdrop-blur-xl shadow-elevated">
+      <div className="relative w-full max-w-sm rounded-2xl border border-border/50 bg-card/70 p-8 backdrop-blur-xl shadow-elevated">
         {/* Logo */}
         <div className="mb-6 text-center">
           <a

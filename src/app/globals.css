@@ -4,31 +4,31 @@
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display",
     "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
 
-  --color-background: #ffffff;
-  --color-foreground: #0d0d0d;
-  --color-card: #ffffff;
-  --color-card-foreground: #0d0d0d;
-  --color-popover: #ffffff;
-  --color-popover-foreground: #0d0d0d;
+  --color-background: #0d0d0d;
+  --color-foreground: #f5f5f7;
+  --color-card: #1c1c1e;
+  --color-card-foreground: #f5f5f7;
+  --color-popover: #1c1c1e;
+  --color-popover-foreground: #f5f5f7;
   --color-primary: #007AFF;
   --color-primary-foreground: #ffffff;
-  --color-secondary: #f5f5f7;
-  --color-secondary-foreground: #1d1d1f;
-  --color-muted: #f5f5f7;
-  --color-muted-foreground: #86868b;
-  --color-accent: #f5f5f7;
-  --color-accent-foreground: #1d1d1f;
-  --color-destructive: #ff3b30;
+  --color-secondary: #2c2c2e;
+  --color-secondary-foreground: #f5f5f7;
+  --color-muted: #2c2c2e;
+  --color-muted-foreground: #98989d;
+  --color-accent: #2c2c2e;
+  --color-accent-foreground: #f5f5f7;
+  --color-destructive: #ff453a;
   --color-destructive-foreground: #ffffff;
-  --color-border: #d2d2d7;
-  --color-input: #d2d2d7;
+  --color-border: #38383a;
+  --color-input: #38383a;
   --color-ring: #007AFF;
   --radius: 0.5rem;
 
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-card-hover: 0 10px 25px rgba(0, 0, 0, 0.06), 0 4px 10px rgba(0, 0, 0, 0.04);
-  --shadow-elevated: 0 20px 50px rgba(0, 0, 0, 0.08), 0 8px 20px rgba(0, 0, 0, 0.04);
-  --shadow-glow: 0 0 20px rgba(0, 122, 255, 0.15);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-card-hover: 0 10px 25px rgba(0, 0, 0, 0.4), 0 4px 10px rgba(0, 0, 0, 0.3);
+  --shadow-elevated: 0 20px 50px rgba(0, 0, 0, 0.5), 0 8px 20px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 20px rgba(0, 122, 255, 0.3);
 }
 
 /* shadcn/ui base reset */
@@ -64,7 +64,7 @@ h6 {
 
 /* Subtle dot-grid background pattern */
 .bg-dot-grid {
-  background-image: radial-gradient(circle, rgba(0, 122, 255, 0.08) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(0, 122, 255, 0.15) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
@@ -74,7 +74,7 @@ h6 {
   pointer-events: none;
   border-radius: 50%;
   filter: blur(80px);
-  opacity: 0.12;
+  opacity: 0.18;
   background: var(--color-primary);
 }
 
@@ -84,7 +84,7 @@ h6 {
   pointer-events: none;
   border-radius: 50%;
   filter: blur(50px);
-  opacity: 0.08;
+  opacity: 0.12;
   background: var(--color-primary);
 }
 
@@ -108,8 +108,8 @@ h6 {
 
 /* Subtle pulse glow for primary elements */
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 12px rgba(0, 122, 255, 0.1); }
-  50% { box-shadow: 0 0 24px rgba(0, 122, 255, 0.2); }
+  0%, 100% { box-shadow: 0 0 12px rgba(0, 122, 255, 0.2); }
+  50% { box-shadow: 0 0 24px rgba(0, 122, 255, 0.35); }
 }
 .animate-glow {
   animation: pulse-glow 3s ease-in-out infinite;
@@ -117,8 +117,8 @@ h6 {
 
 /* Glass card style */
 .glass-card {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(28, 28, 30, 0.7);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(210, 210, 215, 0.5);
+  border: 1px solid rgba(56, 56, 58, 0.5);
 }

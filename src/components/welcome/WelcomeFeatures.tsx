@@ -93,7 +93,7 @@ export default function WelcomeFeatures() {
             return (
               <article
                 key={feature.title}
-                className="wf-card card-lift group rounded-2xl border border-border/60 bg-white p-8 shadow-card"
+                className="wf-card card-lift group rounded-2xl border border-border/60 bg-card p-8 shadow-card"
               >
                 <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 transition-all duration-300 group-hover:bg-primary/15 group-hover:shadow-[0_0_16px_rgba(0,122,255,0.15)]">
                   <Icon className="h-6 w-6 text-primary" />

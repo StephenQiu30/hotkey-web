@@ -79,7 +79,7 @@ export default function LoginPage() {
         </div>
 
         {/* Glass card form */}
-        <div className="lg-form rounded-2xl border border-border/50 bg-white/70 p-8 backdrop-blur-xl shadow-elevated">
+        <div className="lg-form rounded-2xl border border-border/50 bg-card/70 p-8 backdrop-blur-xl shadow-elevated">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium text-foreground">
@@ -93,7 +93,7 @@ export default function LoginPage() {
                   placeholder="name@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="h-11 rounded-xl border-border/80 bg-white/80 pl-10 text-sm backdrop-blur-sm placeholder:text-muted-foreground/60 transition-all duration-200 focus:border-primary/50 focus:shadow-[0_0_0_3px_rgba(0,122,255,0.1)]"
+                  className="h-11 rounded-xl border-border/80 bg-card/80 pl-10 text-sm backdrop-blur-sm placeholder:text-muted-foreground/60 transition-all duration-200 focus:border-primary/50 focus:shadow-[0_0_0_3px_rgba(0,122,255,0.1)]"
                 />
               </div>
             </div>
@@ -110,7 +110,7 @@ export default function LoginPage() {
                   placeholder="输入密码"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-11 rounded-xl border-border/80 bg-white/80 pl-10 text-sm backdrop-blur-sm placeholder:text-muted-foreground/60 transition-all duration-200 focus:border-primary/50 focus:shadow-[0_0_0_3px_rgba(0,122,255,0.1)]"
+                  className="h-11 rounded-xl border-border/80 bg-card/80 pl-10 text-sm backdrop-blur-sm placeholder:text-muted-foreground/60 transition-all duration-200 focus:border-primary/50 focus:shadow-[0_0_0_3px_rgba(0,122,255,0.1)]"
                 />
               </div>
             </div>
