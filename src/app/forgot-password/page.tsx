@@ -9,9 +9,7 @@ import EmailVerificationStep from "@/components/auth/EmailVerificationStep";
 export default function ForgotPasswordPage() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(() => {
-    gsap.from(".fp-content", { y: 20, opacity: 0, duration: 0.5, ease: "power3.out" });
-  }, { scope: containerRef });
+  useGSAP(() => { gsap.from(".fp-fade", { y: 10, opacity: 0, duration: 0.4, ease: "power3.out" }); }, { scope: containerRef });
 
   const handleConfirmed = (_ticket: string) => {
     sessionStorage.setItem("verification_ticket", _ticket);
@@ -21,20 +19,9 @@ export default function ForgotPasswordPage() {
   return (
     <div ref={containerRef}>
       <AuthShell title="找回密码" subtitle="验证邮箱后重置密码">
-        <div className="fp-content">
-          <EmailVerificationStep
-            purpose="reset_password"
-            onConfirmed={handleConfirmed}
-          />
-        </div>
-
-        <div className="mt-6 text-center">
-          <a
-            href="/login"
-            className="text-sm text-muted-foreground no-underline transition-colors hover:text-foreground"
-          >
-            返回登录
-          </a>
+        <div className="fp-fade"><EmailVerificationStep purpose="reset_password" onConfirmed={handleConfirmed} /></div>
+        <div className="mt-4 text-center">
+          <a href="/login" className="text-xs text-muted-foreground transition-colors hover:text-foreground">返回登录</a>
         </div>
       </AuthShell>
     </div>

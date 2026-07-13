@@ -11,26 +11,22 @@ gsap.registerPlugin(ScrollTrigger);
 const features = [
   {
     title: "多平台热点追踪",
-    description:
-      "实时监控微博、知乎、B站、小红书等主流平台热点趋势变化，聚合全网热门内容。",
+    description: "实时监控微博、知乎、B站、小红书等主流平台热点趋势变化。",
     icon: Layers,
   },
   {
     title: "AI 内容选题",
-    description:
-      "AI 智能分析热点关联话题，评估创作价值和流量潜力，推荐最优内容方向。",
+    description: "AI 智能分析热点关联话题，评估创作价值和流量潜力。",
     icon: Sparkles,
   },
   {
     title: "数据趋势报告",
-    description:
-      "自动生成可视化趋势报告，支持日/周维度，热点评分和关联分析一目了然。",
+    description: "自动生成可视化趋势报告，支持日/周维度，热点评分一目了然。",
     icon: BarChart3,
   },
   {
     title: "7×24 实时监控",
-    description:
-      "自定义关键词和监控范围，全天候持续追踪，第一时间发现与您相关的热点动态。",
+    description: "自定义关键词和监控范围，全天候持续追踪热点动态。",
     icon: Radio,
   },
 ];
@@ -39,71 +35,38 @@ export default function WelcomeFeatures() {
   const containerRef = useRef<HTMLElement>(null);
 
   useGSAP(() => {
-    gsap.from(".wf-title", {
-      y: 24,
-      opacity: 0,
-      duration: 0.7,
-      ease: "power3.out",
-      scrollTrigger: {
-        trigger: "#features",
-        start: "top 80%",
-      },
-    });
-
     gsap.from(".wf-card", {
-      y: 40,
-      opacity: 0,
-      duration: 0.7,
-      stagger: 0.12,
-      ease: "power3.out",
-      scrollTrigger: {
-        trigger: "#features",
-        start: "top 75%",
-      },
+      y: 20, opacity: 0, duration: 0.6, stagger: 0.1, ease: "power3.out",
+      scrollTrigger: { trigger: "#features", start: "top 80%" },
     });
   }, { scope: containerRef });
 
   return (
-    <section
-      ref={containerRef}
-      id="features"
-      className="relative overflow-hidden px-6 py-32 sm:py-40"
-    >
-      {/* Dot grid background */}
-      <div className="pointer-events-none absolute inset-0 bg-dot-grid" />
-
-      {/* Decorative blur */}
-      <div className="deco-blur-sm right-0 top-1/4 h-72 w-72" />
-
-      <div className="relative mx-auto max-w-5xl">
-        {/* Section header */}
-        <div className="wf-title mb-20 text-center">
-          <h2 className="mb-4 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+    <section ref={containerRef} id="features" className="border-t border-border/50 px-4 py-20 sm:py-28">
+      <div className="mx-auto max-w-4xl">
+        <div className="mb-12 text-center">
+          <span className="section-eyebrow">Features</span>
+          <h2 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
             强大功能，<span className="text-primary">简单交付</span>
           </h2>
-          <p className="mx-auto max-w-lg text-lg text-muted-foreground">
+          <p className="mt-2 text-sm text-muted-foreground">
             为内容创作者量身打造的全链路热点工具
           </p>
         </div>
 
-        {/* Feature cards grid */}
-        <div className="grid gap-5 sm:grid-cols-2">
-          {features.map((feature) => {
-            const Icon = feature.icon;
+        <div className="grid gap-3 sm:grid-cols-2">
+          {features.map((f) => {
+            const Icon = f.icon;
             return (
               <article
-                key={feature.title}
-                className="wf-card card-lift group rounded-2xl border border-border/60 bg-card p-8 shadow-card"
+                key={f.title}
+                className="wf-card card-border rounded-lg border border-border bg-card p-5"
               >
-                <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 transition-all duration-300 group-hover:bg-primary/15 group-hover:shadow-[0_0_16px_rgba(0,122,255,0.15)]">
-                  <Icon className="h-6 w-6 text-primary" />
+                <div className="mb-3 inline-flex h-8 w-8 items-center justify-center rounded border border-border bg-black/40">
+                  <Icon className="h-4 w-4 text-primary" />
                 </div>
-                <h3 className="mb-3 text-lg font-semibold tracking-tight text-foreground">
-                  {feature.title}
-                </h3>
-                <p className="leading-relaxed text-muted-foreground">
-                  {feature.description}
-                </p>
+                <h3 className="mb-1.5 text-sm font-semibold tracking-tight">{f.title}</h3>
+                <p className="text-xs leading-relaxed text-muted-foreground">{f.description}</p>
               </article>
             );
           })}

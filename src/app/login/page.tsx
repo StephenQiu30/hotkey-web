@@ -9,7 +9,7 @@ import { safeRedirect } from "@/lib/safeRedirect";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Flame, Mail, Lock, ArrowLeft } from "lucide-react";
+import { Mail, Lock, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
 export default function LoginPage() {
@@ -22,135 +22,75 @@ export default function LoginPage() {
 
   useGSAP(() => {
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-    tl.from(".lg-logo", { y: -20, opacity: 0, duration: 0.7 })
-      .from(".lg-heading", { y: -10, opacity: 0, duration: 0.5 }, "-=0.3")
-      .from(".lg-subtitle", { y: -10, opacity: 0, duration: 0.5 }, "-=0.3")
-      .from(".lg-form", { y: 20, opacity: 0, duration: 0.6 }, "-=0.3")
-      .from(".lg-footer", { opacity: 0, duration: 0.4 }, "-=0.2");
+    tl.from(".lg-fade", { y: 10, opacity: 0, duration: 0.5 })
+      .from(".lg-form", { y: 15, opacity: 0, duration: 0.5 }, "-=0.2");
   }, { scope: containerRef });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
-      toast.error("请填写邮箱和密码");
-      return;
-    }
+    if (!email || !password) { toast.error("请填写邮箱和密码"); return; }
     setLoading(true);
     try {
       await loginAction({ email, password });
       toast.success("欢迎回来");
-      const params = new URLSearchParams(window.location.search);
-      router.push(safeRedirect(params.get("redirect")));
+      router.push(safeRedirect(new URLSearchParams(window.location.search).get("redirect")));
     } catch (err: any) {
       toast.error(err.message ?? "邮箱或密码错误");
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   return (
-    <div
-      ref={containerRef}
-      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-6"
-    >
-      {/* Dot grid background */}
-      <div className="pointer-events-none absolute inset-0 bg-dot-grid" />
-
-      {/* Decorative blurs */}
-      <div className="deco-blur right-0 top-0 h-[400px] w-[400px]" />
-      <div className="deco-blur-sm bottom-0 left-0 h-[250px] w-[250px]" />
+    <div ref={containerRef} className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4">
+      <div className="deco-blur left-0 top-0 h-[350px] w-[350px]" />
+      <div className="deco-blur bottom-0 right-0 h-[250px] w-[250px]" />
 
       <div className="relative w-full max-w-sm">
-        {/* Logo + Title */}
-        <div className="lg-logo mb-10 text-center">
-          <a
-            href="/"
-            className="mb-6 inline-flex items-center gap-2 text-foreground no-underline"
-          >
-            <Flame className="h-6 w-6 text-primary" />
-            <span className="text-xl font-semibold tracking-tight">HotKey</span>
+        <div className="lg-fade mb-8 text-center">
+          <a href="/" className="inline-flex items-center gap-1.5 text-foreground no-underline">
+            <span className="text-sm font-semibold tracking-tight">HotKey</span>
           </a>
-          <h1 className="lg-heading mb-2 text-2xl font-bold tracking-tight text-foreground">
-            登录工作台
-          </h1>
-          <p className="lg-subtitle text-sm text-muted-foreground">
-            内容创作者热点工作台
-          </p>
+          <h1 className="mt-4 text-lg font-bold tracking-tight">登录工作台</h1>
+          <p className="mt-1 text-xs text-muted-foreground">内容创作者热点工作台</p>
         </div>
 
-        {/* Glass card form */}
-        <div className="lg-form rounded-2xl border border-border/50 bg-card/70 p-8 backdrop-blur-xl shadow-elevated">
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-foreground">
-                邮箱
-              </Label>
+        <div className="lg-form rounded-lg border border-border bg-card p-6 shadow-card">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-xs font-medium">邮箱</Label>
               <div className="relative">
-                <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="name@example.com"
-                  value={email}
+                <Mail className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                <Input id="email" type="email" placeholder="name@example.com" value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="h-11 rounded-xl border-border/80 bg-card/80 pl-10 text-sm backdrop-blur-sm placeholder:text-muted-foreground/60 transition-all duration-200 focus:border-primary/50 focus:shadow-[0_0_0_3px_rgba(0,122,255,0.1)]"
-                />
+                  className="h-9 rounded-md border-border bg-black/40 pl-8 text-xs placeholder:text-muted-foreground/60" />
               </div>
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium text-foreground">
-                密码
-              </Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="password" className="text-xs font-medium">密码</Label>
               <div className="relative">
-                <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="输入密码"
-                  value={password}
+                <Lock className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                <Input id="password" type="password" placeholder="输入密码" value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-11 rounded-xl border-border/80 bg-card/80 pl-10 text-sm backdrop-blur-sm placeholder:text-muted-foreground/60 transition-all duration-200 focus:border-primary/50 focus:shadow-[0_0_0_3px_rgba(0,122,255,0.1)]"
-                />
+                  className="h-9 rounded-md border-border bg-black/40 pl-8 text-xs placeholder:text-muted-foreground/60" />
               </div>
             </div>
-
-            <Button
-              type="submit"
-              disabled={loading}
-              className="h-11 w-full rounded-xl text-base shadow-lg shadow-primary/20 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,122,255,0.25)] active:scale-[0.98]"
-            >
+            <Button type="submit" disabled={loading}
+              className="h-9 w-full rounded-md text-xs font-medium shadow-button">
               {loading ? "登录中..." : "进入工作台"}
             </Button>
           </form>
 
-          <div className="mt-6 flex flex-col items-center gap-3 text-center">
-            <a
-              href="/forgot-password"
-              className="text-sm text-muted-foreground no-underline transition-colors hover:text-foreground"
-            >
-              忘记密码？
-            </a>
-            <p className="text-sm text-muted-foreground">
+          <div className="mt-4 flex flex-col items-center gap-2 text-center">
+            <a href="/forgot-password" className="text-xs text-muted-foreground transition-colors hover:text-foreground">忘记密码？</a>
+            <p className="text-xs text-muted-foreground">
               还没有账号？{" "}
-              <a
-                href="/register"
-                className="font-medium text-primary no-underline transition-colors hover:text-primary/80"
-              >
-                创建账号
-              </a>
+              <a href="/register" className="font-medium text-primary transition-colors hover:text-primary/80">创建账号</a>
             </p>
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="lg-footer mt-8 text-center">
-          <a
-            href="/"
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground no-underline transition-colors hover:text-foreground"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            返回首页
+        <div className="mt-5 text-center">
+          <a href="/" className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground">
+            <ArrowLeft className="h-3 w-3" /> 返回首页
           </a>
         </div>
       </div>

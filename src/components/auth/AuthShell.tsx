@@ -10,34 +10,23 @@ interface AuthShellProps {
 
 export default function AuthShell({ title, subtitle, children }: AuthShellProps) {
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-6">
-      {/* Dot grid background */}
-      <div className="pointer-events-none absolute inset-0 bg-dot-grid" />
-      {/* Decorative blurs */}
-      <div className="deco-blur right-0 top-0 h-[350px] w-[350px]" />
-      <div className="deco-blur-sm bottom-0 left-0 h-[200px] w-[200px]" />
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4">
+      <div className="deco-blur left-0 top-0 h-[400px] w-[400px]" />
+      <div className="deco-blur bottom-0 right-0 h-[300px] w-[300px]" />
 
-      <div className="relative w-full max-w-sm rounded-2xl border border-border/50 bg-card/70 p-8 backdrop-blur-xl shadow-elevated">
-        {/* Logo */}
-        <div className="mb-6 text-center">
-          <a
-            href="/"
-            className="mb-4 inline-flex items-center gap-2 text-foreground no-underline"
-          >
-            <Flame className="h-6 w-6 text-primary" />
-            <span className="text-xl font-semibold tracking-tight">HotKey</span>
-          </a>
-        </div>
-
-        {/* Title */}
+      <div className="relative w-full max-w-sm">
         <div className="mb-8 text-center">
-          <h1 className="mb-1 text-2xl font-bold tracking-tight text-foreground">
-            {title}
-          </h1>
-          <p className="text-sm text-muted-foreground">{subtitle}</p>
+          <a href="/" className="mb-4 inline-flex items-center gap-1.5 text-foreground no-underline">
+            <Flame className="h-4 w-4 text-primary" />
+            <span className="text-sm font-semibold tracking-tight">HotKey</span>
+          </a>
+          <h1 className="mt-4 text-lg font-bold tracking-tight">{title}</h1>
+          <p className="mt-1 text-xs text-muted-foreground">{subtitle}</p>
         </div>
 
-        {children}
+        <div className="rounded-lg border border-border bg-card p-6 shadow-card">
+          {children}
+        </div>
       </div>
     </div>
   );
