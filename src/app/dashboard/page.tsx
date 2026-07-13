@@ -8,6 +8,9 @@ import remarkGfm from "remark-gfm";
 import {
   Flame, Star, TrendingUp, BarChart3, Bell, CheckCircle, Clock, RefreshCw,
 } from "lucide-react";
+import {
+  AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
+} from "recharts";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -119,7 +122,6 @@ export default function DashboardPage() {
 
   const relevantCount = useMemo(() => posts.filter((p) => (p.relevance_score ?? 0) > 0.7).length, [posts]);
   const pendingNotifCount = useMemo(() => notifications.filter((n) => n.delivery_status === "pending").length, [notifications]);
-  const trendMax = useMemo(() => Math.max(...trends.map((t) => t.heat_score ?? 0), 1), [trends]);
 
   if (pageState === "error") {
     return (
@@ -272,15 +274,31 @@ export default function DashboardPage() {
           </div>
           <div className="p-4">
             {trends.length > 0 ? (
-              <div className="flex items-end gap-[2px]" style={{ height: 120 }}>
-                {trends.map((point, index) => {
-                  const pct = ((point.heat_score ?? 0) / trendMax) * 100;
-                  return (
-                    <div key={index} className="relative flex-1 rounded-t-sm transition-opacity hover:opacity-100"
-                      style={{ height: `${Math.max(pct, 3)}%`, minHeight: 3, background: "var(--color-primary)", opacity: 0.25 + (pct / 100) * 0.75 }}
-                      title={`${formatTime(point.time)}: ${Math.round(point.heat_score ?? 0)}`} />
-                  );
-                })}
+              <div style={{ height: 140 }}>
+                <ResponsiveContainer width="100%" height={140}>
+                  <AreaChart data={trends.map(p => ({ ...p, timeLabel: formatTime(p.time) }))} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
+                    <defs>
+                      <linearGradient id="trendGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="var(--color-primary)" stopOpacity={0.25} />
+                        <stop offset="100%" stopColor="var(--color-primary)" stopOpacity={0.02} />
+                      </linearGradient>
+                    </defs>
+                    <XAxis dataKey="timeLabel" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }} interval="preserveStartEnd" />
+                    <YAxis hide domain={[0, 'auto']} />
+                    <Tooltip
+                      contentStyle={{
+                        background: "var(--color-card)",
+                        border: "1px solid var(--color-border)",
+                        borderRadius: 6,
+                        fontSize: 12,
+                        color: "var(--color-foreground)",
+                      }}
+                      formatter={(value: any) => [`${Math.round(Number(value))}`, "热度"]}
+                      labelStyle={{ color: "var(--color-muted-foreground)" }}
+                    />
+                    <Area type="monotone" dataKey="heat_score" stroke="var(--color-primary)" strokeWidth={2} fill="url(#trendGradient)" dot={false} activeDot={{ r: 3, fill: "var(--color-primary)" }} />
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
             ) : <div className="py-6 text-center text-xs text-muted-foreground">暂无趋势数据</div>}
           </div>
@@ -293,15 +311,24 @@ export default function DashboardPage() {
           </div>
           <div className="p-4">
             {sourceDistribution.length > 0 ? (
-              <div className="space-y-3">
-                {sourceDistribution.map((source) => (
-                  <div key={source.label}>
-                    <div className="mb-1 flex justify-between text-xs"><span>{source.label}</span><span className="stat-value">{source.value}%</span></div>
-                    <div className="h-1.5 overflow-hidden rounded-full bg-muted">
-                      <div className="h-full rounded-full" style={{ width: `${source.value}%`, background: "var(--color-primary)", opacity: 0.3 + (source.value / 100) * 0.7 }} />
-                    </div>
-                  </div>
-                ))}
+              <div style={{ height: 140 }}>
+                <ResponsiveContainer width="100%" height={140}>
+                  <BarChart data={sourceDistribution} layout="vertical" margin={{ top: 0, right: 24, bottom: 0, left: -8 }} barCategoryGap={8}>
+                    <XAxis type="number" hide domain={[0, 100]} />
+                    <YAxis dataKey="label" type="category" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }} width={50} />
+                    <Tooltip
+                      contentStyle={{
+                        background: "var(--color-card)",
+                        border: "1px solid var(--color-border)",
+                        borderRadius: 6,
+                        fontSize: 12,
+                        color: "var(--color-foreground)",
+                      }}
+                      formatter={(value: any) => [`${value}%`, "占比"]}
+                    />
+                    <Bar dataKey="value" radius={[0, 3, 3, 0]} fill="var(--color-primary)" opacity={0.7} />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             ) : <div className="py-6 text-center text-xs text-muted-foreground">暂无来源数据</div>}
           </div>

@@ -9,6 +9,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter,
@@ -33,8 +37,6 @@ const defaultFormData: MonitorFormData = {
   name: "", query_text: "", region: "CN", language: "zh",
   poll_interval_minutes: 15, alert_enabled: true,
 };
-
-const selectClass = "flex h-9 w-full rounded-md border border-border bg-black/40 px-3 py-1.5 text-xs ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
@@ -93,18 +95,31 @@ export default function SettingsPage() {
       </div>
       <div className="grid grid-cols-2 gap-2">
         <div className="space-y-1.5">
-          <Label htmlFor="monitor-region" className="text-xs font-medium">地区</Label>
-          <select id="monitor-region" value={formData.region}
-            onChange={(e) => setFormData({ ...formData, region: e.target.value })} className={selectClass}>
-            <option value="CN">中国</option><option value="US">美国</option><option value="JP">日本</option><option value="EU">欧洲</option>
-          </select>
+          <Label className="text-sm font-medium">地区</Label>
+          <Select value={formData.region} onValueChange={(v) => setFormData({ ...formData, region: v })}>
+            <SelectTrigger className="h-10 rounded-md border-border bg-black/40 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="CN">中国</SelectItem>
+              <SelectItem value="US">美国</SelectItem>
+              <SelectItem value="JP">日本</SelectItem>
+              <SelectItem value="EU">欧洲</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="monitor-lang" className="text-xs font-medium">语言</Label>
-          <select id="monitor-lang" value={formData.language}
-            onChange={(e) => setFormData({ ...formData, language: e.target.value })} className={selectClass}>
-            <option value="zh">中文</option><option value="en">English</option><option value="ja">日本語</option>
-          </select>
+          <Label className="text-sm font-medium">语言</Label>
+          <Select value={formData.language} onValueChange={(v) => setFormData({ ...formData, language: v })}>
+            <SelectTrigger className="h-10 rounded-md border-border bg-black/40 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="zh">中文</SelectItem>
+              <SelectItem value="en">English</SelectItem>
+              <SelectItem value="ja">日本語</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
       <div className="space-y-1.5">
@@ -114,10 +129,9 @@ export default function SettingsPage() {
           className="h-10 rounded-md border-border bg-black/40 text-sm" />
       </div>
       <div className="flex items-center gap-2">
-        <input type="checkbox" id="monitor-alert" checked={formData.alert_enabled}
-          onChange={(e) => setFormData({ ...formData, alert_enabled: e.target.checked })}
-          className="h-3.5 w-3.5 rounded border-border text-primary focus:ring-primary" />
-        <Label htmlFor="monitor-alert" className="text-xs font-normal">启用通知</Label>
+        <Checkbox id="monitor-alert" checked={formData.alert_enabled}
+          onCheckedChange={(v) => setFormData({ ...formData, alert_enabled: v === true })} />
+        <Label htmlFor="monitor-alert" className="text-sm font-normal">启用通知</Label>
       </div>
     </div>
   );
