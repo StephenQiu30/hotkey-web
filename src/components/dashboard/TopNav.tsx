@@ -10,6 +10,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/authStore";
+import ThemeToggle from "@/components/ThemeToggle";
 
 interface MenuItem {
   path: string; name: string; icon: React.ReactNode;
@@ -53,6 +54,7 @@ export default function TopNav({ menuItems, title = "HotKey" }: TopNavProps) {
         </div>
 
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <Button variant="ghost" size="icon" className="h-7 w-7 md:hidden" onClick={() => setMobileOpen(!mobileOpen)}>
             {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </Button>

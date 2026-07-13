@@ -44,7 +44,7 @@ export default function PasswordFields({
             autoComplete="new-password"
             value={onPasswordChange ? password : localPassword}
             onChange={(e) => handlePasswordChange(e.target.value)}
-            className="h-9 rounded-md border-border bg-black/40 pl-8 text-xs" />
+            className="h-10 rounded-md border-border bg-black/40 pl-8 text-sm" />
         </div>
       </div>
       <div className="space-y-1.5">

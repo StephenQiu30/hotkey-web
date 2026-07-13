@@ -85,7 +85,7 @@ export default function FavoritesPage() {
                 <StarIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
                 <div className="min-w-0 flex-1">
                   <p className="mb-0.5 text-xs leading-snug">{item.content_text?.slice(0, 100) ?? `Post #${item.id}`}</p>
-                  <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                     <span>{(item.author_name || item.author_handle) ?? "未知"}</span>
                     {item.heat_score != null && <span className="stat-value">{Math.round(item.heat_score * 100)}</span>}
                     {item.published_at && <span>{new Date(item.published_at).toLocaleDateString("zh-CN")}</span>}

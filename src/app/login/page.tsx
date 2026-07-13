@@ -50,38 +50,38 @@ export default function LoginPage() {
             <span className="text-sm font-semibold tracking-tight">HotKey</span>
           </a>
           <h1 className="mt-4 text-lg font-bold tracking-tight">登录工作台</h1>
-          <p className="mt-1 text-xs text-muted-foreground">内容创作者热点工作台</p>
+          <p className="mt-1 text-sm text-muted-foreground">内容创作者热点工作台</p>
         </div>
 
         <div className="lg-form rounded-lg border border-border bg-card p-6 shadow-card">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-xs font-medium">邮箱</Label>
+              <Label htmlFor="email" className="text-sm font-medium">邮箱</Label>
               <div className="relative">
                 <Mail className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                 <Input id="email" type="email" placeholder="name@example.com" value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="h-9 rounded-md border-border bg-black/40 pl-8 text-xs placeholder:text-muted-foreground/60" />
+                  className="h-10 rounded-md border-border bg-black/40 pl-8 text-sm placeholder:text-muted-foreground/60" />
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="password" className="text-xs font-medium">密码</Label>
+              <Label htmlFor="password" className="text-sm font-medium">密码</Label>
               <div className="relative">
                 <Lock className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                 <Input id="password" type="password" placeholder="输入密码" value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-9 rounded-md border-border bg-black/40 pl-8 text-xs placeholder:text-muted-foreground/60" />
+                  className="h-10 rounded-md border-border bg-black/40 pl-8 text-sm placeholder:text-muted-foreground/60" />
               </div>
             </div>
             <Button type="submit" disabled={loading}
-              className="h-9 w-full rounded-md text-xs font-medium shadow-button">
+              className="h-10 w-full rounded-md text-sm font-medium shadow-button">
               {loading ? "登录中..." : "进入工作台"}
             </Button>
           </form>
 
           <div className="mt-4 flex flex-col items-center gap-2 text-center">
-            <a href="/forgot-password" className="text-xs text-muted-foreground transition-colors hover:text-foreground">忘记密码？</a>
-            <p className="text-xs text-muted-foreground">
+            <a href="/forgot-password" className="text-sm text-muted-foreground transition-colors hover:text-foreground">忘记密码？</a>
+            <p className="text-sm text-muted-foreground">
               还没有账号？{" "}
               <a href="/register" className="font-medium text-primary transition-colors hover:text-primary/80">创建账号</a>
             </p>

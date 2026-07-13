@@ -57,7 +57,7 @@ export default function NotificationsPage() {
     <div ref={containerRef} className="space-y-5">
       <div className="flex items-center justify-between border-b border-border pb-3">
         <div className="flex items-center gap-2"><Bell className="h-4 w-4 text-muted-foreground" /><h2 className="text-sm font-semibold tracking-tight">通知记录</h2></div>
-        {notifications.length > 0 && <span className="text-[11px] text-muted-foreground">{notifications.length} 条未读</span>}
+        {notifications.length > 0 && <span className="text-xs text-muted-foreground">{notifications.length} 条未读</span>}
       </div>
 
       {loading && (
@@ -85,13 +85,13 @@ export default function NotificationsPage() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
-                    <Badge variant={statusVariant(item.delivery_status)} className="h-4 text-[10px] px-1.5">{channelLabel(item.channel)}</Badge>
+                    <Badge variant={statusVariant(item.delivery_status)} className="h-5 text-xs px-2">{channelLabel(item.channel)}</Badge>
                     <span className="text-xs font-medium">{statusLabel[item.delivery_status ?? ""] ?? item.delivery_status}</span>
                   </div>
-                  {item.created_at && <p className="mt-0.5 text-[11px] text-muted-foreground">{new Date(item.created_at).toLocaleString("zh-CN")}</p>}
+                  {item.created_at && <p className="mt-0.5 text-xs text-muted-foreground">{new Date(item.created_at).toLocaleString("zh-CN")}</p>}
                 </div>
                 {item.delivery_status === "pending" && item.id != null && (
-                  <Button variant="ghost" size="sm" className="h-7 text-[11px] shrink-0" onClick={() => handleMarkRead(item.id!)}>标记已读</Button>
+                  <Button variant="ghost" size="sm" className="h-7 text-xs shrink-0" onClick={() => handleMarkRead(item.id!)}>标记已读</Button>
                 )}
               </CardContent>
             </Card>

@@ -81,7 +81,7 @@ export default function ProfilePage() {
           return (
             <Card key={item.title} className="card-border rounded-lg border-border text-center">
               <CardContent className="p-5"><Icon className="mx-auto mb-2 h-4 w-4 text-muted-foreground" />
-                <p className="mb-0.5 text-[11px] font-medium text-muted-foreground">{item.title}</p>
+                <p className="mb-0.5 text-xs font-medium text-muted-foreground">{item.title}</p>
                 <p className="stat-value text-lg">{item.value}</p>
               </CardContent>
             </Card>
@@ -90,7 +90,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Account Details */}
-      <div className="pf-item"><Card className="rounded-lg border-border"><CardHeader><CardTitle className="text-sm">账号详情</CardTitle></CardHeader>
+      <div className="pf-item"><Card className="rounded-lg border-border"><CardHeader><CardTitle className="text-base">账号详情</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <div className="flex justify-between border-b border-border/50 pb-2.5"><span className="text-xs text-muted-foreground">显示名称</span><span className="text-xs font-medium">{user?.display_name || "未设置"}</span></div>
           <div className="flex justify-between border-b border-border/50 pb-2.5"><span className="text-xs text-muted-foreground">电子邮箱</span><span className="text-xs font-medium">{user?.email || "未设置"}</span></div>
@@ -99,7 +99,7 @@ export default function ProfilePage() {
       </Card></div>
 
       {/* Quick Actions */}
-      <div className="pf-item"><Card className="rounded-lg border-border"><CardHeader><CardTitle className="text-sm">快捷操作</CardTitle></CardHeader>
+      <div className="pf-item"><Card className="rounded-lg border-border"><CardHeader><CardTitle className="text-base">快捷操作</CardTitle></CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button onClick={() => { window.location.href = "/dashboard/settings"; }} className="h-8 gap-1.5 rounded-md text-xs"><Settings className="h-3.5 w-3.5" />管理监控</Button>
           <Button variant="outline" onClick={() => { window.location.href = "/dashboard/notifications"; }} className="h-8 gap-1.5 rounded-md border-border text-xs"><Bell className="h-3.5 w-3.5" />查看通知</Button>

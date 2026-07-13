@@ -53,7 +53,7 @@ export default function EmailVerificationStep({ purpose, onConfirmed }: EmailVer
     return (
       <div className="space-y-3">
         <div className="space-y-1.5">
-          <Label htmlFor="verify-email" className="text-xs font-medium">邮箱</Label>
+          <Label htmlFor="verify-email" className="text-sm font-medium">邮箱</Label>
           <div className="relative">
             <Mail className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
             <Input id="verify-email" type="email" placeholder="name@example.com" autoComplete="email"
@@ -62,7 +62,7 @@ export default function EmailVerificationStep({ purpose, onConfirmed }: EmailVer
           </div>
           {sendError && <p className="text-xs text-destructive">{sendError}</p>}
         </div>
-        <Button onClick={handleSend} disabled={!email || loading} className="h-9 w-full rounded-md text-xs font-medium shadow-button">
+        <Button onClick={handleSend} disabled={!email || loading} className="h-10 w-full rounded-md text-sm font-medium shadow-button">
           {loading ? "发送中..." : "发送验证码"}
         </Button>
       </div>
@@ -71,7 +71,7 @@ export default function EmailVerificationStep({ purpose, onConfirmed }: EmailVer
 
   return (
     <div className="space-y-3">
-      <p className="text-center text-xs text-muted-foreground">
+      <p className="text-center text-sm text-muted-foreground">
         验证码已发送至 <span className="font-medium text-foreground">{email}</span>
       </p>
       <div className="space-y-1.5">
@@ -82,7 +82,7 @@ export default function EmailVerificationStep({ purpose, onConfirmed }: EmailVer
           className={`h-9 rounded-md border-border bg-black/40 text-center font-mono text-sm tracking-[0.3em] ${sendError ? "border-destructive" : ""}`} />
         {sendError && <p className="text-xs text-destructive">{sendError}</p>}
       </div>
-      <Button onClick={handleConfirm} disabled={code.length !== 6 || loading} className="h-9 w-full rounded-md text-xs font-medium shadow-button">
+      <Button onClick={handleConfirm} disabled={code.length !== 6 || loading} className="h-10 w-full rounded-md text-sm font-medium shadow-button">
         {loading ? "验证中..." : "验证"}
       </Button>
       <button onClick={handleSend} disabled={countdown > 0}

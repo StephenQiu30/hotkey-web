@@ -64,25 +64,25 @@ export default function RegisterPage() {
           {step === "profile" && (
             <form onSubmit={handleRegister} className="space-y-3">
               <div className="space-y-1.5">
-                <Label htmlFor="display-name" className="text-xs font-medium">显示名称</Label>
+                <Label htmlFor="display-name" className="text-sm font-medium">显示名称</Label>
                 <div className="relative">
                   <User className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                   <Input id="display-name" placeholder="您的昵称" value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
-                    className="h-9 rounded-md border-border bg-black/40 pl-8 text-xs" />
+                    className="h-10 rounded-md border-border bg-black/40 pl-8 text-sm" />
                 </div>
               </div>
               <PasswordFields prefix="register" password={password} confirmPassword={confirmPassword}
                 onPasswordChange={setPassword} onConfirmChange={setConfirmPassword} />
-              {error && <p className="text-xs text-destructive">{error}</p>}
-              <Button type="submit" disabled={loading} className="h-9 w-full rounded-md text-xs font-medium shadow-button">
+              {error && <p className="text-sm text-destructive">{error}</p>}
+              <Button type="submit" disabled={loading} className="h-10 w-full rounded-md text-sm font-medium shadow-button">
                 {loading ? "注册中..." : "完成注册"}
               </Button>
             </form>
           )}
         </div>
         <div className="mt-4 text-center">
-          <a href="/login" className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground">
+          <a href="/login" className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground">
             <ArrowLeft className="h-3 w-3" /> 已有账号？去登录
           </a>
         </div>

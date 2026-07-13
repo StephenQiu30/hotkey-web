@@ -152,8 +152,8 @@ export default function DashboardPage() {
     <div ref={containerRef} className="space-y-3">
       {/* Header */}
       <div className="dp-item"><Card className="rounded-lg border-border"><CardContent className="p-4">
-        <h3 className="text-sm font-semibold tracking-tight">公开源热点聚合 · AI 快速理解 · 内容选题生成</h3>
-        <p className="mt-0.5 text-xs text-muted-foreground">监控「{monitorName}」— 按热度、相关性和可创作价值排序</p>
+        <h3 className="text-base font-semibold tracking-tight">公开源热点聚合 · AI 快速理解 · 内容选题生成</h3>
+        <p className="mt-0.5 text-sm text-muted-foreground">监控「{monitorName}」— 按热度、相关性和可创作价值排序</p>
       </CardContent></Card></div>
 
       {/* Stats Row */}
@@ -166,7 +166,7 @@ export default function DashboardPage() {
         ].map((s) => (
           <Card key={s.title} className="card-border rounded-lg border-border">
             <CardContent className="p-4">
-              <p className="mb-0.5 text-[11px] font-medium text-muted-foreground">{s.title}</p>
+              <p className="mb-0.5 text-xs font-medium text-muted-foreground">{s.title}</p>
               <p className="stat-value text-lg">{s.value}{s.suffix && <span className="ml-0.5 text-xs font-normal text-muted-foreground">{s.suffix}</span>}</p>
             </CardContent>
           </Card>
@@ -178,8 +178,8 @@ export default function DashboardPage() {
         {/* Left: Post List */}
         <div className="flex-1 rounded-lg border border-border bg-card shadow-card">
           <div className="flex items-center justify-between border-b border-border px-4 py-3">
-            <div className="flex items-center gap-2"><Flame className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-xs font-semibold">热点榜单</span></div>
-            <span className="text-[11px] text-muted-foreground">按综合评分排序</span>
+            <div className="flex items-center gap-2"><Flame className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-sm font-semibold">热点榜单</span></div>
+            <span className="text-xs text-muted-foreground">按综合评分排序</span>
           </div>
           <div className="divide-y divide-border/50">
             {sortedPosts.map((item, index) => (
@@ -187,13 +187,13 @@ export default function DashboardPage() {
                 className={`flex cursor-pointer items-start gap-3 px-4 py-2.5 transition-colors hover:bg-secondary/30 ${
                   item.id === selected?.id ? "border-l-2 border-primary bg-secondary/20" : "border-l-2 border-transparent"
                 }`}>
-                <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded border border-border/60 text-[11px] font-semibold text-muted-foreground">{index + 1}</div>
+                <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded border border-border/60 text-xs font-semibold text-muted-foreground">{index + 1}</div>
                 <div className="min-w-0 flex-1">
-                  <p className={`text-xs leading-snug ${item.id === selected?.id ? "font-semibold" : ""}`}>{item.content_text?.slice(0, 80) ?? `Post #${item.id}`}</p>
+                  <p className={`text-sm leading-snug ${item.id === selected?.id ? "font-semibold" : ""}`}>{item.content_text?.slice(0, 80) ?? `Post #${item.id}`}</p>
                   <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                    <span className="text-[11px] text-muted-foreground">{(item.author_name || item.author_handle) ?? "未知"}{item.published_at ? ` · ${new Date(item.published_at).toLocaleDateString("zh-CN")}` : ""}</span>
-                    {item.final_score != null && <Badge variant="default" className="h-4 text-[10px] px-1.5">评分 {Math.round(item.final_score * 100)}</Badge>}
-                    {item.heat_score != null && <Badge variant="outline" className="h-4 text-[10px] px-1.5">{Math.round(item.heat_score * 100)}</Badge>}
+                    <span className="text-xs text-muted-foreground">{(item.author_name || item.author_handle) ?? "未知"}{item.published_at ? ` · ${new Date(item.published_at).toLocaleDateString("zh-CN")}` : ""}</span>
+                    {item.final_score != null && <Badge variant="default" className="h-5 text-xs px-2">评分 {Math.round(item.final_score * 100)}</Badge>}
+                    {item.heat_score != null && <Badge variant="outline" className="h-5 text-xs px-2">{Math.round(item.heat_score * 100)}</Badge>}
                   </div>
                 </div>
                 {item.id != null && (
@@ -210,10 +210,10 @@ export default function DashboardPage() {
         {/* Right: Detail Panel */}
         <div className="flex-[1.4] rounded-lg border border-border bg-card shadow-card">
           <div className="flex items-center justify-between border-b border-border px-4 py-3">
-            <span className="text-xs font-semibold">快速理解</span>
+            <span className="text-sm font-semibold">快速理解</span>
             <div className="flex flex-wrap gap-1">
-              {selected?.matched_keywords?.length ? selected.matched_keywords.map((kw) => <Badge key={kw} variant="default" className="h-4 text-[10px] px-1.5">{kw}</Badge>)
-                : <span className="text-[11px] text-muted-foreground">AI 摘要</span>}
+              {selected?.matched_keywords?.length ? selected.matched_keywords.map((kw) => <Badge key={kw} variant="default" className="h-5 text-xs px-2">{kw}</Badge>)
+                : <span className="text-xs text-muted-foreground">AI 摘要</span>}
             </div>
           </div>
           <div className="space-y-3 p-4">
@@ -229,7 +229,7 @@ export default function DashboardPage() {
                     { label: "新鲜度", value: selected.freshness_score != null ? `${Math.round(selected.freshness_score * 100)}%` : "-" },
                   ].map((stat) => (
                     <div key={stat.label} className="rounded border border-border/60 bg-black/30 p-2 text-center">
-                      <p className="text-[10px] text-muted-foreground">{stat.label}</p>
+                      <p className="text-[11px] text-muted-foreground">{stat.label}</p>
                       <p className="stat-value text-xs">{stat.value}</p>
                     </div>
                   ))}
@@ -237,19 +237,19 @@ export default function DashboardPage() {
                 {topicList.length > 0 ? (
                   <div>
                     <div className="mb-2 flex items-center justify-between">
-                      <span className="text-xs font-semibold">内容选题</span>
-                      <Button variant="outline" size="sm" onClick={() => setTopicRotation((v) => v + 1)} className="h-6 text-[11px] px-2"><RefreshCw className="mr-1 h-3 w-3" />换一批</Button>
+                      <span className="text-sm font-semibold">内容选题</span>
+                      <Button variant="outline" size="sm" onClick={() => setTopicRotation((v) => v + 1)} className="h-6 text-xs px-2"><RefreshCw className="mr-1 h-3 w-3" />换一批</Button>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       {topicList.slice(0, 4).map((topic) => (
                         <Card key={topic.id} className="card-border rounded-lg border-border"><CardContent className="p-3">
-                          <p className="mb-1 text-xs font-semibold leading-snug">{topic.title}</p>
-                          <p className="mb-1.5 line-clamp-2 text-[11px] leading-relaxed text-muted-foreground">{topic.summary}</p>
+                          <p className="mb-1 text-sm font-semibold leading-snug">{topic.title}</p>
+                          <p className="mb-1.5 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{topic.summary}</p>
                           <div className="flex gap-1">
-                            <Badge variant={topic.trend_direction === "up" ? "destructive" : topic.trend_direction === "down" ? "secondary" : "outline"} className="h-4 text-[10px] px-1.5">
+                            <Badge variant={topic.trend_direction === "up" ? "destructive" : topic.trend_direction === "down" ? "secondary" : "outline"} className="h-5 text-xs px-2">
                               {topic.trend_direction === "up" ? "↑ 上升" : topic.trend_direction === "down" ? "↓ 下降" : "→ 平稳"}
                             </Badge>
-                            <Badge variant="outline" className="h-4 text-[10px] px-1.5">热度 {Math.round(topic.current_heat ?? 0)}</Badge>
+                            <Badge variant="outline" className="h-5 text-xs px-2">热度 {Math.round(topic.current_heat ?? 0)}</Badge>
                           </div>
                         </CardContent></Card>
                       ))}
@@ -267,8 +267,8 @@ export default function DashboardPage() {
         {/* Trend */}
         <div className="flex-1 rounded-lg border border-border bg-card shadow-card">
           <div className="flex items-center justify-between border-b border-border px-4 py-3">
-            <div className="flex items-center gap-2"><TrendingUp className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-xs font-semibold">趋势分析</span></div>
-            <span className="text-[11px] text-muted-foreground">{trends.length > 0 ? `${formatTime(trends[0]?.time)} — ${formatTime(trends[trends.length - 1]?.time)}` : "暂无数据"}</span>
+            <div className="flex items-center gap-2"><TrendingUp className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-sm font-semibold">趋势分析</span></div>
+            <span className="text-xs text-muted-foreground">{trends.length > 0 ? `${formatTime(trends[0]?.time)} — ${formatTime(trends[trends.length - 1]?.time)}` : "暂无数据"}</span>
           </div>
           <div className="p-4">
             {trends.length > 0 ? (
@@ -288,15 +288,15 @@ export default function DashboardPage() {
         {/* Source */}
         <div className="flex-1 rounded-lg border border-border bg-card shadow-card">
           <div className="flex items-center justify-between border-b border-border px-4 py-3">
-            <div className="flex items-center gap-2"><BarChart3 className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-xs font-semibold">来源分布</span></div>
-            <span className="text-[11px] text-muted-foreground">公开源</span>
+            <div className="flex items-center gap-2"><BarChart3 className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-sm font-semibold">来源分布</span></div>
+            <span className="text-xs text-muted-foreground">公开源</span>
           </div>
           <div className="p-4">
             {sourceDistribution.length > 0 ? (
               <div className="space-y-3">
                 {sourceDistribution.map((source) => (
                   <div key={source.label}>
-                    <div className="mb-1 flex justify-between text-[11px]"><span>{source.label}</span><span className="stat-value">{source.value}%</span></div>
+                    <div className="mb-1 flex justify-between text-xs"><span>{source.label}</span><span className="stat-value">{source.value}%</span></div>
                     <div className="h-1.5 overflow-hidden rounded-full bg-muted">
                       <div className="h-full rounded-full" style={{ width: `${source.value}%`, background: "var(--color-primary)", opacity: 0.3 + (source.value / 100) * 0.7 }} />
                     </div>
@@ -312,8 +312,8 @@ export default function DashboardPage() {
       <div className="dp-item">
         <div className="rounded-lg border border-border bg-card shadow-card">
           <div className="flex items-center justify-between border-b border-border px-4 py-3">
-            <div className="flex items-center gap-2"><Bell className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-xs font-semibold">通知列表</span></div>
-            <span className="text-[11px] text-muted-foreground">{notifications.length} 条未读</span>
+            <div className="flex items-center gap-2"><Bell className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-sm font-semibold">通知列表</span></div>
+            <span className="text-xs text-muted-foreground">{notifications.length} 条未读</span>
           </div>
           <div className="p-4">
             {notifications.length > 0 ? (
@@ -323,10 +323,10 @@ export default function DashboardPage() {
                     {item.delivery_status === "pending" ? <Clock className="h-4 w-4 shrink-0 text-primary" /> : <CheckCircle className="h-4 w-4 shrink-0 text-primary" />}
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5">
-                        <Badge variant={statusBadgeVariant(item.delivery_status)} className="h-4 text-[10px] px-1.5">{item.channel === "in_app" ? "站内" : item.channel ?? "未知"}</Badge>
+                        <Badge variant={statusBadgeVariant(item.delivery_status)} className="h-5 text-xs px-2">{item.channel === "in_app" ? "站内" : item.channel ?? "未知"}</Badge>
                         <span className="text-xs">{statusLabel[item.delivery_status ?? ""] ?? item.delivery_status}</span>
                       </div>
-                      {item.created_at && <p className="mt-0.5 text-[11px] text-muted-foreground">{new Date(item.created_at).toLocaleString("zh-CN")}</p>}
+                      {item.created_at && <p className="mt-0.5 text-xs text-muted-foreground">{new Date(item.created_at).toLocaleString("zh-CN")}</p>}
                     </div>
                   </div>
                 ))}

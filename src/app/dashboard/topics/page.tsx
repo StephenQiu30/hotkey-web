@@ -84,11 +84,11 @@ export default function TopicsPage() {
             <Card key={topic.id} className="tp-card card-border rounded-lg border-border">
               <CardContent className="space-y-2.5 p-4">
                 <h3 className="text-xs font-semibold leading-snug tracking-tight">{topic.title}</h3>
-                <p className="line-clamp-2 text-[11px] leading-relaxed text-muted-foreground">{topic.summary}</p>
+                <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">{topic.summary}</p>
                 <div className="flex flex-wrap gap-1.5">
-                  <Badge variant={trendVariant(topic.trend_direction)} className="h-4 text-[10px] px-1.5">{trendLabel(topic.trend_direction)}</Badge>
-                  <Badge variant="outline" className="h-4 text-[10px] px-1.5">热度 {Math.round(topic.current_heat ?? 0)}</Badge>
-                  <Badge variant="outline" className="h-4 text-[10px] px-1.5">{(topic.post_count ?? 0)} 篇</Badge>
+                  <Badge variant={trendVariant(topic.trend_direction)} className="h-5 text-xs px-2">{trendLabel(topic.trend_direction)}</Badge>
+                  <Badge variant="outline" className="h-5 text-xs px-2">热度 {Math.round(topic.current_heat ?? 0)}</Badge>
+                  <Badge variant="outline" className="h-5 text-xs px-2">{(topic.post_count ?? 0)} 篇</Badge>
                 </div>
               </CardContent>
             </Card>

@@ -66,6 +66,16 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError<{ code?: number; message?: string; data?: unknown }>) => {
+    // ── Network-level errors (no HTTP response received) ──────────
+    // e.g. ECONNREFUSED, ERR_NETWORK, ERR_NAME_NOT_RESOLVED
+    if (!error.response) {
+      const networkMsg =
+        error.code === "ERR_NETWORK" || error.message?.includes("ECONNREFUSED")
+          ? "无法连接到服务器，请确认 hotkey-server 已启动"
+          : `网络错误：${error.message ?? "请检查网络连接"}`;
+      return Promise.reject(new HotKeyAPIError(0, networkMsg));
+    }
+
     const code = error.response?.status ?? 0;
     const body = error.response?.data;
     const requestUrl = error.config?.url ?? "";

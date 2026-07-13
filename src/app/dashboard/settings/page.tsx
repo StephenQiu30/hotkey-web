@@ -80,16 +80,16 @@ export default function SettingsPage() {
   const createForm = (
     <div className="space-y-3">
       <div className="space-y-1.5">
-        <Label htmlFor="monitor-name" className="text-xs font-medium">监控名称</Label>
+        <Label htmlFor="monitor-name" className="text-sm font-medium">监控名称</Label>
         <Input id="monitor-name" placeholder="例如：AI 热点监控" value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          className="h-9 rounded-md border-border bg-black/40 text-xs" />
+          className="h-10 rounded-md border-border bg-black/40 text-sm" />
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="monitor-query" className="text-xs font-medium">查询关键词</Label>
         <Input id="monitor-query" placeholder="例如：openai OR gpt" value={formData.query_text}
           onChange={(e) => setFormData({ ...formData, query_text: e.target.value })}
-          className="h-9 rounded-md border-border bg-black/40 text-xs" />
+          className="h-10 rounded-md border-border bg-black/40 text-sm" />
       </div>
       <div className="grid grid-cols-2 gap-2">
         <div className="space-y-1.5">
@@ -111,7 +111,7 @@ export default function SettingsPage() {
         <Label htmlFor="monitor-interval" className="text-xs font-medium">采集间隔（分钟）</Label>
         <Input id="monitor-interval" type="number" min={5} max={1440} value={formData.poll_interval_minutes}
           onChange={(e) => setFormData({ ...formData, poll_interval_minutes: parseInt(e.target.value) || 15 })}
-          className="h-9 rounded-md border-border bg-black/40 text-xs" />
+          className="h-10 rounded-md border-border bg-black/40 text-sm" />
       </div>
       <div className="flex items-center gap-2">
         <input type="checkbox" id="monitor-alert" checked={formData.alert_enabled}
@@ -129,14 +129,14 @@ export default function SettingsPage() {
         <div className="flex items-center gap-2"><Settings className="h-4 w-4 text-muted-foreground" /><h2 className="text-sm font-semibold tracking-tight">监控管理</h2></div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="h-8 gap-1.5 rounded-md text-xs"><Plus className="h-3.5 w-3.5" />新建监控</Button>
+            <Button className="h-9 gap-1.5 rounded-md text-sm"><Plus className="h-3.5 w-3.5" />新建监控</Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader><DialogTitle className="text-sm">新建监控</DialogTitle></DialogHeader>
             {createForm}
             <DialogFooter>
-              <Button variant="outline" size="sm" onClick={() => setDialogOpen(false)} className="h-8 text-xs">取消</Button>
-              <Button size="sm" onClick={handleCreate} disabled={submitting || !formData.name || !formData.query_text} className="h-8 text-xs">
+              <Button variant="outline" size="sm" onClick={() => setDialogOpen(false)} className="h-9 text-sm">取消</Button>
+              <Button size="sm" onClick={handleCreate} disabled={submitting || !formData.name || !formData.query_text} className="h-9 text-sm">
                 {submitting ? "创建中..." : "创建"}
               </Button>
             </DialogFooter>
@@ -157,13 +157,13 @@ export default function SettingsPage() {
           <Settings className="h-8 w-8 text-muted-foreground/40" />
           <p className="text-xs text-muted-foreground">暂无监控配置</p>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild><Button size="sm" className="h-8 text-xs">新建监控</Button></DialogTrigger>
+            <DialogTrigger asChild><Button size="sm" className="h-9 text-sm">新建监控</Button></DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader><DialogTitle className="text-sm">新建监控</DialogTitle></DialogHeader>
               {createForm}
               <DialogFooter>
-                <Button variant="outline" size="sm" onClick={() => setDialogOpen(false)} className="h-8 text-xs">取消</Button>
-                <Button size="sm" onClick={handleCreate} disabled={submitting || !formData.name || !formData.query_text} className="h-8 text-xs">
+                <Button variant="outline" size="sm" onClick={() => setDialogOpen(false)} className="h-9 text-sm">取消</Button>
+                <Button size="sm" onClick={handleCreate} disabled={submitting || !formData.name || !formData.query_text} className="h-9 text-sm">
                   {submitting ? "创建中..." : "创建"}
                 </Button>
               </DialogFooter>
@@ -180,10 +180,10 @@ export default function SettingsPage() {
                 <div className="mb-1.5 flex items-center gap-2">
                   <Search className="h-3.5 w-3.5 text-muted-foreground" />
                   <span className="text-xs font-semibold">{item.name ?? "未命名"}</span>
-                  <Badge variant={statusVariant(item.status)} className="h-4 text-[10px] px-1.5">{item.status}</Badge>
+                  <Badge variant={statusVariant(item.status)} className="h-5 text-xs px-2">{item.status}</Badge>
                 </div>
                 <div className="code-inline mb-1.5">{item.query_text}</div>
-                <p className="text-[11px] text-muted-foreground">{item.region} · {item.language} · 每 {item.poll_interval_minutes} 分钟 · ID: {item.id}</p>
+                <p className="text-xs text-muted-foreground">{item.region} · {item.language} · 每 {item.poll_interval_minutes} 分钟 · ID: {item.id}</p>
               </CardContent>
             </Card>
           ))}
