@@ -1,36 +1,26 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import {
-  Card,
-  List,
-  Tag,
-  Typography,
-  Button,
-  Flex,
-  Spin,
-  Empty,
-  Alert,
-} from "antd";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import {
-  BellOutlined,
-  CheckCircleOutlined,
-  ClockCircleOutlined,
-} from "@ant-design/icons";
+import { Bell, CheckCircle, Clock } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import {
   listNotifications,
   markNotificationRead,
 } from "@/services/notifications";
 
-const { Text } = Typography;
-
-const deliveryStatusColor: Record<string, string> = {
-  delivered: "success",
-  pending: "processing",
-  skipped: "warning",
-  failed: "error",
+const statusVariant = (status?: string) => {
+  switch (status) {
+    case "delivered": return "default" as const;
+    case "pending": return "secondary" as const;
+    case "skipped": return "outline" as const;
+    case "failed": return "destructive" as const;
+    default: return "outline" as const;
+  }
 };
 
 const statusLabel: Record<string, string> = {
@@ -56,7 +46,7 @@ export default function NotificationsPage() {
     if (notifications.length === 0) return;
     gsap.from(".nt-item", {
       y: 16,
-      autoAlpha: 0,
+      opacity: 0,
       duration: 0.45,
       stagger: 0.07,
       ease: "power3.out",
@@ -91,105 +81,103 @@ export default function NotificationsPage() {
 
   if (error) {
     return (
-      <Card variant="outlined">
-        <Alert
-          message="加载失败"
-          description={error}
-          type="error"
-          showIcon
-          action={<Button onClick={fetchNotifs}>重试</Button>}
-        />
+      <Card>
+        <CardContent className="flex flex-col items-center gap-4 py-12 text-center">
+          <p className="text-sm text-destructive">{error}</p>
+          <Button variant="outline" size="sm" onClick={fetchNotifs}>
+            重试
+          </Button>
+        </CardContent>
       </Card>
     );
   }
 
   return (
-    <div ref={containerRef}>
-      <Flex vertical gap={16}>
-        <Card variant="outlined">
-          <Flex align="center" justify="space-between">
-            <Flex align="center" gap={8}>
-              <BellOutlined style={{ fontSize: 16, color: "#888" }} />
-              <Text strong>通知记录</Text>
-            </Flex>
-            {notifications.length > 0 && (
-              <Text type="secondary" style={{ fontSize: 12 }}>
-                {notifications.length} 条未读
-              </Text>
-            )}
-          </Flex>
+    <div ref={containerRef} className="space-y-6">
+      {/* Page header */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between px-6 py-4">
+          <div className="flex items-center gap-2">
+            <Bell className="h-5 w-5 text-muted-foreground" />
+            <h2 className="text-base font-semibold tracking-tight">通知记录</h2>
+          </div>
+          {notifications.length > 0 && (
+            <span className="text-xs text-muted-foreground">
+              {notifications.length} 条未读
+            </span>
+          )}
+        </CardHeader>
+      </Card>
+
+      {loading && (
+        <div className="space-y-2">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Card key={i}>
+              <CardContent className="flex items-center gap-4 p-5">
+                <Skeleton className="h-8 w-8 rounded-full" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-1/3" />
+                  <Skeleton className="h-3 w-1/4" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {!loading && notifications.length === 0 && (
+        <Card>
+          <CardContent className="py-16 text-center">
+            <Bell className="mx-auto mb-3 h-8 w-8 text-muted-foreground/50" />
+            <p className="text-sm text-muted-foreground">暂无未读通知</p>
+          </CardContent>
         </Card>
+      )}
 
-        {loading && (
-          <Card variant="outlined" styles={{ body: { textAlign: "center", padding: 80 } }}>
-            <Spin size="large" />
-          </Card>
-        )}
+      {!loading && notifications.length > 0 && (
+        <div className="space-y-2">
+          {notifications.map((item) => (
+            <Card key={item.id} className="nt-item">
+              <CardContent className="flex items-center gap-4 p-5">
+                <div className="shrink-0">
+                  {item.delivery_status === "pending" ? (
+                    <Clock className="h-5 w-5 text-primary" />
+                  ) : (
+                    <CheckCircle className="h-5 w-5 text-emerald-500" />
+                  )}
+                </div>
 
-        {!loading && notifications.length === 0 && (
-          <Card variant="outlined" styles={{ body: { textAlign: "center", padding: 80 } }}>
-            <Empty description="暂无未读通知" />
-          </Card>
-        )}
+                <div className="min-w-0 flex-1">
+                  <div className="mb-1 flex items-center gap-2">
+                    <Badge variant={statusVariant(item.delivery_status)}>
+                      {channelLabel(item.channel)}
+                    </Badge>
+                    <span className="text-sm font-medium">
+                      {statusLabel[item.delivery_status ?? ""] ?? item.delivery_status}
+                    </span>
+                  </div>
+                  {item.created_at && (
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(item.created_at).toLocaleString("zh-CN")}
+                    </p>
+                  )}
+                </div>
 
-        {!loading && notifications.length > 0 && (
-          <Card variant="outlined" styles={{ body: { padding: 0 } }}>
-            <List
-              dataSource={notifications}
-              renderItem={(item) => (
-                <List.Item
-                  key={item.id}
-                  className="nt-item"
-                  actions={
-                    item.delivery_status === "pending" && item.id != null
-                      ? [
-                          <Button
-                            key="read"
-                            size="small"
-                            type="link"
-                            onClick={() => handleMarkRead(item.id!)}
-                          >
-                            标记已读
-                          </Button>,
-                        ]
-                      : []
-                  }
-                >
-                  <List.Item.Meta
-                    avatar={
-                      item.delivery_status === "pending" ? (
-                        <ClockCircleOutlined style={{ fontSize: 20, color: "var(--ant-color-primary)" }} />
-                      ) : (
-                        <CheckCircleOutlined style={{ fontSize: 20, color: "#52c41a" }} />
-                      )
-                    }
-                    title={
-                      <Flex align="center" gap={8}>
-                        <Tag
-                          color={deliveryStatusColor[item.delivery_status ?? ""] ?? "default"}
-                          style={{ fontSize: 11, lineHeight: "18px" }}
-                        >
-                          {channelLabel(item.channel)}
-                        </Tag>
-                        <Text style={{ fontSize: 13 }}>
-                          {statusLabel[item.delivery_status ?? ""] ?? item.delivery_status}
-                        </Text>
-                      </Flex>
-                    }
-                    description={
-                      item.created_at ? (
-                        <Text type="secondary" style={{ fontSize: 12 }}>
-                          {new Date(item.created_at).toLocaleString("zh-CN")}
-                        </Text>
-                      ) : undefined
-                    }
-                  />
-                </List.Item>
-              )}
-            />
-          </Card>
-        )}
-      </Flex>
+                {item.delivery_status === "pending" && item.id != null && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="shrink-0 text-xs"
+                    onClick={() => handleMarkRead(item.id!)}
+                  >
+                    标记已读
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

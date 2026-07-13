@@ -1,8 +1,6 @@
 "use client";
 
-import { Card, Flex, Typography } from "antd";
-
-const { Text } = Typography;
+import { Flame } from "lucide-react";
 
 interface AuthShellProps {
   title: string;
@@ -12,30 +10,34 @@ interface AuthShellProps {
 
 export default function AuthShell({ title, subtitle, children }: AuthShellProps) {
   return (
-    <Flex
-      align="center"
-      justify="center"
-      style={{
-        minHeight: "100vh",
-        background: "#fff",
-        padding: "24px",
-      }}
-    >
-      <Card
-        variant="outlined"
-        styles={{ body: { padding: "40px 32px" } }}
-        style={{ width: "100%", maxWidth: 400 }}
-      >
-        <Flex vertical gap={4} style={{ marginBottom: 32, textAlign: "center" }}>
-          <Text strong style={{ fontSize: 22, letterSpacing: "-0.02em" }}>
+    <div className="relative flex min-h-screen items-center justify-center bg-gradient-to-b from-blue-50/30 to-white px-6">
+      {/* Background decoration */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 left-1/2 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-gradient-to-b from-blue-100/40 to-transparent blur-3xl" />
+      </div>
+
+      <div className="relative w-full max-w-sm rounded-2xl border border-border/60 bg-white p-8 shadow-sm">
+        {/* Logo */}
+        <div className="mb-6 text-center">
+          <a
+            href="/"
+            className="mb-4 inline-flex items-center gap-2 text-foreground no-underline"
+          >
+            <Flame className="h-6 w-6 text-primary" />
+            <span className="text-xl font-semibold tracking-tight">HotKey</span>
+          </a>
+        </div>
+
+        {/* Title */}
+        <div className="mb-8 text-center">
+          <h1 className="mb-1 text-2xl font-bold tracking-tight text-foreground">
             {title}
-          </Text>
-          <Text type="secondary" style={{ fontSize: 14 }}>
-            {subtitle}
-          </Text>
-        </Flex>
+          </h1>
+          <p className="text-sm text-muted-foreground">{subtitle}</p>
+        </div>
+
         {children}
-      </Card>
-    </Flex>
+      </div>
+    </div>
   );
 }

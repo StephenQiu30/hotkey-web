@@ -3,149 +3,88 @@
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Sparkles } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function WelcomeHero() {
   const containerRef = useRef<HTMLElement>(null);
 
   useGSAP(() => {
-    gsap.from(".hh-badge", { y: -16, autoAlpha: 0, duration: 0.6, delay: 0.15, ease: "power3.out" });
-    gsap.from(".hh-title", { y: 30, autoAlpha: 0, duration: 0.8, delay: 0.3, ease: "power3.out" });
-    gsap.from(".hh-desc", { y: 20, autoAlpha: 0, duration: 0.6, delay: 0.55, ease: "power3.out" });
-    gsap.from(".hh-btn", { y: 16, autoAlpha: 0, duration: 0.5, stagger: 0.12, delay: 0.75, ease: "power3.out" });
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+    tl.from(".wh-badge", { y: -20, opacity: 0, duration: 0.6 })
+      .from(".wh-title", { y: 40, opacity: 0, duration: 0.8 }, "-=0.2")
+      .from(".wh-subtitle", { y: 20, opacity: 0, duration: 0.6 }, "-=0.4")
+      .from(".wh-cta-group", { y: 20, opacity: 0, duration: 0.5 }, "-=0.3")
+      .from(".wh-stats", { y: 16, opacity: 0, duration: 0.5 }, "-=0.2");
   }, { scope: containerRef });
 
   return (
     <section
       ref={containerRef}
-      style={{
-        padding: "160px 24px 120px",
-        background:
-          "radial-gradient(ellipse 50% 40% at 50% 40%, rgba(22,119,255,0.04) 0%, transparent 100%)",
-      }}
+      className="relative overflow-hidden px-6 pt-32 pb-24 sm:pt-40 sm:pb-32"
     >
-      <div
-        style={{
-          maxWidth: 800,
-          margin: "0 auto",
-          textAlign: "center",
-        }}
-      >
+      {/* Background gradient */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -top-40 left-1/2 h-[600px] w-[800px] -translate-x-1/2 rounded-full bg-gradient-to-b from-blue-50/60 via-blue-100/30 to-transparent blur-3xl" />
+        <div className="absolute -bottom-40 left-1/2 h-[400px] w-[600px] -translate-x-1/2 rounded-full bg-gradient-to-t from-purple-50/40 via-transparent to-transparent blur-3xl" />
+      </div>
+
+      <div className="relative mx-auto max-w-4xl text-center">
         {/* Eyebrow badge */}
-        <div
-          className="hh-badge"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 6,
-            padding: "4px 14px",
-            border: "1px solid #eaeaea",
-            borderRadius: 100,
-            fontSize: 13,
-            color: "#666",
-            marginBottom: 36,
-          }}
-        >
-          <span
-            style={{
-              display: "inline-block",
-              width: 6,
-              height: 6,
-              borderRadius: "50%",
-              background: "var(--ant-color-primary)",
-            }}
-          />
+        <div className="wh-badge mb-10 inline-flex items-center gap-2 rounded-full border border-border bg-white/70 px-5 py-1.5 text-sm text-muted-foreground backdrop-blur-md">
+          <Sparkles className="h-3.5 w-3.5 text-primary" />
           内容创作者热点平台
         </div>
 
-        <h1
-          className="hh-title"
-          style={{
-            fontSize: 56,
-            fontWeight: 650,
-            lineHeight: 1.1,
-            color: "#111",
-            margin: "0 0 28px",
-            letterSpacing: "-0.03em",
-          }}
-        >
+        {/* Main headline */}
+        <h1 className="wh-title mx-auto mb-6 max-w-3xl text-balance text-5xl font-bold leading-[1.05] tracking-tight text-foreground sm:text-6xl md:text-7xl">
           把握热点脉搏
           <br />
-          创作爆款内容
+          <span className="bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
+            创作爆款内容
+          </span>
         </h1>
 
-        <p
-          className="hh-desc"
-          style={{
-            fontSize: 18,
-            lineHeight: 1.7,
-            color: "#666",
-            margin: "0 auto 48px",
-            maxWidth: 540,
-          }}
-        >
+        {/* Subtitle */}
+        <p className="wh-subtitle mx-auto mb-12 max-w-xl text-balance text-lg leading-relaxed text-muted-foreground sm:text-xl">
           一站式热点追踪平台，实时监控微博、知乎、B站等多渠道趋势，
           AI 智能分析推荐选题，让每一篇内容都踩在流量风口上。
         </p>
 
-        <div
-          style={{
-            display: "flex",
-            gap: 12,
-            justifyContent: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          <a
-            href="/register"
-            className="hh-btn"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              padding: "14px 32px",
-              background: "var(--ant-color-primary)",
-              color: "#fff",
-              borderRadius: 8,
-              textDecoration: "none",
-              fontSize: 15,
-              fontWeight: 500,
-              letterSpacing: "-0.01em",
-              transition: "opacity 0.2s ease",
-            }}
-          >
-            免费开始使用
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              style={{ marginLeft: 6 }}
+        {/* CTA Buttons */}
+        <div className="wh-cta-group mb-16 flex flex-wrap items-center justify-center gap-4">
+          <a href="/register">
+            <Button size="lg" className="h-12 rounded-xl px-8 text-base shadow-lg shadow-primary/20">
+              免费开始使用
+              <ArrowRight className="ml-1 h-4 w-4" />
+            </Button>
+          </a>
+          <a href="#features">
+            <Button
+              variant="outline"
+              size="lg"
+              className="h-12 rounded-xl border-border bg-white/60 px-8 text-base backdrop-blur-sm"
             >
-              <path
-                d="M6 12L10 8L6 4"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+              了解更多
+            </Button>
           </a>
-          <a
-            href="#features"
-            className="hh-btn"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              padding: "14px 32px",
-              border: "1px solid #eaeaea",
-              color: "#444",
-              borderRadius: 8,
-              textDecoration: "none",
-              fontSize: 15,
-              fontWeight: 500,
-            }}
-          >
-            了解更多
-          </a>
+        </div>
+
+        {/* Stats */}
+        <div className="wh-stats mx-auto flex max-w-lg items-center justify-center gap-12 sm:gap-16">
+          {[
+            { value: "10+", label: "平台覆盖" },
+            { value: "99%", label: "准确率" },
+            { value: "实时", label: "数据更新" },
+          ].map((stat) => (
+            <div key={stat.label} className="text-center">
+              <div className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+                {stat.value}
+              </div>
+              <div className="mt-1 text-sm text-muted-foreground">{stat.label}</div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

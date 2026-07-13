@@ -1,4 +1,36 @@
-/* Global styles */
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+
+  --color-background: #ffffff;
+  --color-foreground: #0d0d0d;
+  --color-card: #ffffff;
+  --color-card-foreground: #0d0d0d;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #0d0d0d;
+  --color-primary: #1677ff;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #f5f5f7;
+  --color-secondary-foreground: #1d1d1f;
+  --color-muted: #f5f5f7;
+  --color-muted-foreground: #86868b;
+  --color-accent: #f5f5f7;
+  --color-accent-foreground: #1d1d1f;
+  --color-destructive: #ff3b30;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #d2d2d7;
+  --color-input: #d2d2d7;
+  --color-ring: #1677ff;
+  --radius: 0.5rem;
+}
+
+/* shadcn/ui base reset */
+* {
+  border-color: var(--color-border);
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -6,33 +38,17 @@ html {
 body {
   margin: 0;
   padding: 0;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "SF Pro Display",
-    "SF Pro Text",
-    "Helvetica Neue",
-    Arial,
-    sans-serif;
 }
 
 /* Apple-style text rendering */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   letter-spacing: -0.03em;
-}
-
-/* Vercel-style thin borders on all cards */
-.ant-card-bordered {
-  border: 1px solid #eaeaea !important;
-}
-
-/* Override Ant Design default button shadow */
-.ant-btn-primary {
-  box-shadow: none !important;
-}
-
-.ant-form-item {
-  margin-bottom: 20px;
 }

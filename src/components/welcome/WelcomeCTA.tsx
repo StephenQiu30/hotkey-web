@@ -3,66 +3,58 @@
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Sparkles } from "lucide-react";
 
 export default function WelcomeCTA() {
   const containerRef = useRef<HTMLElement>(null);
 
   useGSAP(() => {
-    gsap.from(".hc-content", { y: 30, autoAlpha: 0, duration: 0.8, ease: "power3.out" });
+    gsap.from(".wc-content", {
+      y: 30,
+      opacity: 0,
+      duration: 0.8,
+      ease: "power3.out",
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top 85%",
+      },
+    });
   }, { scope: containerRef });
 
   return (
     <section
       ref={containerRef}
-      style={{
-        padding: "140px 24px",
-        borderTop: "1px solid #eaeaea",
-      }}
+      className="relative overflow-hidden border-t border-border/50 px-6 py-32 sm:py-40"
     >
-      <div
-        className="hc-content"
-        style={{
-          maxWidth: 640,
-          margin: "0 auto",
-          textAlign: "center",
-        }}
-      >
-        <h2
-          style={{
-            fontSize: 36,
-            fontWeight: 650,
-            color: "#111",
-            margin: "0 0 16px",
-            letterSpacing: "-0.03em",
-          }}
-        >
+      {/* Background */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-50/30 to-white" />
+        <div className="absolute left-1/2 top-1/2 h-[300px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-primary/5 to-purple-500/5 blur-3xl" />
+      </div>
+
+      <div className="wc-content relative mx-auto max-w-xl text-center">
+        <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-primary/5 px-4 py-1.5 text-sm text-primary">
+          <Sparkles className="h-3.5 w-3.5" />
+          完全免费，即刻开始
+        </div>
+
+        <h2 className="mb-4 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
           准备好开始创作了吗？
         </h2>
-        <p
-          style={{
-            fontSize: 16,
-            lineHeight: 1.7,
-            color: "#666",
-            margin: "0 0 40px",
-          }}
-        >
+
+        <p className="mb-10 text-lg leading-relaxed text-muted-foreground">
           免费注册，即刻体验热点追踪、选题推荐与数据洞察
         </p>
-        <a
-          href="/register"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            padding: "14px 36px",
-            background: "var(--ant-color-primary)",
-            color: "#fff",
-            borderRadius: 8,
-            textDecoration: "none",
-            fontSize: 15,
-            fontWeight: 500,
-          }}
-        >
-          免费开始使用
+
+        <a href="/register">
+          <Button
+            size="lg"
+            className="h-14 rounded-xl px-10 text-base shadow-xl shadow-primary/20 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/30"
+          >
+            免费开始使用
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
         </a>
       </div>
     </section>

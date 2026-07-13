@@ -1,20 +1,16 @@
 "use client";
 
 import { useAuthStore } from "@/stores/authStore";
-import { Spin, Flex } from "antd";
+import { Loader2 } from "lucide-react";
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const status = useAuthStore((s) => s.status);
 
   if (status === "initializing") {
     return (
-      <Flex
-        align="center"
-        justify="center"
-        style={{ minHeight: "100vh", background: "#fff" }}
-      >
-        <Spin size="large" />
-      </Flex>
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
     );
   }
 

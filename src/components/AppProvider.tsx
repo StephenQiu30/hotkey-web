@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { ConfigProvider, App as AntApp, Spin, Flex } from "antd";
-import zhCN from "antd/locale/zh_CN";
+import { Toaster } from "sonner";
 import { useAuthStore } from "@/stores/authStore";
 
 export default function AppProvider({ children }: { children: React.ReactNode }) {
@@ -16,23 +15,19 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   }, [initialize]);
 
   return (
-    <ConfigProvider
-      locale={zhCN}
-      theme={{
-        cssVar: true,
-        token: {
-          colorPrimary: "#1677FF",
-          borderRadius: 8,
-          fontFamily:
-            '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif',
-          fontSizeHeading1: 48,
-          fontSizeHeading2: 36,
-          fontSizeHeading3: 24,
-          fontSizeHeading4: 20,
-        },
-      }}
-    >
-      <AntApp>{children}</AntApp>
-    </ConfigProvider>
+    <>
+      {children}
+      <Toaster
+        position="top-center"
+        richColors
+        closeButton
+        toastOptions={{
+          style: {
+            fontFamily:
+              '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif',
+          },
+        }}
+      />
+    </>
   );
 }

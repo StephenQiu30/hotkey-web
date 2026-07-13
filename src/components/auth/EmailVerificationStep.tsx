@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Input, Button, Typography, Flex } from "antd";
-import { MailOutlined } from "@ant-design/icons";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Mail } from "lucide-react";
 import { sendVerification, confirmVerification } from "@/services/auth";
-
-const { Text } = Typography;
 
 interface EmailVerificationStepProps {
   purpose: "register" | "reset_password";
@@ -13,13 +13,6 @@ interface EmailVerificationStepProps {
 }
 
 type Step = "send" | "confirm";
-
-const inputStyle = {
-  background: "#f5f5f5",
-  border: "1px solid #eaeaea",
-  borderRadius: 8,
-  padding: "8px 12px",
-};
 
 export default function EmailVerificationStep({ purpose, onConfirmed }: EmailVerificationStepProps) {
   const [step, setStep] = useState<Step>("send");
@@ -58,7 +51,7 @@ export default function EmailVerificationStep({ purpose, onConfirmed }: EmailVer
       const ticket = res.data?.ticket;
       if (ticket) onConfirmed(ticket, email);
     } catch (err: any) {
-      setSendError(err.message ?? "操作失败，请稍后重试");
+      setSendError(err.message ?? "验证失败，请稍后重试");
     } finally {
       setLoading(false);
     }
@@ -66,75 +59,87 @@ export default function EmailVerificationStep({ purpose, onConfirmed }: EmailVer
 
   if (step === "send") {
     return (
-      <Flex vertical gap={16}>
-        <label style={{ fontWeight: 500, fontSize: 14, color: "#111" }}>
-          邮箱
-        </label>
-        <Input
-          prefix={<MailOutlined style={{ color: "#999" }} />}
-          placeholder="name@example.com"
-          size="large"
-          autoComplete="email"
-          variant="filled"
-          value={email}
-          onChange={(e) => { setEmail(e.target.value); setSendError(""); }}
-          status={sendError ? "error" : undefined}
-          style={inputStyle}
-        />
-        {sendError && (
-          <Text type="danger" style={{ fontSize: 12 }}>{sendError}</Text>
-        )}
-        <Button type="primary" size="large" block loading={loading} onClick={handleSend}>
-          发送验证码
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="verify-email" className="text-sm font-medium text-foreground">
+            邮箱
+          </Label>
+          <div className="relative">
+            <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              id="verify-email"
+              type="email"
+              placeholder="name@example.com"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => { setEmail(e.target.value); setSendError(""); }}
+              className={`h-11 rounded-xl border-border/80 bg-white/80 pl-10 text-sm backdrop-blur-sm ${
+                sendError ? "border-destructive" : ""
+              }`}
+            />
+          </div>
+          {sendError && (
+            <p className="text-xs text-destructive">{sendError}</p>
+          )}
+        </div>
+        <Button
+          onClick={handleSend}
+          disabled={!email || loading}
+          className="h-11 w-full rounded-xl text-base shadow-lg shadow-primary/20"
+        >
+          {loading ? "发送中..." : "发送验证码"}
         </Button>
-      </Flex>
+      </div>
     );
   }
 
   return (
-    <Flex vertical gap={16}>
-      <Text type="secondary" style={{ fontSize: 13, textAlign: "center" }}>
-        验证码已发送至 <Text strong>{email}</Text>
-      </Text>
+    <div className="space-y-4">
+      <p className="text-center text-sm text-muted-foreground">
+        验证码已发送至{" "}
+        <span className="font-medium text-foreground">{email}</span>
+      </p>
 
-      <label style={{ fontWeight: 500, fontSize: 14, color: "#111" }}>
-        验证码
-      </label>
-      <Input
-        placeholder="输入 6 位验证码"
-        size="large"
-        maxLength={6}
-        inputMode="numeric"
-        autoComplete="one-time-code"
-        variant="filled"
-        value={code}
-        onChange={(e) => { setCode(e.target.value.replace(/\D/g, "")); setSendError(""); }}
-        status={sendError ? "error" : undefined}
-        style={{
-          ...inputStyle,
-          textAlign: "center",
-          fontFamily: "monospace",
-          fontSize: 20,
-          letterSpacing: 8,
-        }}
-      />
-      {sendError && (
-        <Text type="danger" style={{ fontSize: 12 }}>{sendError}</Text>
-      )}
-
-      <Button type="primary" size="large" block loading={loading} disabled={code.length !== 6} onClick={handleConfirm}>
-        验证
-      </Button>
+      <div className="space-y-2">
+        <Label htmlFor="verify-code" className="text-sm font-medium text-foreground">
+          验证码
+        </Label>
+        <Input
+          id="verify-code"
+          placeholder="输入 6 位验证码"
+          maxLength={6}
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          value={code}
+          onChange={(e) => { setCode(e.target.value.replace(/\D/g, "")); setSendError(""); }}
+          className={`h-11 rounded-xl border-border/80 bg-white/80 text-center font-mono text-lg tracking-[0.3em] backdrop-blur-sm ${
+            sendError ? "border-destructive" : ""
+          }`}
+        />
+        {sendError && (
+          <p className="text-xs text-destructive">{sendError}</p>
+        )}
+      </div>
 
       <Button
-        type="link"
-        block
-        disabled={countdown > 0}
+        onClick={handleConfirm}
+        disabled={code.length !== 6 || loading}
+        className="h-11 w-full rounded-xl text-base shadow-lg shadow-primary/20"
+      >
+        {loading ? "验证中..." : "验证"}
+      </Button>
+
+      <button
         onClick={handleSend}
-        style={{ color: countdown > 0 ? "#999" : "var(--ant-color-primary)" }}
+        disabled={countdown > 0}
+        className={`w-full text-center text-sm no-underline ${
+          countdown > 0
+            ? "cursor-not-allowed text-muted-foreground"
+            : "cursor-pointer text-primary hover:text-primary/80"
+        }`}
       >
         {countdown > 0 ? `${countdown}秒后可重新发送` : "重新发送验证码"}
-      </Button>
-    </Flex>
+      </button>
+    </div>
   );
 }

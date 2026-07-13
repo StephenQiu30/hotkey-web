@@ -1,28 +1,15 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import {
-  Card,
-  List,
-  Tag,
-  Typography,
-  Button,
-  Flex,
-  Spin,
-  Empty,
-  Alert,
-} from "antd";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import {
-  StarOutlined,
-  StarFilled,
-  DeleteOutlined,
-} from "@ant-design/icons";
+import { Star, StarIcon, Trash2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { listMonitors } from "@/services/monitors";
 import { listPosts } from "@/services/content";
-
-const { Text } = Typography;
 
 export default function FavoritesPage() {
   const [loading, setLoading] = useState(true);
@@ -34,7 +21,7 @@ export default function FavoritesPage() {
     if (favorites.length === 0) return;
     gsap.from(".fv-item", {
       y: 20,
-      autoAlpha: 0,
+      opacity: 0,
       duration: 0.5,
       stagger: 0.08,
       ease: "power3.out",
@@ -87,95 +74,89 @@ export default function FavoritesPage() {
 
   if (error) {
     return (
-      <Card variant="outlined">
-        <Alert
-          message="加载失败"
-          description={error}
-          type="error"
-          showIcon
-          action={<Button onClick={loadFavorites}>重试</Button>}
-        />
+      <Card>
+        <CardContent className="flex flex-col items-center gap-4 py-12 text-center">
+          <p className="text-sm text-destructive">{error}</p>
+          <Button variant="outline" size="sm" onClick={loadFavorites}>
+            重试
+          </Button>
+        </CardContent>
       </Card>
     );
   }
 
   return (
-    <div ref={containerRef}>
-      <Flex vertical gap={16}>
-        <Card variant="outlined">
-          <Flex align="center" gap={8}>
-            <StarOutlined style={{ fontSize: 16, color: "#888" }} />
-            <Text strong>收藏关注</Text>
-          </Flex>
+    <div ref={containerRef} className="space-y-6">
+      {/* Page header */}
+      <Card>
+        <CardHeader className="flex flex-row items-center gap-2 px-6 py-4">
+          <Star className="h-5 w-5 text-muted-foreground" />
+          <h2 className="text-base font-semibold tracking-tight">收藏关注</h2>
+        </CardHeader>
+      </Card>
+
+      {loading && (
+        <div className="space-y-3">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Card key={i}>
+              <CardContent className="flex items-start gap-4 p-5">
+                <Skeleton className="h-4 w-4 shrink-0 mt-1" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-3 w-1/3" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {!loading && favorites.length === 0 && (
+        <Card>
+          <CardContent className="py-16 text-center">
+            <StarIcon className="mx-auto mb-3 h-8 w-8 text-muted-foreground/50" />
+            <p className="text-sm text-muted-foreground">
+              还没有收藏的热点，快去热点榜单收藏吧
+            </p>
+          </CardContent>
         </Card>
+      )}
 
-        {loading && (
-          <Card variant="outlined" styles={{ body: { textAlign: "center", padding: 80 } }}>
-            <Spin size="large" />
-          </Card>
-        )}
-
-        {!loading && favorites.length === 0 && (
-          <Card variant="outlined" styles={{ body: { textAlign: "center", padding: 80 } }}>
-            <Empty description="还没有收藏的热点，快去热点榜单收藏吧" />
-          </Card>
-        )}
-
-        {!loading && favorites.length > 0 && (
-          <Card
-            variant="outlined"
-            styles={{ body: { padding: 0 } }}
-          >
-            <List
-              dataSource={favorites}
-              renderItem={(item) => (
-                <List.Item
-                  key={item.id}
-                  className="fv-item"
-                  actions={[
-                    <Button
-                      key="delete"
-                      type="text"
-                      size="small"
-                      danger
-                      icon={<DeleteOutlined />}
-                      onClick={() => item.id != null && removeFavorite(item.id)}
-                    />,
-                  ]}
+      {!loading && favorites.length > 0 && (
+        <div className="space-y-2">
+          {favorites.map((item) => (
+            <Card key={item.id} className="fv-item">
+              <CardContent className="flex items-start gap-4 p-5">
+                <StarIcon className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
+                <div className="min-w-0 flex-1">
+                  <p className="mb-1 text-sm leading-snug">
+                    {item.content_text?.slice(0, 100) ?? `Post #${item.id}`}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                    <span>{(item.author_name || item.author_handle) ?? "未知"}</span>
+                    {item.heat_score != null && (
+                      <span>{Math.round(item.heat_score * 100)}</span>
+                    )}
+                    {item.published_at && (
+                      <span>
+                        {new Date(item.published_at).toLocaleDateString("zh-CN")}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="shrink-0 text-muted-foreground hover:text-destructive"
+                  onClick={() => item.id != null && removeFavorite(item.id)}
                 >
-                  <List.Item.Meta
-                    avatar={
-                      <StarFilled style={{ fontSize: 18, color: "#faad14" }} />
-                    }
-                    title={
-                      <Text style={{ fontSize: 13 }}>
-                        {item.content_text?.slice(0, 100) ?? `Post #${item.id}`}
-                      </Text>
-                    }
-                    description={
-                      <Flex align="center" gap={8} style={{ marginTop: 4 }}>
-                        <Text type="secondary" style={{ fontSize: 12 }}>
-                          {(item.author_name || item.author_handle) ?? "未知"}
-                        </Text>
-                        {item.heat_score != null && (
-                          <Tag style={{ fontSize: 11, lineHeight: "18px" }}>
-                            {Math.round(item.heat_score * 100)}
-                          </Tag>
-                        )}
-                        {item.published_at && (
-                          <Text type="secondary" style={{ fontSize: 12 }}>
-                            {new Date(item.published_at).toLocaleDateString("zh-CN")}
-                          </Text>
-                        )}
-                      </Flex>
-                    }
-                  />
-                </List.Item>
-              )}
-            />
-          </Card>
-        )}
-      </Flex>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

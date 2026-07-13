@@ -1,11 +1,14 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Form, Input, Button, Typography, Flex } from "antd";
-import { UserOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { User, ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 import AuthShell from "@/components/auth/AuthShell";
 import EmailVerificationStep from "@/components/auth/EmailVerificationStep";
 import PasswordFields from "@/components/auth/PasswordFields";
@@ -13,29 +16,23 @@ import { register as apiRegister } from "@/services/auth";
 import { useAuthStore } from "@/stores/authStore";
 import { createRegisterRequest } from "@/lib/registerRequest";
 
-const { Text } = Typography;
-
 type Step = "email" | "profile";
-
-const inputStyle = {
-  background: "#f5f5f5",
-  border: "1px solid #eaeaea",
-  borderRadius: 8,
-  padding: "8px 12px",
-};
 
 export default function RegisterPage() {
   const [step, setStep] = useState<Step>("email");
   const [ticket, setTicket] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [displayName, setDisplayName] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const establishSession = useAuthStore((s) => s.establishSession);
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
-    gsap.from(".rg-content", { y: 20, autoAlpha: 0, duration: 0.5, ease: "power3.out" });
+    gsap.from(".rg-content", { y: 20, opacity: 0, duration: 0.5, ease: "power3.out" });
   }, { scope: containerRef, dependencies: [step] });
 
   const handleConfirmed = (tkt: string, eml: string) => {
@@ -44,20 +41,30 @@ export default function RegisterPage() {
     setStep("profile");
   };
 
-  const handleRegister = async (values: {
-    display_name: string;
-    register_password: string;
-  }) => {
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!displayName) {
+      setError("请输入显示名称");
+      return;
+    }
+    if (password.length < 8) {
+      setError("密码至少 8 位");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError("两次输入的密码不一致");
+      return;
+    }
+
     setLoading(true);
     setError("");
     try {
-      const response = await apiRegister(createRegisterRequest(
-        ticket,
-        values.register_password,
-        values.display_name,
-      ));
+      const response = await apiRegister(
+        createRegisterRequest(ticket, password, displayName)
+      );
       if (!response.data) throw new Error("注册响应无效");
       await establishSession(response.data);
+      toast.success("注册成功");
       router.push("/dashboard");
     } catch (err: any) {
       setError(err.message ?? "注册失败，请稍后重试");
@@ -78,34 +85,54 @@ export default function RegisterPage() {
           )}
 
           {step === "profile" && (
-            <Form layout="vertical" onFinish={handleRegister} style={{ width: "100%" }}>
-              <Flex vertical gap={16}>
-                <Form.Item
-                  name="display_name"
-                  label="显示名称"
-                  rules={[{ required: true, message: "请输入显示名称" }]}
-                >
+            <form onSubmit={handleRegister} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="display-name" className="text-sm font-medium text-foreground">
+                  显示名称
+                </Label>
+                <div className="relative">
+                  <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
-                    prefix={<UserOutlined style={{ color: "#999" }} />}
+                    id="display-name"
                     placeholder="您的昵称"
-                    size="large"
-                    variant="filled"
-                    style={inputStyle}
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    className="h-11 rounded-xl border-border/80 bg-white/80 pl-10 text-sm backdrop-blur-sm"
                   />
-                </Form.Item>
+                </div>
+              </div>
 
-                <PasswordFields prefix="register" />
+              <PasswordFields
+                prefix="register"
+                password={password}
+                confirmPassword={confirmPassword}
+                onPasswordChange={setPassword}
+                onConfirmChange={setConfirmPassword}
+              />
 
-                {error && (
-                  <Text type="danger" style={{ fontSize: 12 }}>{error}</Text>
-                )}
+              {error && (
+                <p className="text-xs text-destructive">{error}</p>
+              )}
 
-                <Button type="primary" size="large" block htmlType="submit" loading={loading}>
-                  完成注册
-                </Button>
-              </Flex>
-            </Form>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="h-11 w-full rounded-xl text-base shadow-lg shadow-primary/20"
+              >
+                {loading ? "注册中..." : "完成注册"}
+              </Button>
+            </form>
           )}
+        </div>
+
+        <div className="mt-6 text-center">
+          <a
+            href="/login"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground no-underline transition-colors hover:text-foreground"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            已有账号？去登录
+          </a>
         </div>
       </AuthShell>
     </div>

@@ -1,45 +1,48 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Form, Input, Button, Typography, App } from "antd";
-import { MailOutlined, LockOutlined, FireOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useAuthStore } from "@/stores/authStore";
 import { safeRedirect } from "@/lib/safeRedirect";
-
-const { Text } = Typography;
-
-interface LoginForm {
-  email: string;
-  password: string;
-}
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Flame, Mail, Lock, ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const loginAction = useAuthStore((s) => s.login);
   const router = useRouter();
-  const { message } = App.useApp();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
-    gsap.from(".lg-logo-title", { y: -20, autoAlpha: 0, duration: 0.7, ease: "power3.out" });
-    gsap.from(".lg-heading", { y: -10, autoAlpha: 0, duration: 0.5, delay: 0.15, ease: "power3.out" });
-    gsap.from(".lg-subtitle", { y: -10, autoAlpha: 0, duration: 0.5, delay: 0.25, ease: "power3.out" });
-    gsap.from(".lg-form", { y: 20, autoAlpha: 0, duration: 0.6, delay: 0.4, ease: "power3.out" });
-    gsap.from(".lg-footer", { autoAlpha: 0, duration: 0.4, delay: 0.65, ease: "power3.out" });
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+    tl.from(".lg-logo", { y: -20, opacity: 0, duration: 0.7 })
+      .from(".lg-heading", { y: -10, opacity: 0, duration: 0.5 }, "-=0.3")
+      .from(".lg-subtitle", { y: -10, opacity: 0, duration: 0.5 }, "-=0.3")
+      .from(".lg-form", { y: 20, opacity: 0, duration: 0.6 }, "-=0.3")
+      .from(".lg-footer", { opacity: 0, duration: 0.4 }, "-=0.2");
   }, { scope: containerRef });
 
-  const onFinish = async (values: LoginForm) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) {
+      toast.error("请填写邮箱和密码");
+      return;
+    }
     setLoading(true);
     try {
-      await loginAction({ email: values.email, password: values.password });
-      message.success("欢迎回来");
+      await loginAction({ email, password });
+      toast.success("欢迎回来");
       const params = new URLSearchParams(window.location.search);
       router.push(safeRedirect(params.get("redirect")));
     } catch (err: any) {
-      message.error(err.message ?? "邮箱或密码错误");
+      toast.error(err.message ?? "邮箱或密码错误");
     } finally {
       setLoading(false);
     }
@@ -48,159 +51,103 @@ export default function LoginPage() {
   return (
     <div
       ref={containerRef}
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "#fff",
-      }}
+      className="relative flex min-h-screen items-center justify-center bg-gradient-to-b from-blue-50/30 to-white px-6"
     >
-      <div
-        style={{
-          width: "100%",
-          maxWidth: 360,
-          padding: "0 24px",
-        }}
-      >
+      {/* Background decoration */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 left-1/2 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-gradient-to-b from-blue-100/40 to-transparent blur-3xl" />
+      </div>
+
+      <div className="relative w-full max-w-sm">
         {/* Logo + Title */}
-        <div className="lg-logo-title" style={{ textAlign: "center", marginBottom: 40 }}>
+        <div className="lg-logo mb-10 text-center">
           <a
             href="/"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              textDecoration: "none",
-              color: "inherit",
-              marginBottom: 24,
-            }}
+            className="mb-6 inline-flex items-center gap-2 text-foreground no-underline"
           >
-            <FireOutlined style={{ fontSize: 24, color: "var(--ant-color-primary)" }} />
-            <span
-              style={{
-                fontSize: 20,
-                fontWeight: 600,
-                letterSpacing: "-0.02em",
-              }}
-            >
-              HotKey
-            </span>
+            <Flame className="h-6 w-6 text-primary" />
+            <span className="text-xl font-semibold tracking-tight">HotKey</span>
           </a>
-          <h1
-            className="lg-heading"
-            style={{
-              fontSize: 22,
-              fontWeight: 600,
-              color: "#111",
-              margin: "0 0 8px",
-              letterSpacing: "-0.02em",
-            }}
-          >
+          <h1 className="lg-heading mb-2 text-2xl font-bold tracking-tight text-foreground">
             登录工作台
           </h1>
-          <Text className="lg-subtitle" style={{ color: "#666", fontSize: 14 }}>
+          <p className="lg-subtitle text-sm text-muted-foreground">
             内容创作者热点工作台
-          </Text>
+          </p>
         </div>
 
         {/* Form */}
         <div className="lg-form">
-          <Form
-            name="login"
-            layout="vertical"
-            onFinish={onFinish}
-            autoComplete="off"
-            style={{ width: "100%" }}
-          >
-            <Form.Item
-              name="email"
-              label={<span style={{ fontWeight: 500, fontSize: 14, color: "#111" }}>邮箱</span>}
-              rules={[
-                { required: true, message: "请输入邮箱" },
-                { type: "email", message: "邮箱格式不正确" },
-              ]}
-            >
-              <Input
-                prefix={<MailOutlined style={{ color: "#999" }} />}
-                placeholder="name@example.com"
-                size="large"
-                variant="filled"
-                style={{
-                  background: "#f5f5f5",
-                  border: "1px solid #eaeaea",
-                  borderRadius: 8,
-                  padding: "8px 12px",
-                }}
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="password"
-              label={<span style={{ fontWeight: 500, fontSize: 14, color: "#111" }}>密码</span>}
-              rules={[{ required: true, message: "请输入密码" }]}
-            >
-              <Input.Password
-                prefix={<LockOutlined style={{ color: "#999" }} />}
-                placeholder="输入密码"
-                size="large"
-                variant="filled"
-                style={{
-                  background: "#f5f5f5",
-                  border: "1px solid #eaeaea",
-                  borderRadius: 8,
-                  padding: "8px 12px",
-                }}
-              />
-            </Form.Item>
-
-            <Form.Item style={{ marginBottom: 0, marginTop: 28 }}>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={loading}
-                block
-                size="large"
-              >
-                进入工作台
-              </Button>
-            </Form.Item>
-
-            <div
-              style={{
-                marginTop: 20,
-                textAlign: "center",
-                display: "flex",
-                flexDirection: "column",
-                gap: 8,
-              }}
-            >
-              <a
-                href="/forgot-password"
-                style={{ color: "#666", textDecoration: "none", fontSize: 13 }}
-              >
-                忘记密码？
-              </a>
-              <Text style={{ fontSize: 13, color: "#999" }}>
-                还没有账号？{" "}
-                <a href="/register" style={{ color: "var(--ant-color-primary)", textDecoration: "none" }}>
-                  创建账号
-                </a>
-              </Text>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium text-foreground">
+                邮箱
+              </Label>
+              <div className="relative">
+                <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="name@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-11 rounded-xl border-border/80 bg-white/80 pl-10 text-sm backdrop-blur-sm placeholder:text-muted-foreground/60"
+                />
+              </div>
             </div>
-          </Form>
+
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-sm font-medium text-foreground">
+                密码
+              </Label>
+              <div className="relative">
+                <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="输入密码"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="h-11 rounded-xl border-border/80 bg-white/80 pl-10 text-sm backdrop-blur-sm placeholder:text-muted-foreground/60"
+                />
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={loading}
+              className="h-11 w-full rounded-xl text-base shadow-lg shadow-primary/20"
+            >
+              {loading ? "登录中..." : "进入工作台"}
+            </Button>
+          </form>
+
+          <div className="mt-6 flex flex-col items-center gap-3 text-center">
+            <a
+              href="/forgot-password"
+              className="text-sm text-muted-foreground no-underline transition-colors hover:text-foreground"
+            >
+              忘记密码？
+            </a>
+            <p className="text-sm text-muted-foreground">
+              还没有账号？{" "}
+              <a
+                href="/register"
+                className="font-medium text-primary no-underline transition-colors hover:text-primary/80"
+              >
+                创建账号
+              </a>
+            </p>
+          </div>
         </div>
 
-        <div
-          className="lg-footer"
-          style={{
-            textAlign: "center",
-            marginTop: 32,
-            fontSize: 13,
-            color: "#999",
-          }}
-        >
-          <a href="/" style={{ color: "#666", textDecoration: "none" }}>
+        {/* Footer */}
+        <div className="lg-footer mt-8 text-center">
+          <a
+            href="/"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground no-underline transition-colors hover:text-foreground"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
             返回首页
           </a>
         </div>
