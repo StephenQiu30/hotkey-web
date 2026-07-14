@@ -205,3 +205,102 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 0.25rem;
   color: var(--color-muted-foreground);
 }
+
+/* ============================================
+   Premium / "大气" utilities
+   ============================================ */
+
+/* Glass card — subtle backdrop blur */
+.glass-card {
+  background: rgba(17, 17, 17, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Gradient text accent */
+.gradient-text {
+  background: linear-gradient(135deg, #007AFF 0%, #60a5fa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Gradient border accent (top edge) */
+.gradient-border-top {
+  position: relative;
+}
+.gradient-border-top::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(0, 122, 255, 0.3), transparent 50%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Subtle glow ring for focused cards */
+.glow-ring {
+  transition: box-shadow 0.3s ease;
+}
+.glow-ring:hover {
+  box-shadow: 0 0 0 1px rgba(0, 122, 255, 0.5), 0 0 24px rgba(0, 122, 255, 0.08);
+}
+
+/* Rank badges: gold / silver / bronze */
+.rank-gold {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #000;
+  border: none;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.25);
+}
+.rank-silver {
+  background: linear-gradient(135deg, #9ca3af, #6b7280);
+  color: #fff;
+  border: none;
+  box-shadow: 0 0 8px rgba(156, 163, 175, 0.2);
+}
+.rank-bronze {
+  background: linear-gradient(135deg, #d97706, #92400e);
+  color: #fff;
+  border: none;
+  box-shadow: 0 0 8px rgba(217, 119, 6, 0.2);
+}
+
+/* Elevated card shadow */
+.card-elevated {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Stat value — larger, more premium */
+.stat-value-premium {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+/* Section header accent dot */
+.section-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  box-shadow: 0 0 8px rgba(0, 122, 255, 0.4);
+}
+
+/* Light theme overrides for premium utilities */
+[data-theme="light"] .glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+[data-theme="light"] .stat-value-premium {
+  color: var(--color-foreground);
+}
