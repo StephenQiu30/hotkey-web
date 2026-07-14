@@ -1,34 +1,50 @@
 /**
- * In-memory access token and single-flight refresh coordination.
+ * Access token storage with localStorage persistence and single-flight refresh.
  *
- * Token and verification Ticket remain in memory only — never written
- * to LocalStorage, SessionStorage, query strings, or analytics.
+ * Token is stored both in memory (fast access) and localStorage (survives page reload).
+ * On page reload, getAccessToken() falls back to localStorage transparently.
  */
+
+const STORAGE_KEY = "hk_access_token";
 
 let accessToken = "";
 let expiresAt = 0;
 let refreshPromise: Promise<string> | null = null;
 
 /**
- * Store a new access token in memory.
+ * Store a new access token in memory and localStorage.
  */
 export function setAccessToken(token: string, expiresIn: number): void {
   accessToken = token;
   expiresAt = Date.now() + expiresIn * 1000;
+  try {
+    localStorage.setItem(STORAGE_KEY, token);
+  } catch {
+    // localStorage unavailable (SSR / private mode) — memory-only fallback
+  }
 }
 
 /**
- * Clear the in-memory access token (logout / session end).
+ * Clear the access token from memory and localStorage.
  */
 export function clearAccessToken(): void {
   accessToken = "";
   expiresAt = 0;
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch { /* ignore */ }
 }
 
 /**
- * Read the current in-memory access token.
+ * Read the current access token.
+ * Falls back to localStorage when the in-memory value is empty (page reload).
  */
 export function getAccessToken(): string {
+  if (!accessToken) {
+    try {
+      accessToken = localStorage.getItem(STORAGE_KEY) ?? "";
+    } catch { /* ignore */ }
+  }
   return accessToken;
 }
 
@@ -43,10 +59,6 @@ export function isAccessTokenExpired(): boolean {
 
 /**
  * Single-flight refresh: callers share one in-flight Promise.
- *
- * The caller (response interceptor) provides the actual refresh
- * implementation so it can import generated services without
- * creating a circular dependency.
  */
 export function refreshAccessToken(
   perform: () => Promise<string>,

@@ -20,6 +20,7 @@ import * as authSession from "@/lib/authSession";
 
 beforeEach(() => {
   vi.clearAllMocks();
+  localStorage.clear();
   useAuthStore.setState({ status: "initializing", user: null, error: null });
 });
 
@@ -31,6 +32,9 @@ describe("auth store state machine", () => {
   });
 
   it("initialize transitions to authenticated when me succeeds", async () => {
+    vi.mocked(authSession.getAccessToken).mockReturnValueOnce("valid-token");
+    vi.mocked(authSession.isAccessTokenExpired).mockReturnValueOnce(false);
+
     const userData: HotKeyAPI.AuthenticatedUserData = {
       id: 1,
       email: "a@b.com",
@@ -47,6 +51,9 @@ describe("auth store state machine", () => {
   });
 
   it("initialize transitions to unauthenticated when me fails", async () => {
+    vi.mocked(authSession.getAccessToken).mockReturnValueOnce("valid-token");
+    vi.mocked(authSession.isAccessTokenExpired).mockReturnValueOnce(false);
+
     vi.mocked(authService.me).mockRejectedValueOnce(new Error("no session"));
 
     await useAuthStore.getState().initialize();
@@ -63,12 +70,10 @@ describe("auth store state machine", () => {
       plan_type: "free",
     };
 
-    // Mock login response
     vi.mocked(authService.login).mockResolvedValueOnce({
       data: { token: "tok1", user: { id: 1, email: "a@b.com", display_name: "Alice" } },
     } as any);
 
-    // Mock me response
     vi.mocked(authService.me).mockResolvedValueOnce({
       data: userData,
     } as any);
