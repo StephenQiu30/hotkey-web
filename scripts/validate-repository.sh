@@ -5,8 +5,7 @@ set -euo pipefail
 
 required_files=(
   "README.md"
-  "CLAUDE.md"
-  "CLAUDE.local.md"
+  "AGENTS.md"
   "next.config.ts"
   ".env.example"
   ".gitignore"
@@ -19,10 +18,15 @@ required_files=(
   "docs/design"
   "docs/acceptance"
   "docs/operations"
-  ".claude/skills/commit/SKILL.md"
-  ".claude/skills/pull/SKILL.md"
-  ".claude/skills/push/SKILL.md"
-  ".claude/skills/land/SKILL.md"
+  ".codex/agents/builder.toml"
+  ".codex/agents/explorer.toml"
+  ".codex/agents/pm.toml"
+  ".codex/agents/reporter.toml"
+  ".codex/agents/tester.toml"
+  ".codex/skills/commit/SKILL.md"
+  ".codex/skills/pull/SKILL.md"
+  ".codex/skills/push/SKILL.md"
+  ".codex/skills/land/SKILL.md"
   ".github/pull_request_template.md"
 )
 

@@ -19,7 +19,7 @@ docs/
 
 ### 文档要求
 - 只有对项目有长期影响的文档才放入 `docs/`
-- 临时事项如待办列表、进度笔记放在 OpenSpec change 任务中
+- 临时事项如待办列表、进度笔记放在对应的 Linear ticket 或 PR 中
 - 正式文档需要 YAML frontmatter，包含 `layer`、`doc_no`、`audience`、`purpose` 等元数据字段
 - 使用 `TEMPLATE.md` 作为标准模板
 
