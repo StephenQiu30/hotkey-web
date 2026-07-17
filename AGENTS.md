@@ -32,6 +32,7 @@ hotkey-web/
 │       └── hotkey/
 │           └── hotkey-server/    # @umijs/openapi 自动生成的 API 客户端
 ├── public/             # 静态资源
+├── test/               # 单元测试与统一测试初始化
 ├── package.json        # 依赖配置
 ├── tsconfig.json       # TypeScript 配置
 ├── next.config.ts      # Next.js 配置（含 API 代理 rewrites）
@@ -43,9 +44,9 @@ hotkey-web/
 ```bash
 npm run dev           # 开发服务器
 npm run build         # 生产构建
-npx tsc --noEmit      # 类型检查
+npm run typecheck     # 类型检查
+npm run test:unit     # test/ 下的单元测试
 npm run openapi:generate   # 从服务器 OpenAPI 重新生成 API 客户端
-python3 -m unittest discover -s tests   # 治理/契约测试
 ```
 
 ## 架构
@@ -76,6 +77,8 @@ python3 -m unittest discover -s tests   # 治理/契约测试
 **SMART 工程** — 需求和验收标准遵循 SMART 原则。
 
 **变更闭环** — 每次重要变更必须完成实现、测试和验证，然后才能进行中文 Git 提交。
+
+**测试目录统一** — 所有 `*.test.ts` / `*.test.tsx` 与测试初始化文件统一放在仓库根目录 `test/`，禁止在 `src/` 内创建测试文件。
 
 ---
 

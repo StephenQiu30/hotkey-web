@@ -1,4 +1,4 @@
-name: CI
+name: Test acceptance
 
 on:
   push:
@@ -7,11 +7,20 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  typecheck:
-    name: TypeScript type check
+  acceptance:
+    name: Web test acceptance
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout repository
@@ -26,8 +35,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: TypeScript check
-        run: npx tsc --noEmit
+      - name: TypeScript acceptance
+        run: npm run typecheck
 
-      - name: Unit tests
-        run: npx vitest run
+      - name: Unit test acceptance
+        run: npm run test:unit
+
+      - name: Production build acceptance
+        run: npm run build
