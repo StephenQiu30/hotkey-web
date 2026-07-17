@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getSourceConnections, postSourceConnections, postSourceConnectionsIdDisable, postSourceConnectionsIdEnable, postSourceConnectionsIdHealth } from "@/services/hotkey/hotkey-server/sources";
+import { getSourceHealthMessage } from "@/lib/sourceHealthMessages";
 
 export default function SourcesPage() {
   const [sources, setSources] = useState<HotKeyAPI.SourceReadResponse[]>([]);
@@ -37,7 +38,7 @@ export default function SourcesPage() {
     try {
       if (kind === "health") {
         const result = await postSourceConnectionsIdHealth({ id: source.id });
-        toast[result.data?.healthy ? "success" : "error"](result.data?.healthy ? "来源健康" : `来源异常：${result.data?.error_code || "unknown"}`);
+        toast[result.data?.healthy ? "success" : "error"](result.data?.healthy ? "来源健康" : getSourceHealthMessage(result.data?.error_code));
       } else if (source.enabled) await postSourceConnectionsIdDisable({ id: source.id }, { expected_source_version: source.version ?? 0 });
       else await postSourceConnectionsIdEnable({ id: source.id }, { expected_source_version: source.version ?? 0 });
       await load();

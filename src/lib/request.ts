@@ -5,6 +5,7 @@ import {
   refreshAccessToken,
   resetRefreshPromise,
 } from "./authSession";
+import { getUserFacingAPIErrorMessage } from "./apiErrorMessages";
 
 /** Pages that do NOT require authentication — skip redirect-to-login on 401. */
 const PUBLIC_PATHS = ["/", "/login", "/register", "/forgot-password", "/reset-password"];
@@ -84,7 +85,7 @@ apiClient.interceptors.response.use(
     const isRetry = (error.config as any)?.[RETRY_MARKER] === true;
 
     // Parse envelope: { code, message, data }
-    const errorMessage = body?.message ?? "操作失败，请稍后重试";
+    const errorMessage = getUserFacingAPIErrorMessage(body?.code, body?.message);
     const errorData = body?.data ?? null;
 
     // 401 handling: refresh + retry (once per request)

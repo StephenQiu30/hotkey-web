@@ -6,6 +6,13 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "HotKey · AI 热点情报平台",
   description: "发现正在加速的事件，验证证据，并生成可发布的热点报告。",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

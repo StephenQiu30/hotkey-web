@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, Flame, LogOut, Menu, Search, User, X } from "lucide-react";
+import { ChevronDown, LogOut, Menu, Search, User, X } from "lucide-react";
 import { useState } from "react";
+import { BrandLogo } from "@/components/BrandLogo";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -26,7 +27,7 @@ export default function TopNav({ menuItems, title = "HotKey" }: { menuItems: Men
     <header className="sticky top-0 z-50 border-b border-border bg-black/95 backdrop-blur">
       <div className="flex h-[60px] items-center gap-5 px-5 lg:px-7">
         <Link href="/dashboard" className="flex shrink-0 items-center gap-2 text-sm font-semibold text-foreground no-underline">
-          <Flame className="h-4 w-4" />{title}
+          <BrandLogo title={title} />
         </Link>
         <nav className="hidden h-full items-center md:flex">
           {menuItems.map((item) => {
