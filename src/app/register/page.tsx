@@ -12,8 +12,7 @@ import { toast } from "sonner";
 import AuthShell from "@/components/auth/AuthShell";
 import EmailVerificationStep from "@/components/auth/EmailVerificationStep";
 import PasswordFields from "@/components/auth/PasswordFields";
-import { register as apiRegister } from "@/services/auth";
-import { useAuthStore } from "@/stores/authStore";
+import { postAuthRegistrations } from "@/services/hotkey/hotkey-server/identity";
 import { createRegisterRequest } from "@/lib/registerRequest";
 
 type Step = "email" | "profile";
@@ -27,7 +26,6 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const establishSession = useAuthStore((s) => s.establishSession);
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -46,11 +44,10 @@ export default function RegisterPage() {
     if (password !== confirmPassword) { setError("两次输入的密码不一致"); return; }
     setLoading(true); setError("");
     try {
-      const response = await apiRegister(createRegisterRequest(ticket, password, displayName));
+      const response = await postAuthRegistrations(createRegisterRequest(ticket, password, displayName));
       if (!response.data) throw new Error("注册响应无效");
-      await establishSession(response.data);
-      toast.success("注册成功");
-      router.push("/dashboard");
+      toast.success("注册成功，请登录");
+      router.push("/login");
     } catch (err: any) { setError(err.message ?? "注册失败"); }
     finally { setLoading(false); }
   };

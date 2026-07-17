@@ -31,4 +31,41 @@ describe("Umi OpenAPI generation contract", () => {
       openapiConfig.requestImportStatement,
     );
   });
+
+  it("keeps application code on the generated server client only", () => {
+    const legacyServices = [
+      "auth.ts",
+      "content.ts",
+      "health.ts",
+      "hotEvents.ts",
+      "monitors.ts",
+      "notifications.ts",
+      "reports.ts",
+      "topics.ts",
+      "trending.ts",
+      "trends.ts",
+      "typings.d.ts",
+    ];
+
+    for (const file of legacyServices) {
+      expect(fs.existsSync(path.resolve(repositoryRoot, "src/services", file))).toBe(false);
+    }
+
+    const sourceRoot = path.resolve(repositoryRoot, "src");
+    const queue = [sourceRoot];
+    const sourceFiles: string[] = [];
+    while (queue.length) {
+      const current = queue.pop()!;
+      for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+        const resolved = path.join(current, entry.name);
+        if (entry.isDirectory()) queue.push(resolved);
+        else if (/\.(ts|tsx)$/.test(entry.name)) sourceFiles.push(resolved);
+      }
+    }
+
+    for (const file of sourceFiles) {
+      const source = fs.readFileSync(file, "utf8");
+      expect(source, file).not.toMatch(/@\/services\/(?!hotkey\/hotkey-server)/);
+    }
+  });
 });

@@ -22,7 +22,7 @@ build/
 # 测试与报告
 coverage/
 artifacts/
-reports/
+/reports/
 test-results/
 playwright-report/
 

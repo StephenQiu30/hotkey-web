@@ -1,16 +1,18 @@
 import type { NextConfig } from "next";
 
+const apiOrigin = process.env.HOTKEY_API_ORIGIN ?? "http://127.0.0.1:8080";
+
 const nextConfig: NextConfig = {
   output: process.env.NEXT_OUTPUT === "standalone" ? "standalone" : undefined,
   async rewrites() {
     return [
       {
         source: "/api/:path*",
-        destination: "http://127.0.0.1:8080/api/:path*",
+        destination: `${apiOrigin}/api/:path*`,
       },
       {
         source: "/healthz",
-        destination: "http://127.0.0.1:8080/healthz",
+        destination: `${apiOrigin}/healthz`,
       },
     ];
   },

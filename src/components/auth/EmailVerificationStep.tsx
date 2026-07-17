@@ -5,7 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Mail } from "lucide-react";
-import { sendVerification, confirmVerification } from "@/services/auth";
+import {
+  postAuthEmailVerifications,
+  postAuthEmailVerificationsConfirm,
+} from "@/services/hotkey/hotkey-server/identity";
 
 interface EmailVerificationStepProps {
   purpose: "register" | "reset_password";
@@ -15,6 +18,7 @@ interface EmailVerificationStepProps {
 type Step = "send" | "confirm";
 
 export default function EmailVerificationStep({ purpose, onConfirmed }: EmailVerificationStepProps) {
+  const apiPurpose = purpose === "register" ? "registration" : "password_reset";
   const [step, setStep] = useState<Step>("send");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
@@ -32,22 +36,22 @@ export default function EmailVerificationStep({ purpose, onConfirmed }: EmailVer
     if (!email) return;
     setLoading(true); setSendError("");
     try {
-      await sendVerification({ email, purpose });
+      await postAuthEmailVerifications({ email, purpose: apiPurpose });
       setStep("confirm"); setCountdown(60);
     } catch (err: any) { setSendError(err.message ?? "操作失败"); }
     finally { setLoading(false); }
-  }, [email, purpose]);
+  }, [apiPurpose, email]);
 
   const handleConfirm = useCallback(async () => {
     if (code.length !== 6) return;
     setLoading(true);
     try {
-      const res = await confirmVerification({ email, purpose, code });
-      const ticket = res.data?.ticket;
+      const res = await postAuthEmailVerificationsConfirm({ email, purpose: apiPurpose, code });
+      const ticket = res.data?.verification_ticket;
       if (ticket) onConfirmed(ticket, email);
     } catch (err: any) { setSendError(err.message ?? "验证失败"); }
     finally { setLoading(false); }
-  }, [email, purpose, code, onConfirmed]);
+  }, [apiPurpose, email, code, onConfirmed]);
 
   if (step === "send") {
     return (

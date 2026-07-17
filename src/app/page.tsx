@@ -1,21 +1,19 @@
-import {
-  WelcomeHeader,
-  WelcomeHero,
-  WelcomeFeatures,
-  WelcomeCTA,
-  WelcomeFooter,
-} from "@/components/welcome";
+import Link from "next/link";
+import { ArrowRight, Check, Database, FileText, Flame, Radar, ShieldCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+const capabilities = [
+  { icon: Database, title: "合规来源", body: "连接官方 RSS、Atom 与 Hacker News，保留来源与采集证据。" },
+  { icon: Radar, title: "事件研判", body: "按热度和趋势聚合事件，读取内容证据、实体与已验证声明。" },
+  { icon: FileText, title: "报告发布", body: "构建、预览并发布日报或周报，通过邮件和私有 RSS 分发。" },
+];
 
 export default function HomePage() {
-  return (
-    <>
-      <WelcomeHeader />
-      <main>
-        <WelcomeHero />
-        <WelcomeFeatures />
-        <WelcomeCTA />
-      </main>
-      <WelcomeFooter />
-    </>
-  );
+  return <div className="min-h-screen bg-black text-foreground">
+    <header className="border-b border-border"><div className="mx-auto flex h-[60px] max-w-7xl items-center px-5"><Link href="/" className="flex items-center gap-2 text-sm font-semibold text-foreground no-underline"><Flame className="h-4 w-4" />HotKey</Link><nav className="ml-auto flex items-center gap-2"><Link href="/login"><Button variant="ghost" size="sm">登录</Button></Link><Link href="/register"><Button size="sm">开始使用</Button></Link></nav></div></header>
+    <main><section className="mx-auto grid min-h-[680px] max-w-7xl items-center gap-14 px-5 py-20 lg:grid-cols-[minmax(0,.9fr)_minmax(560px,1.1fr)]"><div><div className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-xs text-muted-foreground"><span className="h-1.5 w-1.5 rounded-full bg-green-500" />AI 热点情报平台</div><h1 className="mt-7 max-w-2xl text-5xl font-semibold leading-[1.08] tracking-[-.045em] sm:text-6xl">把公开信号变成<br />可验证的事件情报</h1><p className="mt-6 max-w-xl text-base leading-7 text-muted-foreground">从正式来源采集内容，聚合正在加速的事件，验证证据并生成可发布报告。每一步都有真实接口和可追溯事实。</p><div className="mt-8 flex flex-wrap gap-3"><Link href="/register"><Button size="lg" className="gap-2">创建工作区 <ArrowRight /></Button></Link><Link href="/login"><Button size="lg" variant="outline">登录工作台</Button></Link></div><div className="mt-10 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">{["OpenAPI 驱动", "可追溯证据", "本地优先"].map((item) => <span key={item} className="flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-green-500" />{item}</span>)}</div></div>
+      <div className="overflow-hidden rounded-lg border border-border bg-[#030303]"><div className="flex h-11 items-center border-b border-border px-4"><span className="text-xs font-medium">Editorial Intelligence Canvas</span><span className="ml-auto mono text-[10px] text-muted-foreground">LIVE WORKSPACE</span></div><div className="grid min-h-[470px] lg:grid-cols-[minmax(0,1fr)_210px]"><div className="p-5"><p className="text-xs text-muted-foreground">今日值得关注</p><h2 className="mt-3 text-xl font-semibold">本地运行 AI 智能体热度加速</h2><p className="mt-2 text-xs leading-5 text-muted-foreground">跨来源内容被聚合为事件，并通过热度、趋势和证据声明完成验证。</p><div className="mt-5 grid grid-cols-3 divide-x divide-border border-y border-border py-3">{[["热度","78"],["来源","5"],["证据","12"]].map(([label,value]) => <div key={label} className="px-3 first:pl-0"><p className="text-[10px] text-muted-foreground">{label}</p><p className="mono mt-1 text-base text-blue-400">{value}</p></div>)}</div><div className="mt-5 space-y-0 border-l border-border pl-4">{["官方产品更新确认能力变化","社区讨论出现跨平台增长","行业媒体补充应用与风险边界"].map((item,index) => <div key={item} className="relative border-b border-border py-3 text-xs"><span className="absolute -left-[19px] top-4 h-2 w-2 rounded-full border-2 border-blue-500 bg-black" /><span className="mono mr-3 text-blue-400">0{index + 1}</span>{item}</div>)}</div></div><aside className="border-l border-border bg-[#050505] p-4"><p className="text-xs font-medium">事件情报</p><div className="mt-4 space-y-2">{["实体已提取", "声明已验证", "报告可预览"].map((item) => <div key={item} className="rounded-md border border-border p-3 text-xs"><ShieldCheck className="mb-2 h-4 w-4 text-green-500" />{item}</div>)}</div><Button className="mt-4 w-full">构建报告</Button></aside></div></div></section>
+      <section className="border-t border-border"><div className="mx-auto max-w-7xl px-5 py-20"><p className="eyebrow">Real workflow</p><h2 className="mt-3 text-3xl font-semibold">从来源到发布，一条真实链路</h2><div className="mt-10 grid divide-y divide-border border-y border-border md:grid-cols-3 md:divide-x md:divide-y-0">{capabilities.map(({icon:Icon,title,body}) => <article key={title} className="px-0 py-7 md:px-7 md:first:pl-0"><Icon className="h-5 w-5 text-muted-foreground" /><h3 className="mt-5 text-base font-medium">{title}</h3><p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">{body}</p></article>)}</div></div></section>
+    </main><footer className="border-t border-border"><div className="mx-auto flex max-w-7xl flex-col gap-2 px-5 py-7 text-xs text-muted-foreground sm:flex-row sm:justify-between"><span>© 2026 HotKey</span><span>基于后端 OpenAPI 的真实产品能力</span></div></footer>
+  </div>;
 }

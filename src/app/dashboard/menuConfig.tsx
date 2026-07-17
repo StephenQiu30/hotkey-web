@@ -1,41 +1,11 @@
-import {
-  Flame,
-  FileText,
-  Star,
-  Bell,
-  Settings,
-} from "lucide-react";
+import { Activity, Database, FileText, Radar, Send } from "lucide-react";
 
-export interface MenuItem {
-  path: string;
-  name: string;
-  icon: React.ReactNode;
-}
+export interface MenuItem { path: string; name: string; icon: React.ReactNode; }
 
 export const dashboardMenuItems: MenuItem[] = [
-  {
-    path: "/dashboard",
-    name: "热点榜单",
-    icon: <Flame className="h-4 w-4" />,
-  },
-  {
-    path: "/dashboard/topics",
-    name: "内容选题",
-    icon: <FileText className="h-4 w-4" />,
-  },
-  {
-    path: "/dashboard/favorites",
-    name: "收藏关注",
-    icon: <Star className="h-4 w-4" />,
-  },
-  {
-    path: "/dashboard/notifications",
-    name: "通知配置",
-    icon: <Bell className="h-4 w-4" />,
-  },
-  {
-    path: "/dashboard/settings",
-    name: "设置",
-    icon: <Settings className="h-4 w-4" />,
-  },
+  { path: "/dashboard", name: "工作台", icon: <Activity className="h-3.5 w-3.5" /> },
+  { path: "/dashboard/settings", name: "热点监控", icon: <Radar className="h-3.5 w-3.5" /> },
+  { path: "/dashboard/sources", name: "来源管理", icon: <Database className="h-3.5 w-3.5" /> },
+  { path: "/dashboard/reports", name: "报告中心", icon: <FileText className="h-3.5 w-3.5" /> },
+  { path: "/dashboard/notifications", name: "发布订阅", icon: <Send className="h-3.5 w-3.5" /> },
 ];

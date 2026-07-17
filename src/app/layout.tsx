@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import AppProvider from "@/components/AppProvider";
-import { ThemeProvider, ThemeScript } from "@/components/ThemeProvider";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "HotKey - 内容创作者热点工作台",
-  description: "一站式热点追踪平台，助力内容创作者把握流量脉搏",
+  title: "HotKey · AI 热点情报平台",
+  description: "发现正在加速的事件，验证证据，并生成可发布的热点报告。",
 };
 
 export default function RootLayout({
@@ -14,10 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="zh-CN" suppressHydrationWarning>
-      <head>
-        <ThemeScript />
-      </head>
+    <html lang="zh-CN" data-theme="dark" data-scroll-behavior="smooth">
       <body>
         <ThemeProvider>
           <AppProvider>{children}</AppProvider>

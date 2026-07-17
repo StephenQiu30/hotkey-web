@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
 import AuthShell from "@/components/auth/AuthShell";
 import PasswordFields from "@/components/auth/PasswordFields";
-import { resetPassword } from "@/services/auth";
+import { postAuthPasswordResetsConfirm } from "@/services/hotkey/hotkey-server/identity";
 import { toast } from "sonner";
 
 export default function ResetPasswordPage() {
@@ -35,7 +35,7 @@ export default function ResetPasswordPage() {
     if (password !== confirmPassword) { setError("两次输入的密码不一致"); return; }
     setLoading(true); setError("");
     try {
-      await resetPassword({ reset_token: ticket, new_password: password });
+      await postAuthPasswordResetsConfirm({ verification_ticket: ticket, password });
       setSuccess(true);
       toast.success("密码已重置");
     } catch (err: any) { setError(err.message ?? "密码重置失败"); }

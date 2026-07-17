@@ -1,14 +1,8 @@
-export type VerifiedRegisterRequest = {
-  verification_ticket: string;
-  password: string;
-  display_name: string;
-};
-
 export function createRegisterRequest(
   verificationTicket: string,
   password: string,
   displayName: string,
-): VerifiedRegisterRequest {
+): HotKeyAPI.RegistrationRequest {
   return {
     verification_ticket: verificationTicket,
     password,

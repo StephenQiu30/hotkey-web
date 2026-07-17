@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 import EmailVerificationStep from "@/components/auth/EmailVerificationStep";
-import { confirmVerification, sendVerification } from "@/services/auth";
+import {
+  postAuthEmailVerifications,
+  postAuthEmailVerificationsConfirm,
+} from "@/services/hotkey/hotkey-server/identity";
 
 // Module-level smoke tests — Ant Design's jsdom rendering quirks
 // make direct component rendering unreliable. Core logic (store, session,
@@ -13,7 +16,7 @@ describe("EmailVerificationStep", () => {
   });
 
   it("auth service module exports correctly", () => {
-    expect(typeof sendVerification).toBe("function");
-    expect(typeof confirmVerification).toBe("function");
+    expect(typeof postAuthEmailVerifications).toBe("function");
+    expect(typeof postAuthEmailVerificationsConfirm).toBe("function");
   });
 });

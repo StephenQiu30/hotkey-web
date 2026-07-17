@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-vi.mock("@/services/auth", () => ({
-  login: vi.fn(),
-  logout: vi.fn(),
-  me: vi.fn(),
-  refreshToken: vi.fn(),
+vi.mock("@/services/hotkey/hotkey-server/identity", () => ({
+  postAuthLogin: vi.fn(),
+  postAuthLogout: vi.fn(),
+  getAuthMe: vi.fn(),
+  postAuthRefresh: vi.fn(),
 }));
 
 vi.mock("@/lib/authSession", () => ({
@@ -15,7 +15,7 @@ vi.mock("@/lib/authSession", () => ({
 }));
 
 import { useAuthStore } from "@/stores/authStore";
-import * as authService from "@/services/auth";
+import * as authService from "@/services/hotkey/hotkey-server/identity";
 import * as authSession from "@/lib/authSession";
 
 beforeEach(() => {
@@ -35,12 +35,12 @@ describe("auth store state machine", () => {
     vi.mocked(authSession.getAccessToken).mockReturnValueOnce("valid-token");
     vi.mocked(authSession.isAccessTokenExpired).mockReturnValueOnce(false);
 
-    const userData: HotKeyAPI.AuthenticatedUserData = {
+    const userData: HotKeyAPI.UserResponse = {
       id: 1,
       email: "a@b.com",
       display_name: "Alice",
     };
-    vi.mocked(authService.me).mockResolvedValueOnce({
+    vi.mocked(authService.getAuthMe).mockResolvedValueOnce({
       data: userData,
     } as any);
 
@@ -54,7 +54,7 @@ describe("auth store state machine", () => {
     vi.mocked(authSession.getAccessToken).mockReturnValueOnce("valid-token");
     vi.mocked(authSession.isAccessTokenExpired).mockReturnValueOnce(false);
 
-    vi.mocked(authService.me).mockRejectedValueOnce(new Error("no session"));
+    vi.mocked(authService.getAuthMe).mockRejectedValueOnce(new Error("no session"));
 
     await useAuthStore.getState().initialize();
 
@@ -63,18 +63,17 @@ describe("auth store state machine", () => {
   });
 
   it("login stores token, fetches me, and sets authenticated", async () => {
-    const userData: HotKeyAPI.AuthenticatedUserData = {
+    const userData: HotKeyAPI.UserResponse = {
       id: 1,
       email: "a@b.com",
       display_name: "Alice",
-      plan_type: "free",
     };
 
-    vi.mocked(authService.login).mockResolvedValueOnce({
-      data: { token: "tok1", user: { id: 1, email: "a@b.com", display_name: "Alice" } },
+    vi.mocked(authService.postAuthLogin).mockResolvedValueOnce({
+      data: { access_token: "tok1", user: { id: 1, email: "a@b.com", display_name: "Alice" } },
     } as any);
 
-    vi.mocked(authService.me).mockResolvedValueOnce({
+    vi.mocked(authService.getAuthMe).mockResolvedValueOnce({
       data: userData,
     } as any);
 
@@ -83,33 +82,33 @@ describe("auth store state machine", () => {
       password: "pass123",
     });
 
-    expect(authService.login).toHaveBeenCalledWith({
+    expect(authService.postAuthLogin).toHaveBeenCalledWith({
       email: "a@b.com",
       password: "pass123",
     });
     expect(authSession.setAccessToken).toHaveBeenCalledWith("tok1", 900);
-    expect(authService.me).toHaveBeenCalled();
+    expect(authService.getAuthMe).toHaveBeenCalled();
     expect(useAuthStore.getState().status).toBe("authenticated");
     expect(useAuthStore.getState().user).toEqual(userData);
   });
 
   it("establishes the session returned by registration without another login", async () => {
-    const userData = { id: 2, email: "new@example.com", display_name: "New" } as HotKeyAPI.AuthenticatedUserData;
-    vi.mocked(authService.me).mockResolvedValueOnce({ data: userData } as any);
+    const userData = { id: 2, email: "new@example.com", display_name: "New" } as HotKeyAPI.UserResponse;
+    vi.mocked(authService.getAuthMe).mockResolvedValueOnce({ data: userData } as any);
 
     await useAuthStore.getState().establishSession({
-      token: "registered-token",
+      access_token: "registered-token",
       user: { id: 2, email: "new@example.com", display_name: "New" },
     });
 
-    expect(authService.login).not.toHaveBeenCalled();
+    expect(authService.postAuthLogin).not.toHaveBeenCalled();
     expect(authSession.setAccessToken).toHaveBeenCalledWith("registered-token", 900);
-    expect(authService.me).toHaveBeenCalledOnce();
+    expect(authService.getAuthMe).toHaveBeenCalledOnce();
     expect(useAuthStore.getState().user).toEqual(userData);
   });
 
   it("login sets error on invalid credentials", async () => {
-    vi.mocked(authService.login).mockRejectedValueOnce({
+    vi.mocked(authService.postAuthLogin).mockRejectedValueOnce({
       message: "邮箱或密码错误",
       code: 401,
     });
@@ -124,11 +123,11 @@ describe("auth store state machine", () => {
 
   it("logout calls API and clears state", async () => {
     useAuthStore.setState({ status: "authenticated", user: { id: 1, email: "a@b.com" } as any });
-    vi.mocked(authService.logout).mockResolvedValueOnce({ code: 200, message: "success" } as any);
+    vi.mocked(authService.postAuthLogout).mockResolvedValueOnce({ code: 0, message: "success" } as any);
 
     await useAuthStore.getState().logout();
 
-    expect(authService.logout).toHaveBeenCalled();
+    expect(authService.postAuthLogout).toHaveBeenCalled();
     expect(authSession.clearAccessToken).toHaveBeenCalled();
     expect(useAuthStore.getState().status).toBe("unauthenticated");
     expect(useAuthStore.getState().user).toBeNull();
@@ -139,7 +138,7 @@ describe("auth store state machine", () => {
 
     await useAuthStore.getState().logout();
 
-    expect(authService.logout).not.toHaveBeenCalled();
+    expect(authService.postAuthLogout).not.toHaveBeenCalled();
     expect(useAuthStore.getState().status).toBe("unauthenticated");
   });
 
