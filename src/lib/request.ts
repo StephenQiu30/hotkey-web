@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, type AxiosRequestConfig } from "axios";
 import {
   getAccessToken,
   clearAccessToken,
@@ -22,12 +22,12 @@ const RETRY_MARKER = "_retry" as const;
 /** Endpoints that must NEVER trigger an automatic token refresh. */
 const NO_REFRESH_PATHS = [
   "/api/v1/auth/login",
-  "/api/v1/auth/register",
-  "/api/v1/auth/token/refresh",
   "/api/v1/auth/logout",
-  "/api/v1/auth/password/reset",
-  "/api/v1/auth/verifications",
-  "/api/v1/auth/verifications/confirm",
+  "/api/v1/auth/refresh",
+  "/api/v1/auth/registrations",
+  "/api/v1/auth/password-resets/confirm",
+  "/api/v1/auth/email-verifications",
+  "/api/v1/auth/email-verifications/confirm",
 ];
 
 function isNoRefreshPath(url: string = ""): boolean {
@@ -44,6 +44,8 @@ export class HotKeyAPIError extends Error {
     this.name = "HotKeyAPIError";
   }
 }
+
+export type RequestOptions = AxiosRequestConfig;
 
 const apiClient = axios.create({
   baseURL: "",
@@ -90,8 +92,10 @@ apiClient.interceptors.response.use(
       try {
         // Single-flight: all concurrent 401s share one refresh
         const newToken = await refreshAccessToken(async () => {
-          const { refreshToken } = await import("@/services/auth");
-          const res = await refreshToken();
+          const { postAuthRefresh } = await import(
+            "@/services/hotkey/hotkey-server/identity"
+          );
+          const res = await postAuthRefresh();
           const data = res.data ?? {};
           const token = data.access_token ?? "";
           if (!token) throw new Error("refresh returned no token");
@@ -143,7 +147,7 @@ apiClient.interceptors.response.use(
  * - Automatic 401 → refresh → retry (single-flight)
  * - Unified envelope error parsing
  */
-export async function request<T>(url: string, options?: any): Promise<T> {
+export async function request<T>(url: string, options?: RequestOptions): Promise<T> {
   const response = await apiClient({ url, ...options });
   return response.data;
 }

@@ -41,15 +41,13 @@ hotkey-miniapp ──── 微信端轻量入口
 
 - Node.js 20+
 - 本地已克隆并可用 [`hotkey-server`](../hotkey-server)（用于 OpenAPI 规范）
-- 后端运行在 8080 端口（用于 OpenAPI 拉取）
 
 ### 安装与开发
 
 ```bash
 npm install
 
-# 从后端 Swagger 端点生成 TypeScript 客户端
-# 需先启动 hotkey-server（localhost:8080）
+# 根据后端仓库已提交的 OpenAPI 文档生成 TypeScript 请求客户端
 npm run openapi:generate
 
 # 启动开发服务器
@@ -63,22 +61,25 @@ npm run dev
 ```bash
 npm run build          # 生产构建
 npm run typecheck      # TypeScript 类型检查
-npm run openapi:generate  # 从远程 Swagger 生成 API 客户端
+npm run openapi:generate  # 从后端 OpenAPI 文档生成 API 请求与类型
 ```
 
 ## OpenAPI 客户端生成
 
 生成配置见 [`openapi2ts.config.ts`](./openapi2ts.config.ts)：
 
-- 规范来源：`http://localhost:8080/swagger/doc.json`（远程端点）
+- 规范来源：`../hotkey-server/docs/openapi/swagger.json`（后端契约事实源）
 - 输出目录：`src/services/hotkey/hotkey-server/`
 - 请求封装：`src/lib/request.ts`（基于 axios）
 
+生成结果包含每个后端模块的请求函数、请求参数和响应类型。生成过程不依赖正在运行的后端服务；`hotkey-server` 更新并提交 OpenAPI 文档后，前端重新执行命令即可同步全部 API 请求代码。生成目录只允许由该命令更新，不得手工维护。
+
 后端接口有变更时，按以下顺序操作：
 
-1. 在 `hotkey-server` 稳定 OpenAPI 并合并到 `main`
-2. 执行 `npm run openapi:generate`
-3. 在页面与组件中接入新接口并回归
+1. 在 `hotkey-server` 修改接口，并执行 `make openapi-check` 生成、校验和确认 OpenAPI 文档无漂移
+2. 在 `hotkey-web` 执行 `npm run openapi:generate`
+3. 检查 `src/services/hotkey/hotkey-server/` 的生成差异，并执行 `npm run typecheck` 与 `npm run test:unit`
+4. 在页面与组件中接入新接口并回归
 
 ## 目录结构
 

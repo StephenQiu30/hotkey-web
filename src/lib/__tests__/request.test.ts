@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
+import type { AxiosAdapter } from "axios";
 
 // -- authSession.ts unit tests ---------------------------------------
 
@@ -42,6 +43,25 @@ describe("HotKeyAPIError", () => {
     expect(err.code).toBe(401);
     expect(err.message).toBe("邮箱或密码错误");
     expect(err.name).toBe("HotKeyAPIError");
+  });
+
+  it("sends generated request options through Axios and returns response data", async () => {
+    const { request } = await import("@/lib/request");
+    const adapter: AxiosAdapter = async (config) => ({
+      config,
+      data: { code: 0, data: { ok: true }, message: "ok" },
+      headers: {},
+      status: 200,
+      statusText: "OK",
+    });
+
+    await expect(
+      request<{ code: number; data: { ok: boolean }; message: string }>("/api/v1/test", {
+        adapter,
+        method: "POST",
+        data: { source: "generated-client" },
+      }),
+    ).resolves.toEqual({ code: 0, data: { ok: true }, message: "ok" });
   });
 });
 
