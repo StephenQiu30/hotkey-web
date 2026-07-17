@@ -45,6 +45,16 @@ describe("HotKeyAPIError", () => {
     expect(err.name).toBe("HotKeyAPIError");
   });
 
+  it("maps stable backend error codes to user-facing Chinese messages", async () => {
+    const { getUserFacingAPIErrorMessage } = await import("@/lib/apiErrorMessages");
+
+    expect(getUserFacingAPIErrorMessage(20002, "invalid credentials")).toBe("邮箱或密码错误");
+    expect(getUserFacingAPIErrorMessage(30001, "monitor version conflict")).toBe(
+      "监控已被更新，请刷新后重试",
+    );
+    expect(getUserFacingAPIErrorMessage(12345, "自定义错误")).toBe("自定义错误");
+  });
+
   it("sends generated request options through Axios and returns response data", async () => {
     const { request } = await import("@/lib/request");
     const adapter: AxiosAdapter = async (config) => ({
@@ -73,5 +83,15 @@ describe("registration contract", () => {
       password: "Passw0rd!",
       display_name: "Alice",
     });
+  });
+});
+
+describe("source health diagnostics", () => {
+  it("turns stable diagnostic codes into actionable Chinese messages", async () => {
+    const { getSourceHealthMessage } = await import("@/lib/sourceHealthMessages");
+
+    expect(getSourceHealthMessage("destination_not_permitted")).toContain("Fake-IP");
+    expect(getSourceHealthMessage("request_failed")).toBe("无法连接来源，请检查网络后重试");
+    expect(getSourceHealthMessage("future_code")).toBe("来源暂不可用");
   });
 });

@@ -11,8 +11,10 @@ describe("Umi OpenAPI generation contract", () => {
   it("uses the server OpenAPI document and the repository-standard output directory", () => {
     const schemaPath = path.resolve(repositoryRoot, "../hotkey-server/docs/openapi/swagger.json");
 
-    expect(fs.existsSync(schemaPath)).toBe(true);
     expect(openapiConfig.schemaPath).toBe(schemaPath);
+    expect(path.relative(repositoryRoot, openapiConfig.schemaPath)).toBe(
+      "../hotkey-server/docs/openapi/swagger.json",
+    );
     expect(openapiConfig.serversPath).toBe(path.resolve(repositoryRoot, "src/services/hotkey"));
     expect(openapiConfig.projectName).toBe("hotkey-server");
   });
