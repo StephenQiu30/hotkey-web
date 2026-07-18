@@ -1,6 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import {
+  type FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   Archive,
   Loader2,
@@ -8,8 +14,10 @@ import {
   Play,
   Plus,
   Radar,
+  RotateCcw,
   Rocket,
   Search,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -33,17 +41,42 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  deleteMonitorsId,
   getMonitors,
   postMonitors,
   postMonitorsIdArchive,
   postMonitorsIdPause,
   postMonitorsIdPublish,
   postMonitorsIdResume,
+  postMonitorsIdRestore,
 } from "@/services/hotkey/hotkey-server/monitors";
 import { getSourceConnections } from "@/services/hotkey/hotkey-server/sources";
 import { PageHeader } from "@/components/dashboard/PageHeader";
-import { MonitorAction, MonitorStatus } from "@/lib/domainEnums";
+import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog";
+import { MonitorAction, MonitorRegion, MonitorStatus } from "@/lib/domainEnums";
 import { monitorStatusLabel } from "@/lib/domainPresentation";
+import {
+  MAX_MONITOR_SOURCES,
+  MONITOR_LIMITS,
+  buildMonitorDraftRequest,
+  selectAllMonitorSources,
+  toggleMonitorSource,
+  validateMonitorDraft,
+  type MonitorDraftForm,
+} from "@/lib/monitorDraft";
+
+const createInitialForm = (): MonitorDraftForm => ({
+  name: "",
+  description: "",
+  query: "",
+  language: "zh",
+  region: MonitorRegion.China,
+  interval: 900,
+  relevance: 60,
+  event: 70,
+  retention: 30,
+  sourceIds: [],
+});
 
 export default function MonitorsPage() {
   const [monitors, setMonitors] = useState<HotKeyAPI.MonitorResponse[]>([]);
@@ -51,18 +84,9 @@ export default function MonitorsPage() {
   const [loading, setLoading] = useState(true);
   const [dialog, setDialog] = useState(false);
   const [action, setAction] = useState<number>();
-  const [form, setForm] = useState({
-    name: "",
-    description: "",
-    query: "",
-    language: "zh",
-    region: "CN",
-    interval: 900,
-    relevance: 60,
-    event: 70,
-    retention: 30,
-    sourceIds: [] as number[],
-  });
+  const [creating, setCreating] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<HotKeyAPI.MonitorResponse>();
+  const [form, setForm] = useState<MonitorDraftForm>(createInitialForm);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -74,8 +98,8 @@ export default function MonitorsPage() {
       setMonitors(monitorResult.data?.items ?? []);
       setSources(
         (sourceResult.data?.items ?? []).filter(
-          (source) => source.enabled && !source.deleted,
-        ),
+          (source) => source.enabled && !source.deleted
+        )
       );
     } catch (reason) {
       toast.error(reason instanceof Error ? reason.message : "监控加载失败");
@@ -87,60 +111,30 @@ export default function MonitorsPage() {
     load();
   }, [load]);
 
-  const create = async () => {
-    if (!form.name || !form.query || !form.sourceIds.length) return;
+  const create = async (event?: FormEvent) => {
+    event?.preventDefault();
+    const validationMessage = validateMonitorDraft(form);
+    if (validationMessage) {
+      toast.error(validationMessage);
+      return;
+    }
+    setCreating(true);
     try {
-      await postMonitors({
-        name: form.name,
-        description: form.description || undefined,
-        config: {
-          collection_interval_seconds: form.interval,
-          event_threshold: form.event,
-          languages: [form.language],
-          regions: [form.region],
-          relevance_threshold: form.relevance,
-          retention_days: form.retention,
-          timezone: "Asia/Shanghai",
-        },
-        rules: [
-          {
-            rule_type: "keyword",
-            operator: "contains",
-            value: form.query,
-            enabled: true,
-            priority: 1,
-            weight: 1,
-          },
-        ],
-        sources: form.sourceIds.map((source_connection_id, index) => ({
-          source_connection_id,
-          enabled: true,
-          priority: index + 1,
-        })),
-      });
+      await postMonitors(buildMonitorDraftRequest(form));
       setDialog(false);
-      setForm({
-        name: "",
-        description: "",
-        query: "",
-        language: "zh",
-        region: "CN",
-        interval: 900,
-        relevance: 60,
-        event: 70,
-        retention: 30,
-        sourceIds: [],
-      });
+      setForm(createInitialForm());
       await load();
       toast.success("监控草稿已创建");
     } catch (reason) {
       toast.error(reason instanceof Error ? reason.message : "监控创建失败");
+    } finally {
+      setCreating(false);
     }
   };
 
   const operate = async (
     monitor: HotKeyAPI.MonitorResponse,
-    kind: MonitorAction,
+    kind: MonitorAction
   ) => {
     if (monitor.id == null) return;
     setAction(monitor.id);
@@ -151,7 +145,7 @@ export default function MonitorsPage() {
           {
             expected_draft_version: monitor.draft?.version ?? 0,
             expected_monitor_version: monitor.version ?? 0,
-          },
+          }
         );
       else if (kind === MonitorAction.Pause)
         await postMonitorsIdPause({ id: monitor.id }, {
@@ -159,6 +153,10 @@ export default function MonitorsPage() {
         } as unknown as HotKeyAPI.LifecycleRequest);
       else if (kind === MonitorAction.Resume)
         await postMonitorsIdResume({ id: monitor.id }, {
+          expected_monitor_version: monitor.version ?? 0,
+        } as unknown as HotKeyAPI.LifecycleRequest);
+      else if (kind === MonitorAction.Restore)
+        await postMonitorsIdRestore({ id: monitor.id }, {
           expected_monitor_version: monitor.version ?? 0,
         } as unknown as HotKeyAPI.LifecycleRequest);
       else
@@ -174,12 +172,45 @@ export default function MonitorsPage() {
     }
   };
 
+  const deleteMonitor = async () => {
+    if (deleteTarget?.id == null) return;
+    setAction(deleteTarget.id);
+    try {
+      await deleteMonitorsId({ id: deleteTarget.id }, {
+        expected_monitor_version: deleteTarget.version ?? 0,
+      } as unknown as HotKeyAPI.LifecycleRequest);
+      setDeleteTarget(undefined);
+      await load();
+      toast.success("监控已删除，历史事件与报告仍保留");
+    } catch (reason) {
+      toast.error(reason instanceof Error ? reason.message : "监控删除失败");
+    } finally {
+      setAction(undefined);
+    }
+  };
+
+  const availableSourceIds = useMemo(
+    () => sources.flatMap((source) => (source.id == null ? [] : [source.id])),
+    [sources]
+  );
+  const selectAllIds = useMemo(
+    () => selectAllMonitorSources(availableSourceIds),
+    [availableSourceIds]
+  );
+  const allSelected =
+    selectAllIds.length > 0 &&
+    selectAllIds.every((id) => form.sourceIds.includes(id)) &&
+    form.sourceIds.length === selectAllIds.length;
+  const selectionState = allSelected
+    ? true
+    : form.sourceIds.length > 0
+    ? "indeterminate"
+    : false;
+
   const toggleSource = (id: number, checked: boolean) =>
     setForm((current) => ({
       ...current,
-      sourceIds: checked
-        ? [...current.sourceIds, id]
-        : current.sourceIds.filter((value) => value !== id),
+      sourceIds: toggleMonitorSource(current.sourceIds, id, checked),
     }));
 
   return (
@@ -196,147 +227,247 @@ export default function MonitorsPage() {
                 新建监控
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
-              <DialogHeader>
+            <DialogContent className="max-h-[90vh] overflow-hidden p-0 sm:max-w-xl">
+              <DialogHeader className="border-b border-border px-6 py-5">
                 <DialogTitle>新建监控草稿</DialogTitle>
               </DialogHeader>
-              <div className="grid gap-4 py-2 sm:grid-cols-2">
-                <div className="sm:col-span-2">
-                  <Label htmlFor="monitor-name">监控名称</Label>
-                  <Input
-                    id="monitor-name"
-                    className="mt-2"
-                    value={form.name}
-                    onChange={(event) =>
-                      setForm({ ...form, name: event.target.value })
-                    }
-                    placeholder="AI Agent 创作工具"
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <Label htmlFor="monitor-query">关键词规则</Label>
-                  <Input
-                    id="monitor-query"
-                    className="mt-2"
-                    value={form.query}
-                    onChange={(event) =>
-                      setForm({ ...form, query: event.target.value })
-                    }
-                    placeholder="AI Agent OR 智能体 OR agentic"
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <Label htmlFor="monitor-description">说明</Label>
-                  <Input
-                    id="monitor-description"
-                    className="mt-2"
-                    value={form.description}
-                    onChange={(event) =>
-                      setForm({ ...form, description: event.target.value })
-                    }
-                    placeholder="追踪创作工作流中的智能体产品与案例"
-                  />
-                </div>
-                <div>
-                  <Label>语言</Label>
-                  <Select
-                    value={form.language}
-                    onValueChange={(value) =>
-                      setForm({ ...form, language: value })
-                    }
-                  >
-                    <SelectTrigger className="mt-2">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="zh">中文</SelectItem>
-                      <SelectItem value="en">English</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>地区</Label>
-                  <Select
-                    value={form.region}
-                    onValueChange={(value) =>
-                      setForm({ ...form, region: value })
-                    }
-                  >
-                    <SelectTrigger className="mt-2">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="CN">中国</SelectItem>
-                      <SelectItem value="US">美国</SelectItem>
-                      <SelectItem value="GLOBAL">全球</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                {[
-                  ["采集间隔（秒）", "interval", 60, 86400],
-                  ["相关性阈值", "relevance", 0, 100],
-                  ["事件阈值", "event", 0, 100],
-                  ["保留天数", "retention", 1, 365],
-                ].map(([label, key, min, max]) => (
-                  <div key={String(key)}>
-                    <Label htmlFor={`monitor-${key}`}>{label}</Label>
+              <form onSubmit={create}>
+                <div className="grid max-h-[calc(90vh-9rem)] gap-4 overflow-y-auto px-6 py-5 sm:grid-cols-2">
+                  <div className="sm:col-span-2">
+                    <Label htmlFor="monitor-name">监控名称</Label>
                     <Input
-                      id={`monitor-${key}`}
-                      type="number"
-                      min={Number(min)}
-                      max={Number(max)}
-                      className="mono mt-2"
-                      value={form[key as "interval"]}
+                      id="monitor-name"
+                      className="mt-2"
+                      value={form.name}
                       onChange={(event) =>
-                        setForm({ ...form, [key]: Number(event.target.value) })
+                        setForm({ ...form, name: event.target.value })
                       }
+                      placeholder="AI Agent 创作工具"
                     />
                   </div>
-                ))}
-                <div className="sm:col-span-2">
-                  <Label>数据来源</Label>
-                  <div className="mt-2 divide-y divide-border rounded-md border border-border">
-                    {sources.length ? (
-                      sources.map((source) => (
-                        <label
-                          key={source.id}
-                          className="flex cursor-pointer items-center gap-3 px-3 py-3 text-sm"
-                        >
-                          <Checkbox
-                            checked={
-                              source.id != null &&
-                              form.sourceIds.includes(source.id)
+                  <div className="sm:col-span-2">
+                    <Label htmlFor="monitor-query">关键词规则</Label>
+                    <Input
+                      id="monitor-query"
+                      className="mt-2"
+                      value={form.query}
+                      onChange={(event) =>
+                        setForm({ ...form, query: event.target.value })
+                      }
+                      placeholder="AI Agent OR 智能体 OR agentic"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <Label htmlFor="monitor-description">说明</Label>
+                    <Input
+                      id="monitor-description"
+                      className="mt-2"
+                      value={form.description}
+                      onChange={(event) =>
+                        setForm({ ...form, description: event.target.value })
+                      }
+                      placeholder="追踪创作工作流中的智能体产品与案例"
+                    />
+                  </div>
+                  <div>
+                    <Label>语言</Label>
+                    <Select
+                      value={form.language}
+                      onValueChange={(value) =>
+                        setForm({ ...form, language: value })
+                      }
+                    >
+                      <SelectTrigger className="mt-2">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="zh">中文</SelectItem>
+                        <SelectItem value="en">English</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>地区</Label>
+                    <Select
+                      value={form.region}
+                      onValueChange={(value) =>
+                        setForm({ ...form, region: value as MonitorRegion })
+                      }
+                    >
+                      <SelectTrigger className="mt-2">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="CN">中国</SelectItem>
+                        <SelectItem value="US">美国</SelectItem>
+                        <SelectItem value={MonitorRegion.Global}>
+                          全球
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {(
+                    [
+                      [
+                        "采集间隔（秒）",
+                        "interval",
+                        MONITOR_LIMITS.interval.min,
+                        MONITOR_LIMITS.interval.max,
+                        MONITOR_LIMITS.interval.step,
+                      ],
+                      [
+                        "相关性阈值",
+                        "relevance",
+                        MONITOR_LIMITS.relevance.min,
+                        MONITOR_LIMITS.relevance.max,
+                        1,
+                      ],
+                      [
+                        "事件阈值",
+                        "event",
+                        MONITOR_LIMITS.event.min,
+                        MONITOR_LIMITS.event.max,
+                        1,
+                      ],
+                      [
+                        "保留天数",
+                        "retention",
+                        MONITOR_LIMITS.retention.min,
+                        MONITOR_LIMITS.retention.max,
+                        1,
+                      ],
+                    ] as const
+                  ).map(([label, key, min, max, step]) => (
+                    <div key={String(key)}>
+                      <Label htmlFor={`monitor-${key}`}>{label}</Label>
+                      <Input
+                        id={`monitor-${key}`}
+                        type="number"
+                        min={Number(min)}
+                        max={Number(max)}
+                        step={Number(step)}
+                        className="mono mt-2"
+                        value={form[key as "interval"]}
+                        onChange={(event) =>
+                          setForm({
+                            ...form,
+                            [key]: Number(event.target.value),
+                          })
+                        }
+                      />
+                    </div>
+                  ))}
+                  <div className="sm:col-span-2">
+                    <div className="flex items-end justify-between gap-3">
+                      <div>
+                        <Label>数据来源</Label>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          最多选择 {MAX_MONITOR_SOURCES}{" "}
+                          个，优先选择与关键词相关的来源。
+                        </p>
+                      </div>
+                      <span className="mono shrink-0 text-xs text-muted-foreground">
+                        已选 {form.sourceIds.length}/{MAX_MONITOR_SOURCES}
+                      </span>
+                    </div>
+                    <div className="mt-2 overflow-hidden rounded-md border border-border">
+                      {sources.length > 0 && (
+                        <div className="flex items-center gap-3 border-b border-border bg-muted/30 px-3 py-2.5 text-sm">
+                          <label className="flex cursor-pointer items-center gap-3 font-medium">
+                            <Checkbox
+                              aria-label="全选数据来源"
+                              checked={selectionState}
+                              onCheckedChange={(checked) =>
+                                setForm((current) => ({
+                                  ...current,
+                                  sourceIds:
+                                    checked === true ? selectAllIds : [],
+                                }))
+                              }
+                            />
+                            <span>全选</span>
+                          </label>
+                          {availableSourceIds.length > MAX_MONITOR_SOURCES && (
+                            <span className="text-xs text-muted-foreground">
+                              按列表顺序选择前 {MAX_MONITOR_SOURCES} 个
+                            </span>
+                          )}
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="ml-auto h-7 px-2 text-xs"
+                            disabled={!form.sourceIds.length}
+                            onClick={() =>
+                              setForm((current) => ({
+                                ...current,
+                                sourceIds: [],
+                              }))
                             }
-                            onCheckedChange={(checked) =>
-                              source.id != null &&
-                              toggleSource(source.id, checked === true)
-                            }
-                          />
-                          <span>{source.name}</span>
-                          <span className="ml-auto mono text-xs text-muted-foreground">
-                            {source.source_type}
-                          </span>
-                        </label>
-                      ))
-                    ) : (
-                      <p className="p-4 text-xs text-muted-foreground">
-                        请先在来源管理中创建并启用来源。
-                      </p>
-                    )}
+                          >
+                            清空
+                          </Button>
+                        </div>
+                      )}
+                      <div className="max-h-64 divide-y divide-border overflow-y-auto">
+                        {sources.length ? (
+                          sources.map((source) => (
+                            <label
+                              key={source.id}
+                              className="flex cursor-pointer items-center gap-3 px-3 py-3 text-sm has-[[data-disabled]]:cursor-not-allowed has-[[data-disabled]]:opacity-50"
+                            >
+                              <Checkbox
+                                checked={
+                                  source.id != null &&
+                                  form.sourceIds.includes(source.id)
+                                }
+                                onCheckedChange={(checked) =>
+                                  source.id != null &&
+                                  toggleSource(source.id, checked === true)
+                                }
+                                disabled={
+                                  source.id != null &&
+                                  !form.sourceIds.includes(source.id) &&
+                                  form.sourceIds.length >= MAX_MONITOR_SOURCES
+                                }
+                              />
+                              <span>{source.name}</span>
+                              <span className="ml-auto mono text-xs text-muted-foreground">
+                                {source.source_type}
+                              </span>
+                            </label>
+                          ))
+                        ) : (
+                          <p className="p-4 text-xs text-muted-foreground">
+                            请先在来源管理中创建并启用来源。
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setDialog(false)}>
-                  取消
-                </Button>
-                <Button
-                  onClick={create}
-                  disabled={!form.name || !form.query || !form.sourceIds.length}
-                >
-                  创建草稿
-                </Button>
-              </DialogFooter>
+                <DialogFooter className="border-t border-border px-6 py-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setDialog(false)}
+                  >
+                    取消
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={
+                      creating ||
+                      !form.name.trim() ||
+                      !form.query.trim() ||
+                      !form.sourceIds.length
+                    }
+                  >
+                    {creating && <Loader2 className="animate-spin" />}
+                    {creating ? "创建中" : "创建草稿"}
+                  </Button>
+                </DialogFooter>
+              </form>
             </DialogContent>
           </Dialog>
         }
@@ -437,6 +568,30 @@ export default function MonitorsPage() {
                         归档
                       </Button>
                     )}
+                    {monitor.status === MonitorStatus.Archived && (
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => operate(monitor, MonitorAction.Restore)}
+                          disabled={action === monitor.id}
+                          className="gap-1.5"
+                        >
+                          <RotateCcw />
+                          恢复
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setDeleteTarget(monitor)}
+                          disabled={action === monitor.id}
+                          className="gap-1.5 text-destructive hover:text-destructive"
+                        >
+                          <Trash2 />
+                          删除
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
               );
@@ -444,6 +599,15 @@ export default function MonitorsPage() {
           </div>
         </div>
       )}
+      <ConfirmDeleteDialog
+        open={deleteTarget != null}
+        onOpenChange={(open) => !open && setDeleteTarget(undefined)}
+        title="删除监控"
+        description="监控将从工作区隐藏，已采集内容、历史事件、报告和审计记录仍会保留。"
+        resourceName={deleteTarget?.name || `监控 #${deleteTarget?.id ?? ""}`}
+        onConfirm={deleteMonitor}
+        loading={action === deleteTarget?.id}
+      />
     </div>
   );
 }

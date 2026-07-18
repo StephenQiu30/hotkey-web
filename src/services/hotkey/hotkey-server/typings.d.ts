@@ -250,7 +250,7 @@ required property without making explicit null impossible to bind. */
     model_name?: string;
     model_version?: string;
     name?: string;
-    provider?: "openai" | "onnx";
+    provider?: "openai" | "deepseek" | "ollama" | "onnx";
     task_type?:
       | "embedding"
       | "term_expansion"
@@ -292,6 +292,20 @@ required property without making explicit null impossible to bind. */
   type deleteAiModelProfilesIdParams = {
     /** model profile ID */
     id: number;
+  };
+
+  type deleteMonitorsIdParams = {
+    /** monitor ID */
+    id: number;
+  };
+
+  type deleteReportSubscriptionsIdParams = {
+    /** subscription ID */
+    id: number;
+  };
+
+  type DeleteSubscriptionRequest = {
+    expected_version: number;
   };
 
   type deleteUsersIdParams = {

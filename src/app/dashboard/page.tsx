@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { Activity, ArrowUpRight, BookOpen, Check, FileText, Loader2, RefreshCw, Sparkles } from "lucide-react";
+import { ArrowUpRight, BookOpen, Check, FileText, Loader2, RefreshCw, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,8 +16,11 @@ import {
   postEventsIdIntelligenceSummaryRegenerate,
 } from "@/services/hotkey/hotkey-server/events";
 import { getContentsId } from "@/services/hotkey/hotkey-server/contents";
+import { getMonitors } from "@/services/hotkey/hotkey-server/monitors";
+import { getOperationsOverview } from "@/services/hotkey/hotkey-server/operations";
 import { getReports, postReportsIdBuild, postReportsIdPreview } from "@/services/hotkey/hotkey-server/reports";
 import { EventAction, ReportAction, WorkspaceTab } from "@/lib/domainEnums";
+import { EmptyWorkspace } from "@/components/dashboard/EmptyWorkspace";
 
 const formatDateTime = (value?: string) => value
   ? new Intl.DateTimeFormat("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).format(new Date(value))
@@ -33,6 +36,8 @@ export default function DashboardPage() {
   const [intelligence, setIntelligence] = useState<HotKeyAPI.EventIntelligenceResponse>();
   const [contents, setContents] = useState<HotKeyAPI.ContentResponse[]>([]);
   const [reports, setReports] = useState<HotKeyAPI.ReportResponse[]>([]);
+  const [monitors, setMonitors] = useState<HotKeyAPI.MonitorResponse[]>([]);
+  const [overview, setOverview] = useState<HotKeyAPI.RuntimeOverview>();
   const [tab, setTab] = useState<WorkspaceTab>(WorkspaceTab.Evidence);
   const [loading, setLoading] = useState(true);
   const [detailLoading, setDetailLoading] = useState(false);
@@ -44,13 +49,17 @@ export default function DashboardPage() {
   const loadWorkspace = useCallback(async () => {
     setLoading(true); setError(undefined);
     try {
-      const [eventResult, reportResult] = await Promise.all([
+      const [eventResult, reportResult, monitorResult, overviewResult] = await Promise.all([
         getEvents({ limit: 50 }),
         getReports({ limit: 20 }),
+        getMonitors({ limit: 100 }),
+        getOperationsOverview().catch(() => undefined),
       ]);
       const nextEvents = eventResult.data?.items ?? [];
       setEvents(nextEvents);
       setReports(reportResult.data?.items ?? []);
+      setMonitors(monitorResult.data?.items ?? []);
+      setOverview(overviewResult?.data);
       setSelectedId((current) => current ?? nextEvents[0]?.id);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "工作台加载失败");
@@ -115,7 +124,8 @@ export default function DashboardPage() {
 
   if (loading) return <div className="flex min-h-[calc(100vh-60px)] items-center justify-center"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>;
   if (error) return <div className="app-page"><div className="panel p-10 text-center"><p className="text-sm text-destructive">{error}</p><Button onClick={loadWorkspace} variant="outline" className="mt-4">重新加载</Button></div></div>;
-  if (!events.length) return <div className="app-page"><div className="panel flex min-h-80 flex-col items-center justify-center text-center"><Activity className="mb-3 h-6 w-6 text-muted-foreground" /><h1 className="text-base font-medium">还没有聚合事件</h1><p className="mt-1 text-sm text-muted-foreground">配置并发布监控后，事件会在这里出现。</p><a href="/dashboard/settings"><Button className="mt-5">前往热点监控</Button></a></div></div>;
+  if (!events.length)
+    return <EmptyWorkspace monitors={monitors} overview={overview} />;
 
   return (
     <div className="grid min-h-[calc(100vh-60px)] grid-cols-1 xl:grid-cols-[minmax(0,1fr)_460px]">

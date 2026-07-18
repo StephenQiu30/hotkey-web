@@ -39,6 +39,13 @@ export enum MonitorAction {
   Pause = "pause",
   Resume = "resume",
   Archive = "archive",
+  Restore = "restore",
+}
+
+export enum MonitorRegion {
+  China = "CN",
+  UnitedStates = "US",
+  Global = "global",
 }
 
 export enum ReportStatus {

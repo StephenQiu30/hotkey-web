@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Loader2, Plus, Rss, RotateCw, Send } from "lucide-react";
+import { Loader2, Plus, Rss, RotateCw, Send, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,12 +24,14 @@ import {
 } from "@/components/ui/select";
 import { getMonitors } from "@/services/hotkey/hotkey-server/monitors";
 import {
+  deleteReportSubscriptionsId,
   getReportSubscriptions,
   patchReportSubscriptionsId,
   postReportSubscriptions,
   postReportSubscriptionsIdRssTokenRotate,
 } from "@/services/hotkey/hotkey-server/delivery";
 import { PageHeader } from "@/components/dashboard/PageHeader";
+import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog";
 import { DeliveryChannel, ReportType } from "@/lib/domainEnums";
 import {
   deliveryChannelLabel,
@@ -44,6 +46,7 @@ export default function SubscriptionsPage() {
   const [loading, setLoading] = useState(true);
   const [dialog, setDialog] = useState(false);
   const [action, setAction] = useState<number>();
+  const [deleteTarget, setDeleteTarget] = useState<HotKeyAPI.SubscriptionResponse>();
   const [form, setForm] = useState({
     monitor_id: "",
     channel: DeliveryChannel.Email,
@@ -126,6 +129,24 @@ export default function SubscriptionsPage() {
       await load();
     } catch (reason) {
       toast.error(reason instanceof Error ? reason.message : "Token 轮换失败");
+    } finally {
+      setAction(undefined);
+    }
+  };
+
+  const deleteSubscription = async () => {
+    if (deleteTarget?.id == null || deleteTarget.enabled) return;
+    setAction(deleteTarget.id);
+    try {
+      await deleteReportSubscriptionsId(
+        { id: deleteTarget.id },
+        { expected_version: deleteTarget.version ?? 0 },
+      );
+      setDeleteTarget(undefined);
+      await load();
+      toast.success("发布订阅已删除，历史投递记录仍保留");
+    } catch (reason) {
+      toast.error(reason instanceof Error ? reason.message : "订阅删除失败");
     } finally {
       setAction(undefined);
     }
@@ -274,7 +295,7 @@ export default function SubscriptionsPage() {
         </div>
       ) : (
         <div className="panel mt-6 overflow-hidden">
-          <div className="hidden grid-cols-[minmax(0,1fr)_100px_120px_180px] gap-4 border-b border-border px-5 py-3 text-xs text-muted-foreground md:grid">
+          <div className="hidden grid-cols-[minmax(0,1fr)_100px_120px_250px] gap-4 border-b border-border px-5 py-3 text-xs text-muted-foreground md:grid">
             <span>订阅</span>
             <span>状态</span>
             <span>计划</span>
@@ -284,7 +305,7 @@ export default function SubscriptionsPage() {
             {subscriptions.map((subscription) => (
               <div
                 key={subscription.id}
-                className="grid gap-3 px-4 py-4 md:grid-cols-[minmax(0,1fr)_100px_120px_180px] md:items-center md:gap-4 md:px-5"
+                className="grid gap-3 px-4 py-4 md:grid-cols-[minmax(0,1fr)_100px_120px_250px] md:items-center md:gap-4 md:px-5"
               >
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
@@ -330,12 +351,32 @@ export default function SubscriptionsPage() {
                   >
                     {subscription.enabled ? "停用" : "启用"}
                   </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setDeleteTarget(subscription)}
+                    disabled={action === subscription.id || subscription.enabled}
+                    title={subscription.enabled ? "请先停用订阅" : "删除订阅"}
+                    className="gap-1.5 text-destructive hover:text-destructive"
+                  >
+                    <Trash2 />
+                    删除
+                  </Button>
                 </div>
               </div>
             ))}
           </div>
         </div>
       )}
+      <ConfirmDeleteDialog
+        open={deleteTarget != null}
+        onOpenChange={(open) => !open && setDeleteTarget(undefined)}
+        title="删除发布订阅"
+        description="订阅配置会从工作区移除；已生成报告、投递结果和审计记录仍会保留。"
+        resourceName={`${reportTypeLabel(deleteTarget?.report_type)} · ${deliveryChannelLabel(deleteTarget?.channel)}`}
+        onConfirm={deleteSubscription}
+        loading={action === deleteTarget?.id}
+      />
     </div>
   );
 }

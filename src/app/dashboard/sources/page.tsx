@@ -9,6 +9,7 @@ import {
   Plus,
   Power,
   RefreshCw,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -35,12 +36,14 @@ import {
   postSourceConnectionsIdDisable,
   postSourceConnectionsIdEnable,
   postSourceConnectionsIdHealth,
+  postSourceConnectionsIdArchive,
 } from "@/services/hotkey/hotkey-server/sources";
 import { getSourceHealthMessage } from "@/lib/sourceHealthMessages";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { useAuthStore } from "@/stores/authStore";
 import { SourceAction, SourceType, UserRole } from "@/lib/domainEnums";
 import { sourceHealthPresentation } from "@/lib/domainPresentation";
+import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog";
 
 function sourceStatus(source: HotKeyAPI.SourceReadResponse) {
   if (source.deleted) {
@@ -59,6 +62,7 @@ export default function SourcesPage() {
   const [loading, setLoading] = useState(true);
   const [dialog, setDialog] = useState(false);
   const [action, setAction] = useState<number>();
+  const [deleteTarget, setDeleteTarget] = useState<HotKeyAPI.SourceReadResponse>();
   const [form, setForm] = useState({
     name: "",
     source_type: SourceType.RSS,
@@ -70,7 +74,9 @@ export default function SourcesPage() {
     setLoading(true);
     try {
       setSources(
-        (await getSourceConnections({ limit: 100 })).data?.items ?? [],
+        ((await getSourceConnections({ limit: 100 })).data?.items ?? []).filter(
+          (source) => !source.deleted,
+        ),
       );
     } catch (reason) {
       toast.error(reason instanceof Error ? reason.message : "来源加载失败");
@@ -127,6 +133,24 @@ export default function SourcesPage() {
       await load();
     } catch (reason) {
       toast.error(reason instanceof Error ? reason.message : "操作失败");
+    } finally {
+      setAction(undefined);
+    }
+  };
+
+  const deleteSource = async () => {
+    if (!canManage || deleteTarget?.id == null || deleteTarget.enabled) return;
+    setAction(deleteTarget.id);
+    try {
+      await postSourceConnectionsIdArchive(
+        { id: deleteTarget.id },
+        { expected_source_version: deleteTarget.version ?? 0 },
+      );
+      setDeleteTarget(undefined);
+      await load();
+      toast.success("来源已删除，已采集内容仍保留");
+    } catch (reason) {
+      toast.error(reason instanceof Error ? reason.message : "来源删除失败");
     } finally {
       setAction(undefined);
     }
@@ -241,7 +265,7 @@ export default function SourcesPage() {
           <div
             className={`hidden gap-4 border-b border-border px-5 py-3 text-xs text-muted-foreground md:grid ${
               canManage
-                ? "grid-cols-[minmax(0,1.5fr)_120px_120px_180px]"
+                ? "grid-cols-[minmax(0,1.5fr)_120px_120px_250px]"
                 : "grid-cols-[minmax(0,1.5fr)_120px_120px]"
             }`}
           >
@@ -258,7 +282,7 @@ export default function SourcesPage() {
                   key={source.id}
                   className={`grid gap-3 px-4 py-4 md:items-center md:gap-4 md:px-5 ${
                     canManage
-                      ? "md:grid-cols-[minmax(0,1.5fr)_120px_120px_180px]"
+                      ? "md:grid-cols-[minmax(0,1.5fr)_120px_120px_250px]"
                       : "md:grid-cols-[minmax(0,1.5fr)_120px_120px]"
                   }`}
                 >
@@ -300,6 +324,17 @@ export default function SourcesPage() {
                         <Power />
                         {source.enabled ? "停用" : "启用"}
                       </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setDeleteTarget(source)}
+                        disabled={action === source.id || source.enabled}
+                        title={source.enabled ? "请先停用来源" : "删除来源"}
+                        className="gap-1.5 text-destructive hover:text-destructive"
+                      >
+                        <Trash2 />
+                        删除
+                      </Button>
                     </div>
                   )}
                 </div>
@@ -318,6 +353,15 @@ export default function SourcesPage() {
           刷新来源
         </Button>
       </div>
+      <ConfirmDeleteDialog
+        open={deleteTarget != null}
+        onOpenChange={(open) => !open && setDeleteTarget(undefined)}
+        title="删除来源"
+        description="来源配置将从列表中移除；已采集内容、证据和历史报告不会被删除。"
+        resourceName={deleteTarget?.name || `来源 #${deleteTarget?.id ?? ""}`}
+        onConfirm={deleteSource}
+        loading={action === deleteTarget?.id}
+      />
     </div>
   );
 }
