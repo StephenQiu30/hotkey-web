@@ -3,29 +3,15 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
-import openapiConfig, {
-  DEFAULT_OPENAPI_SCHEMA_URL,
-  resolveOpenAPISchemaPath,
-} from "../../../openapi2ts.config";
+import openapiConfig from "../../../openapi2ts.config";
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 
 describe("Umi OpenAPI generation contract", () => {
   it("uses the running server OpenAPI document and the repository-standard output directory", () => {
-    expect(DEFAULT_OPENAPI_SCHEMA_URL).toBe("http://127.0.0.1:8080/openapi.json");
-    expect(openapiConfig.schemaPath).toBe(DEFAULT_OPENAPI_SCHEMA_URL);
+    expect(openapiConfig.schemaPath).toBe("http://127.0.0.1:8080/openapi.json");
     expect(openapiConfig.serversPath).toBe(path.resolve(repositoryRoot, "src/services/hotkey"));
     expect(openapiConfig.projectName).toBe("hotkey-server");
-  });
-
-  it("allows CI and offline generation to override the schema with a URL or local file", () => {
-    expect(resolveOpenAPISchemaPath("https://api.example.test/openapi.json")).toBe(
-      "https://api.example.test/openapi.json",
-    );
-    expect(resolveOpenAPISchemaPath("../hotkey-server/docs/openapi/swagger.json")).toBe(
-      path.resolve(repositoryRoot, "../hotkey-server/docs/openapi/swagger.json"),
-    );
-    expect(resolveOpenAPISchemaPath("   ")).toBe(DEFAULT_OPENAPI_SCHEMA_URL);
   });
 
   it("routes generated requests through the shared Axios adapter", () => {

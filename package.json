@@ -9,7 +9,6 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "openapi:generate": "openapi2ts",
-    "openapi:generate:local": "HOTKEY_OPENAPI_SCHEMA=../hotkey-server/docs/openapi/swagger.json openapi2ts",
     "test": "tsc --noEmit",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
