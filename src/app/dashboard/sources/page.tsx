@@ -44,6 +44,15 @@ import { useAuthStore } from "@/stores/authStore";
 import { SourceAction, SourceType, UserRole } from "@/lib/domainEnums";
 import { sourceHealthPresentation } from "@/lib/domainPresentation";
 import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog";
+import { Checkbox } from "@/components/ui/checkbox";
+
+const emptySourceForm = () => ({
+  name: "",
+  source_type: SourceType.RSS,
+  endpoint: "",
+  auth_type: "none" as "none" | "api_key" | "oauth2" | "bearer",
+  allow_body_storage: false,
+});
 
 function sourceStatus(source: HotKeyAPI.SourceReadResponse) {
   if (source.deleted) {
@@ -63,12 +72,12 @@ export default function SourcesPage() {
   const [dialog, setDialog] = useState(false);
   const [action, setAction] = useState<number>();
   const [deleteTarget, setDeleteTarget] = useState<HotKeyAPI.SourceReadResponse>();
-  const [form, setForm] = useState({
-    name: "",
-    source_type: SourceType.RSS,
-    endpoint: "",
-    auth_type: "none" as "none" | "api_key" | "oauth2" | "bearer",
-  });
+  const [form, setForm] = useState(emptySourceForm);
+
+  const changeDialog = (open: boolean) => {
+    setDialog(open);
+    if (!open) setForm(emptySourceForm());
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -91,14 +100,17 @@ export default function SourcesPage() {
   const create = async () => {
     if (!canManage || !form.name || !form.endpoint) return;
     try {
-      await postSourceConnections({ ...form, enabled: true });
-      setDialog(false);
-      setForm({
-        name: "",
-        source_type: SourceType.RSS,
-        endpoint: "",
-        auth_type: "none",
+      await postSourceConnections({
+        name: form.name,
+        source_type: form.source_type,
+        endpoint: form.endpoint,
+        auth_type: form.auth_type,
+        enabled: true,
+        config: {
+          allow_body_storage: form.allow_body_storage,
+        },
       });
+      changeDialog(false);
       await load();
       toast.success("来源连接已创建");
     } catch (reason) {
@@ -168,7 +180,7 @@ export default function SourcesPage() {
         }
         action={
           canManage ? (
-            <Dialog open={dialog} onOpenChange={setDialog}>
+            <Dialog open={dialog} onOpenChange={changeDialog}>
               <DialogTrigger asChild>
                 <Button className="gap-2">
                   <Plus />
@@ -197,7 +209,11 @@ export default function SourcesPage() {
                     <Select
                       value={form.source_type}
                       onValueChange={(value) =>
-                        setForm({ ...form, source_type: value as SourceType })
+                        setForm({
+                          ...form,
+                          source_type: value as SourceType,
+                          allow_body_storage: false,
+                        })
                       }
                     >
                       <SelectTrigger className="mt-2">
@@ -223,9 +239,32 @@ export default function SourcesPage() {
                       className="mt-2"
                     />
                   </div>
+                  <div className="rounded-md border border-border p-4">
+                    <div className="flex items-start gap-3">
+                      <Checkbox
+                        aria-label="保存来源正文/摘要用于归档预览"
+                        checked={form.allow_body_storage}
+                        id="source-allow-body-storage"
+                        onCheckedChange={(checked) =>
+                          setForm({
+                            ...form,
+                            allow_body_storage: checked === true,
+                          })
+                        }
+                      />
+                      <div className="min-w-0">
+                        <Label htmlFor="source-allow-body-storage">
+                          保存来源正文/摘要用于归档预览
+                        </Label>
+                        <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                          只保存来源 Feed 实际提供的正文/摘要，不抓取原网页；启用前确认来源条款。
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setDialog(false)}>
+                  <Button variant="outline" onClick={() => changeDialog(false)}>
                     取消
                   </Button>
                   <Button
