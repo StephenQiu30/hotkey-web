@@ -72,10 +72,47 @@ h1, h2, h3, h4 { letter-spacing: -0.025em; }
 .focus-ring:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
 .quiet-scrollbar { scrollbar-color: #333 transparent; scrollbar-width: thin; }
 
+.document-markdown { max-width: 72ch; color: #d8d8d8; font-size: 15px; line-height: 1.8; }
+.document-markdown > :first-child { margin-top: 0; }
+.document-markdown h1, .document-markdown h2, .document-markdown h3 { margin: 1.8em 0 .65em; color: var(--foreground); line-height: 1.25; }
+.document-markdown h1 { font-size: 2rem; }
+.document-markdown h2 { font-size: 1.5rem; }
+.document-markdown h3 { font-size: 1.2rem; }
+.document-markdown p, .document-markdown ul, .document-markdown ol, .document-markdown blockquote, .document-markdown pre { margin: 1em 0; }
+.document-markdown ul, .document-markdown ol { padding-left: 1.5rem; }
+.document-markdown ul { list-style: disc; }
+.document-markdown ol { list-style: decimal; }
+.document-markdown a { color: #60a5fa; overflow-wrap: anywhere; text-decoration: underline; text-underline-offset: 3px; }
+.document-markdown blockquote { border-left: 2px solid var(--border-strong); padding-left: 1rem; color: var(--muted-foreground); }
+.document-markdown code { border-radius: 4px; background: #111; padding: .12rem .35rem; font-family: var(--font-mono); font-size: .9em; }
+.document-markdown pre { max-width: 100%; overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; background: #080808; padding: 1rem; }
+.document-markdown pre code { background: transparent; padding: 0; }
+.document-table-scroll { max-width: 100%; overflow-x: auto; margin: 1.25rem 0; }
+.document-markdown table { width: 100%; min-width: 480px; border-collapse: collapse; font-size: .9em; }
+.document-markdown th, .document-markdown td { border: 1px solid var(--border); padding: .65rem .75rem; text-align: left; }
+.document-markdown th { background: #0b0b0b; color: var(--foreground); }
+
 @media (max-width: 768px) {
   .app-page { padding: 24px 16px 40px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+@media print {
+  @page { margin: 16mm; }
+  :root { color-scheme: light; --background: #fff; --foreground: #111; --card: #fff; --border: #d4d4d4; --muted-foreground: #555; }
+  body { min-width: 0; background: #fff !important; color: #111 !important; }
+  nav, [data-top-nav], [data-sonner-toaster], .document-actions { display: none !important; }
+  .document-page { max-width: none; padding: 0; }
+  .document-print-root { max-width: none; }
+  .document-header, .document-footer { border-color: #d4d4d4; }
+  .document-scope { border: 1px solid #bbb; background: transparent; color: #333; }
+  .document-markdown { max-width: none; color: #111; font-size: 11pt; }
+  .document-markdown a { color: #111; }
+  .document-markdown pre { white-space: pre-wrap; border-color: #ccc; background: #f7f7f7; }
+  .document-markdown code { background: #f3f3f3; }
+  .document-table-scroll { overflow: visible; }
+  .document-markdown table { min-width: 0; }
 }
