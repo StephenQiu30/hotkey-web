@@ -33,6 +33,7 @@ describe("TopNav", () => {
       />,
     );
 
+    expect(screen.getByRole("banner")).toHaveAttribute("data-top-nav");
     expect(screen.getByRole("navigation", { name: "主导航" })).toHaveClass(
       "shrink-0",
       "xl:flex",
