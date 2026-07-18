@@ -131,6 +131,19 @@ required property without making explicit null impossible to bind. */
     verification_ticket?: string;
   };
 
+  type ContentDocumentResponse = {
+    availability?: "ready" | "not_captured";
+    canonical_url?: string;
+    captured_at?: string;
+    content_id?: number;
+    language?: string;
+    markdown?: string;
+    published_at?: string;
+    sha256?: string;
+    source_name?: string;
+    title?: string;
+  };
+
   type ContentMetricsResponse = {
     comment_count?: number;
     like_count?: number;
@@ -169,6 +182,12 @@ required property without making explicit null impossible to bind. */
   type ContentResultArrayHttpRelevancePreviewItemResponse = {
     code?: number;
     data?: RelevancePreviewItemResponse[];
+    message?: string;
+  };
+
+  type ContentResultHttpContentDocumentResponse = {
+    code?: number;
+    data?: ContentDocumentResponse;
     message?: string;
   };
 
@@ -518,6 +537,11 @@ required property without making explicit null impossible to bind. */
     cursor?: string;
     /** page size */
     limit?: number;
+  };
+
+  type getContentsIdDocumentParams = {
+    /** content ID */
+    id: number;
   };
 
   type getContentsIdParams = {

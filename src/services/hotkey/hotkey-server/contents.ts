@@ -36,3 +36,20 @@ export async function getContentsId(
     }
   );
 }
+
+/** Get captured content Markdown document Returns not_captured as a successful empty state when no authorized Markdown asset exists. GET /api/v1/contents/${param0}/document */
+export async function getContentsIdDocument(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: HotKeyAPI.getContentsIdDocumentParams,
+  options?: RequestOptions
+) {
+  const { id: param0, ...queryParams } = params;
+  return request<HotKeyAPI.ContentResultHttpContentDocumentResponse>(
+    `/api/v1/contents/${param0}/document`,
+    {
+      method: "GET",
+      params: { ...queryParams },
+      ...(options || {}),
+    }
+  );
+}
