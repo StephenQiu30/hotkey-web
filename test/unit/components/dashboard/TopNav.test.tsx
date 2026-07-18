@@ -1,6 +1,6 @@
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import { Activity } from "lucide-react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import TopNav from "@/components/dashboard/TopNav";
 import { useAuthStore } from "@/stores/authStore";
 
@@ -9,6 +9,8 @@ vi.mock("next/navigation", () => ({
 }));
 
 describe("TopNav", () => {
+  afterEach(cleanup);
+
   beforeEach(() => {
     useAuthStore.setState({
       status: "authenticated",
@@ -26,9 +28,7 @@ describe("TopNav", () => {
   it("keeps desktop navigation labels intact at constrained widths", () => {
     render(
       <TopNav
-        menuItems={[
-          { path: "/dashboard", name: "工作台", icon: <Activity /> },
-        ]}
+        menuItems={[{ path: "/dashboard", name: "工作台", icon: <Activity /> }]}
       />,
     );
 
