@@ -46,7 +46,9 @@ describe("ContentDocumentViewer", () => {
     expect(screen.getByText("const safe = true;")).toBeInTheDocument();
     expect(container.querySelector("script")).toBeNull();
     expect((window as typeof window & { __unsafeMarkdown?: boolean }).__unsafeMarkdown).toBeUndefined();
-    expect(screen.getByText("仅包含来源 Feed 实际提供并获准归档的正文或摘要")).toBeInTheDocument();
+    expect(
+      screen.getByText(/仅包含来源 Feed 实际提供并获准归档的正文或摘要/),
+    ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "访问原站" })).toHaveAttribute(
       "href",
       "https://example.test/papers/7",
