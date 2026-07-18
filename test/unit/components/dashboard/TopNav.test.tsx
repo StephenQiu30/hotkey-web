@@ -45,12 +45,13 @@ describe("TopNav", () => {
     );
   });
 
-  it("keeps search available without forcing the full navigation to shrink", () => {
+  it("offers a working shortcut to collected data without a fake search control", () => {
     render(<TopNav menuItems={[]} />);
 
-    expect(screen.getByRole("search", { name: "工作台搜索" })).toHaveClass(
-      "md:flex",
-      "min-w-0",
+    expect(screen.queryByRole("search")).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "查看采集数据" })).toHaveAttribute(
+      "href",
+      "/dashboard/contents",
     );
   });
 });

@@ -36,7 +36,7 @@ describe("CollectionWorkspace", () => {
     );
 
     expect(
-      screen.getByRole("heading", { name: "最近采集批次" })
+      screen.getByRole("heading", { name: "采集批次（当前页）" })
     ).toBeInTheDocument();
     expect(screen.getByText("destination_not_permitted")).toBeInTheDocument();
     expect(
