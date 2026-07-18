@@ -50,7 +50,8 @@ export function CollectionWorkspace({
         ))}
       </section>
 
-      <section className="panel overflow-hidden">
+      <div data-testid="collection-pipeline" className="grid items-start gap-5 lg:grid-cols-2">
+        <section className="panel min-w-0 overflow-hidden">
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
           <div>
             <h2 className="text-sm font-medium">采集批次（当前页）</h2>
@@ -106,9 +107,9 @@ export function CollectionWorkspace({
             </p>
           </div>
         )}
-      </section>
+        </section>
 
-      <section className="panel overflow-hidden">
+        <section className="panel min-w-0 overflow-hidden">
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
           <div>
             <h2 className="text-sm font-medium">最近入库内容</h2>
@@ -120,32 +121,56 @@ export function CollectionWorkspace({
         </div>
         {contents.length ? (
           <div className="divide-y divide-border">
-            {contents.map((content) => (
-              <article className="px-5 py-4" key={content.id}>
+            {contents.map((content, index) => {
+              const title = content.title || content.external_id || `内容 #${content.id ?? "—"}`;
+              return (
+                <article
+                  className="px-5 py-4"
+                  key={content.id ?? `${content.external_id ?? title}-${index}`}
+                >
                 <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                   <span>{content.source_name || content.source_type || "来源"}</span>
                   <span>·</span>
                   <span>{formatDateTime(content.published_at ?? content.fetched_at)}</span>
                   <span className="mono ml-auto">{content.language || "—"}</span>
                 </div>
-                <div className="mt-2 flex items-start gap-4">
-                  <p className="min-w-0 flex-1 text-sm font-medium leading-6">
-                    {content.title || content.external_id || `内容 #${content.id}`}
-                  </p>
-                  {content.canonical_url ? (
+                <div className="mt-2 min-w-0">
+                  {content.id != null ? (
                     <a
-                      aria-label="查看原文"
-                      className="flex shrink-0 items-center gap-1 text-xs text-blue-400 no-underline"
-                      href={content.canonical_url}
-                      rel="noreferrer"
-                      target="_blank"
+                      className="block text-sm font-medium leading-6 text-foreground no-underline hover:text-blue-300"
+                      href={`/dashboard/contents/${content.id}`}
                     >
-                      查看原文 <ExternalLink className="h-3 w-3" />
+                      {title}
                     </a>
-                  ) : null}
+                  ) : (
+                    <p className="text-sm font-medium leading-6">{title}</p>
+                  )}
+                  <div className="mt-3 flex flex-wrap items-center gap-4 text-xs">
+                    {content.id != null ? (
+                      <a
+                        aria-label={`阅读归档：${title}`}
+                        className="text-blue-400 no-underline"
+                        href={`/dashboard/contents/${content.id}`}
+                      >
+                        阅读归档
+                      </a>
+                    ) : null}
+                    {content.canonical_url ? (
+                      <a
+                        aria-label="访问原站"
+                        className="flex shrink-0 items-center gap-1 text-muted-foreground no-underline hover:text-foreground"
+                        href={content.canonical_url}
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        访问原站 <ExternalLink className="h-3 w-3" />
+                      </a>
+                    ) : null}
+                  </div>
                 </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         ) : (
           <div className="flex min-h-48 flex-col items-center justify-center px-5 text-center">
@@ -160,7 +185,8 @@ export function CollectionWorkspace({
             </p>
           </div>
         )}
-      </section>
+        </section>
+      </div>
     </div>
   );
 }
