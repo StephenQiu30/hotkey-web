@@ -16,14 +16,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { getMonitors } from "@/services/hotkey/hotkey-server/monitors";
-import {
   deleteReportSubscriptionsId,
   getReportSubscriptions,
   patchReportSubscriptionsId,
@@ -44,7 +36,6 @@ export default function SubscriptionsPage() {
   const [subscriptions, setSubscriptions] = useState<
     HotKeyAPI.SubscriptionResponse[]
   >([]);
-  const [monitors, setMonitors] = useState<HotKeyAPI.MonitorResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialog, setDialog] = useState(false);
   const [action, setAction] = useState<number>();
@@ -53,28 +44,19 @@ export default function SubscriptionsPage() {
   const [cursors, setCursors] = useState<(string | undefined)[]>([undefined]);
   const [nextCursor, setNextCursor] = useState<string>();
   const [form, setForm] = useState({
-    monitor_id: "",
-    channel: DeliveryChannel.Email,
-    report_type: ReportType.Daily,
     recipient: "",
-    schedule: "0 9 * * *",
-    timezone: "Asia/Shanghai",
   });
 
   const loadPage = useCallback(async (cursor: string | undefined, pageNumber: number) => {
     setLoading(true);
     try {
-      const [subscriptionResult, monitorResult] = await Promise.all([
-        getReportSubscriptions({
-          limit: pageSize,
-          ...(cursor ? { cursor } : {}),
-        }),
-        getMonitors({ limit: 100 }),
-      ]);
+      const subscriptionResult = await getReportSubscriptions({
+        limit: pageSize,
+        ...(cursor ? { cursor } : {}),
+      });
       setSubscriptions(subscriptionResult.data?.items ?? []);
       setNextCursor(subscriptionResult.data?.next_cursor);
       setPage(pageNumber);
-      setMonitors(monitorResult.data?.items ?? []);
     } catch (reason) {
       toast.error(reason instanceof Error ? reason.message : "订阅加载失败");
     } finally {
@@ -103,16 +85,13 @@ export default function SubscriptionsPage() {
   };
 
   const create = async () => {
-    if (!form.monitor_id) return;
     try {
       const result = await postReportSubscriptions({
-        monitor_id: Number(form.monitor_id),
-        channel: form.channel,
-        report_type: form.report_type,
-        recipient:
-          form.channel === DeliveryChannel.Email ? form.recipient : undefined,
-        schedule: form.schedule,
-        timezone: form.timezone,
+        channel: DeliveryChannel.Email,
+        report_type: ReportType.Daily,
+        recipient: form.recipient,
+        schedule: "0 9 * * *",
+        timezone: "Asia/Shanghai",
         enabled: true,
       });
       setDialog(false);
@@ -199,98 +178,19 @@ export default function SubscriptionsPage() {
               </DialogHeader>
               <div className="space-y-4 py-2">
                 <div>
-                  <Label>监控</Label>
-                  <Select
-                    value={form.monitor_id}
-                    onValueChange={(value) =>
-                      setForm({ ...form, monitor_id: value })
-                    }
-                  >
-                    <SelectTrigger className="mt-2">
-                      <SelectValue placeholder="选择监控" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {monitors.map(
-                        (monitor) =>
-                          monitor.id != null && (
-                            <SelectItem
-                              key={monitor.id}
-                              value={String(monitor.id)}
-                            >
-                              {monitor.name || `监控 #${monitor.id}`}
-                            </SelectItem>
-                          ),
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <div>
-                    <Label>渠道</Label>
-                    <Select
-                      value={form.channel}
-                      onValueChange={(value) =>
-                        setForm({
-                          ...form,
-                          channel: value as DeliveryChannel,
-                        })
-                      }
-                    >
-                      <SelectTrigger className="mt-2">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value={DeliveryChannel.Email}>
-                          邮件
-                        </SelectItem>
-                        <SelectItem value={DeliveryChannel.RSS}>
-                          私有 RSS
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label>报告类型</Label>
-                    <Select
-                      value={form.report_type}
-                      onValueChange={(value) =>
-                        setForm({ ...form, report_type: value as ReportType })
-                      }
-                    >
-                      <SelectTrigger className="mt-2">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value={ReportType.Daily}>日报</SelectItem>
-                        <SelectItem value={ReportType.Weekly}>周报</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                {form.channel === DeliveryChannel.Email && (
-                  <div>
-                    <Label htmlFor="recipient">收件邮箱</Label>
-                    <Input
-                      id="recipient"
-                      type="email"
-                      className="mt-2"
-                      value={form.recipient}
-                      onChange={(event) =>
-                        setForm({ ...form, recipient: event.target.value })
-                      }
-                    />
-                  </div>
-                )}
-                <div>
-                  <Label htmlFor="schedule">Cron 计划</Label>
+                  <Label htmlFor="recipient">收件邮箱</Label>
                   <Input
-                    id="schedule"
-                    className="mono mt-2"
-                    value={form.schedule}
+                    id="recipient"
+                    type="email"
+                    className="mt-2"
+                    value={form.recipient}
                     onChange={(event) =>
-                      setForm({ ...form, schedule: event.target.value })
+                      setForm({ ...form, recipient: event.target.value })
                     }
                   />
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    系统每天 09:00 自动整理所有已启用关键词监测结果并发送邮件。
+                  </p>
                 </div>
               </div>
               <DialogFooter>
@@ -299,10 +199,7 @@ export default function SubscriptionsPage() {
                 </Button>
                 <Button
                   onClick={create}
-                  disabled={
-                    !form.monitor_id ||
-                    (form.channel === DeliveryChannel.Email && !form.recipient)
-                  }
+                  disabled={!form.recipient}
                 >
                   创建订阅
                 </Button>

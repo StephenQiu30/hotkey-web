@@ -54,7 +54,7 @@ const emptySourceForm = () => ({
   source_type: SourceType.RSS,
   endpoint: "",
   auth_type: "none" as "none" | "api_key" | "oauth2" | "bearer",
-  allow_body_storage: false,
+  allow_body_storage: true,
 });
 
 function sourceStatus(source: HotKeyAPI.SourceReadResponse) {
@@ -266,7 +266,7 @@ export default function SourcesPage() {
                         setForm({
                           ...form,
                           source_type: value as SourceType,
-                          allow_body_storage: false,
+                          allow_body_storage: true,
                         })
                       }
                     >

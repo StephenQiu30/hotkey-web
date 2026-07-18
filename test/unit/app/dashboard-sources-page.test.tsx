@@ -52,14 +52,14 @@ describe("SourcesPage body storage authorization", () => {
     setRole(UserRole.Admin);
   });
 
-  it("submits an explicit false by default", async () => {
+  it("submits Feed body storage by default", async () => {
     render(<SourcesPage />);
     const user = await openCompletedForm();
 
     const checkbox = screen.getByRole("checkbox", {
       name: "保存来源正文/摘要用于归档预览",
     });
-    expect(checkbox).not.toBeChecked();
+    expect(checkbox).toBeChecked();
     expect(
       screen.getByText(
         "只保存来源 Feed 实际提供的正文/摘要，不抓取原网页；启用前确认来源条款。",
@@ -70,13 +70,13 @@ describe("SourcesPage body storage authorization", () => {
     await waitFor(() =>
       expect(mocks.postSourceConnections).toHaveBeenCalledWith(
         expect.objectContaining({
-          config: { allow_body_storage: false },
+          config: { allow_body_storage: true },
         }),
       ),
     );
   });
 
-  it("submits true only after explicit consent and resets after closing", async () => {
+  it("keeps body storage enabled when a new form is opened", async () => {
     render(<SourcesPage />);
     const user = await openCompletedForm();
     const checkbox = screen.getByRole("checkbox", {
@@ -84,20 +84,15 @@ describe("SourcesPage body storage authorization", () => {
     });
 
     await user.click(checkbox);
-    expect(checkbox).toBeChecked();
+    expect(checkbox).not.toBeChecked();
     await user.click(screen.getByRole("button", { name: "取消" }));
     await user.click(screen.getByRole("button", { name: "新增来源" }));
     expect(
       screen.getByRole("checkbox", {
         name: "保存来源正文/摘要用于归档预览",
       }),
-    ).not.toBeChecked();
+    ).toBeChecked();
 
-    await user.click(
-      screen.getByRole("checkbox", {
-        name: "保存来源正文/摘要用于归档预览",
-      }),
-    );
     await user.type(screen.getByLabelText("名称"), "Second feed");
     await user.type(
       screen.getByLabelText("接口地址"),
