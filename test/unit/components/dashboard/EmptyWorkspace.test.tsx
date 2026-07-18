@@ -41,4 +41,30 @@ describe("EmptyWorkspace", () => {
       "/dashboard/settings"
     );
   });
+
+  it("distinguishes a published monitor from a started collection pipeline", () => {
+    render(
+      <EmptyWorkspace
+        monitors={[
+          {
+            id: 9,
+            name: "AI Agent 创建工具",
+            status: MonitorStatus.Active,
+            published: { sources: [{ source_connection_id: 1 }] },
+          },
+        ]}
+        collectionRuns={[]}
+        collectedContents={[]}
+      />
+    );
+
+    expect(
+      screen.getByText("监控已发布，但尚未产生采集任务。请确认后台调度器正在运行。")
+    ).toBeInTheDocument();
+    expect(screen.getByText("等待调度")).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: "查看采集内容" })[0]).toHaveAttribute(
+      "href",
+      "/dashboard/contents"
+    );
+  });
 });
