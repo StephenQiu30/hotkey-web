@@ -5,6 +5,7 @@ import { ContentDocumentViewer } from "@/components/dashboard/ContentDocumentVie
 const readyDocument = {
   availability: "ready",
   content_id: 7,
+  title: "Archived item title",
   source_name: "arXiv · Artificial Intelligence",
   canonical_url: "https://example.test/papers/7",
   published_at: "2026-07-18T04:00:00Z",
@@ -41,6 +42,9 @@ describe("ContentDocumentViewer", () => {
 
     expect(
       screen.getByRole("heading", { name: "A durable agent workflow" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Archived item title" }),
     ).toBeInTheDocument();
     expect(screen.getByRole("table")).toBeInTheDocument();
     expect(screen.getByText("const safe = true;")).toBeInTheDocument();
