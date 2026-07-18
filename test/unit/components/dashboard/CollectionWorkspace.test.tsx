@@ -1,8 +1,12 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
 import { CollectionWorkspace } from "@/components/dashboard/CollectionWorkspace";
 
 describe("CollectionWorkspace", () => {
+  afterEach(() => {
+    cleanup();
+  });
+
   it("shows recent runs and normalized content as separate pipeline stages", () => {
     render(
       <CollectionWorkspace
@@ -39,10 +43,15 @@ describe("CollectionWorkspace", () => {
       screen.getByRole("heading", { name: "采集批次（当前页）" })
     ).toBeInTheDocument();
     expect(screen.getByText("destination_not_permitted")).toBeInTheDocument();
+    expect(screen.getByTestId("collection-pipeline")).toHaveClass(
+      "lg:grid-cols-2",
+    );
     expect(
-      screen.getByText("Agent systems are changing software development")
-    ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "查看原文" })).toHaveAttribute(
+      screen.getByRole("link", {
+        name: "阅读归档：Agent systems are changing software development",
+      }),
+    ).toHaveAttribute("href", "/dashboard/contents/4");
+    expect(screen.getByRole("link", { name: "访问原站" })).toHaveAttribute(
       "href",
       "https://example.test/paper"
     );
@@ -55,5 +64,28 @@ describe("CollectionWorkspace", () => {
     expect(
       screen.getByText("发布监控后仍长期停留在这里，通常表示后台调度器未创建任务。")
     ).toBeInTheDocument();
+  });
+
+  it("only exposes entry points supported by each content record", () => {
+    render(
+      <CollectionWorkspace
+        runs={[]}
+        contents={[
+          { title: "Missing internal id", canonical_url: "https://example.test/external" },
+          { id: 9, title: "Missing canonical URL" },
+        ]}
+      />,
+    );
+
+    expect(
+      screen.queryByRole("link", { name: "阅读归档：Missing internal id" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "访问原站" })).toHaveAttribute(
+      "href",
+      "https://example.test/external",
+    );
+    expect(
+      screen.getByRole("link", { name: "阅读归档：Missing canonical URL" }),
+    ).toHaveAttribute("href", "/dashboard/contents/9");
   });
 });
