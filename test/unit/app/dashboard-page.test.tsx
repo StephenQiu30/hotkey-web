@@ -65,6 +65,25 @@ describe("DashboardPage", () => {
     expect(screen.getByText("暂无已验证声明，可重新提取事件情报。")).toBeInTheDocument();
   });
 
+  it("uses the shared centered page width and only pins intelligence on desktop", async () => {
+    render(<DashboardPage />);
+
+    expect(
+      await screen.findByRole("heading", { name: "A collected research event" }),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("dashboard-shell")).toHaveClass("app-page");
+    expect(screen.getByRole("complementary")).toHaveClass(
+      "static",
+      "max-h-none",
+      "overflow-visible",
+      "xl:sticky",
+      "xl:top-[76px]",
+      "xl:max-h-[calc(100vh-92px)]",
+      "xl:overflow-y-auto",
+      "xl:self-start",
+    );
+  });
+
   it("keeps evidence full-width, reports partial detail loading and moves heat into Signals", async () => {
     mocks.getEvents.mockResolvedValue({
       data: {
