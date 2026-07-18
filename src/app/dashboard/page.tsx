@@ -77,19 +77,26 @@ export default function DashboardPage() {
   const loadDetail = useCallback(async (id: number) => {
     setDetailLoading(true);
     try {
-      const [eventResult, heatResult, intelligenceResult, memberResult] = await Promise.all([
-        getEventsId({ id }),
+      const eventResult = await getEventsId({ id });
+      setSelected(eventResult.data);
+      const [heatResult, intelligenceResult, memberResult] = await Promise.allSettled([
         getEventsIdHeat({ id }),
         getEventsIdIntelligence({ id }),
         getEventsIdContents({ id }),
       ]);
-      const members = memberResult.data?.items ?? [];
+      setHeat(heatResult.status === "fulfilled" ? heatResult.value.data : undefined);
+      setIntelligence(
+        intelligenceResult.status === "fulfilled"
+          ? intelligenceResult.value.data
+          : undefined,
+      );
+      const members =
+        memberResult.status === "fulfilled"
+          ? (memberResult.value.data?.items ?? [])
+          : [];
       const contentResults = await Promise.allSettled(
         members.slice(0, 8).filter((member) => member.content_id != null).map((member) => getContentsId({ id: member.content_id! })),
       );
-      setSelected(eventResult.data);
-      setHeat(heatResult.data);
-      setIntelligence(intelligenceResult.data);
       setContents(contentResults.flatMap((result) => result.status === "fulfilled" && result.value.data ? [result.value.data] : []));
     } catch (reason) {
       toast.error(reason instanceof Error ? reason.message : "事件详情加载失败");
