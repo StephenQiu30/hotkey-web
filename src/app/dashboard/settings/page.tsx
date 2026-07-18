@@ -104,11 +104,20 @@ export default function MonitorsPage() {
       setPage(1);
       setCursors([undefined]);
       setNextCursor(monitorResult.data?.next_cursor);
-      setSources(
-        (sourceResult.data?.items ?? []).filter(
-          (source) => source.enabled && !source.deleted
-        )
+      const enabledSources = (sourceResult.data?.items ?? []).filter(
+        (source) => source.enabled && !source.deleted
       );
+      setSources(enabledSources);
+      setForm((current) => ({
+        ...current,
+        sourceIds: current.sourceIds.length
+          ? current.sourceIds
+          : selectAllMonitorSources(
+              enabledSources.flatMap((source) =>
+                source.id == null ? [] : [source.id]
+              )
+            ),
+      }));
     } catch (reason) {
       toast.error(reason instanceof Error ? reason.message : "监控加载失败");
     } finally {
@@ -154,14 +163,20 @@ export default function MonitorsPage() {
 
   const create = async (event?: FormEvent) => {
     event?.preventDefault();
-    const validationMessage = validateMonitorDraft(form);
+    const normalizedForm = {
+      ...form,
+      name:
+        form.name.trim() ||
+        `热点监控 · ${form.query.trim().slice(0, 48)}`,
+    };
+    const validationMessage = validateMonitorDraft(normalizedForm);
     if (validationMessage) {
       toast.error(validationMessage);
       return;
     }
     setCreating(true);
     try {
-      await postMonitors(buildMonitorDraftRequest(form));
+      await postMonitors(buildMonitorDraftRequest(normalizedForm));
       setDialog(false);
       setForm(createInitialForm());
       await load();
@@ -261,7 +276,20 @@ export default function MonitorsPage() {
         title="热点监控"
         description="用正式来源、查询规则和阈值建立可发布的监控。"
         action={
-          <Dialog open={dialog} onOpenChange={setDialog}>
+          <Dialog
+            open={dialog}
+            onOpenChange={(open) => {
+              setDialog(open);
+              if (open) {
+                setForm((current) => ({
+                  ...current,
+                  sourceIds: current.sourceIds.length
+                    ? current.sourceIds
+                    : selectAllIds,
+                }));
+              }
+            }}
+          >
             <DialogTrigger asChild>
               <Button className="gap-2">
                 <Plus />
@@ -275,7 +303,7 @@ export default function MonitorsPage() {
               <form onSubmit={create}>
                 <div className="grid max-h-[calc(90vh-9rem)] gap-4 overflow-y-auto px-6 py-5 sm:grid-cols-2">
                   <div className="sm:col-span-2">
-                    <Label htmlFor="monitor-name">监控名称</Label>
+                    <Label htmlFor="monitor-name">监控名称（可选）</Label>
                     <Input
                       id="monitor-name"
                       className="mt-2"
@@ -283,7 +311,7 @@ export default function MonitorsPage() {
                       onChange={(event) =>
                         setForm({ ...form, name: event.target.value })
                       }
-                      placeholder="AI Agent 创作工具"
+                      placeholder="留空将根据关键词自动生成"
                     />
                   </div>
                   <div className="sm:col-span-2">
@@ -403,8 +431,8 @@ export default function MonitorsPage() {
                       <div>
                         <Label>数据来源</Label>
                         <p className="mt-1 text-xs text-muted-foreground">
-                          最多选择 {MAX_MONITOR_SOURCES}{" "}
-                          个，优先选择与关键词相关的来源。
+                          系统已自动选择已启用来源，最多使用 {MAX_MONITOR_SOURCES}{" "}
+                          个；如有需要可以手动调整。
                         </p>
                       </div>
                       <span className="mono shrink-0 text-xs text-muted-foreground">
@@ -499,7 +527,6 @@ export default function MonitorsPage() {
                     type="submit"
                     disabled={
                       creating ||
-                      !form.name.trim() ||
                       !form.query.trim() ||
                       !form.sourceIds.length
                     }

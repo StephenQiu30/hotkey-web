@@ -85,4 +85,21 @@ describe("ContentDocumentViewer", () => {
       "https://example.test/papers/8",
     );
   });
+
+  it("shows the management action only when the caller has permission", async () => {
+    const onDelete = vi.fn();
+    const { rerender } = render(
+      <ContentDocumentViewer
+        canManage
+        document={readyDocument}
+        onDelete={onDelete}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "删除内容" }));
+    expect(onDelete).toHaveBeenCalledTimes(1);
+
+    rerender(<ContentDocumentViewer document={readyDocument} />);
+    expect(screen.queryByRole("button", { name: "删除内容" })).not.toBeInTheDocument();
+  });
 });

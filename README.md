@@ -50,11 +50,14 @@ npm install
 # 根据后端仓库已提交的 OpenAPI 文档生成 TypeScript 请求客户端
 npm run openapi:generate
 
-# 启动开发服务器
+# 启动开发服务器（支持 Fast Refresh / HMR）
 npm run dev
 ```
 
 浏览器访问 [http://localhost:3000](http://localhost:3000)。
+
+> 本地开发必须使用 `npm run dev`。`npm run start` 是生产模式，只能在
+> `npm run build` 之后运行，不提供代码修改后的热更新。
 
 ### 常用命令
 

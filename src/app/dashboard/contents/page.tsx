@@ -4,16 +4,21 @@ import { useCallback, useEffect, useState } from "react";
 import { Loader2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import {
   CollectionWorkspace,
   type CollectionWorkspacePagination,
 } from "@/components/dashboard/CollectionWorkspace";
 import { getCollectionRuns } from "@/services/hotkey/hotkey-server/collectionRuns";
-import { getContents } from "@/services/hotkey/hotkey-server/contents";
+import { deleteContentsId, getContents } from "@/services/hotkey/hotkey-server/contents";
+import { useAuthStore } from "@/stores/authStore";
+import { UserRole } from "@/lib/domainEnums";
 
 export default function ContentsPage() {
   const pageSize = 20;
+  const user = useAuthStore((state) => state.user);
+  const canManage = user?.role === UserRole.Editor || user?.role === UserRole.Admin;
   const [runs, setRuns] = useState<HotKeyAPI.CollectionRunResponse[]>([]);
   const [contents, setContents] = useState<HotKeyAPI.ContentResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,6 +32,8 @@ export default function ContentsPage() {
     undefined,
   ]);
   const [contentNextCursor, setContentNextCursor] = useState<string>();
+  const [deleteTarget, setDeleteTarget] = useState<HotKeyAPI.ContentResponse>();
+  const [deletingContentID, setDeletingContentID] = useState<number>();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -110,6 +117,22 @@ export default function ContentsPage() {
     void loadContentsPage(contentCursors[contentPage - 2], contentPage - 1);
   };
 
+  const deleteContent = async () => {
+    const id = deleteTarget?.id;
+    if (!canManage || id == null) return;
+    setDeletingContentID(id);
+    try {
+      await deleteContentsId({ id });
+      setDeleteTarget(undefined);
+      await loadContentsPage(contentCursors[contentPage - 1], contentPage);
+      toast.success("内容已删除，归档证据将按生命周期清理");
+    } catch (reason) {
+      toast.error(reason instanceof Error ? reason.message : "内容删除失败");
+    } finally {
+      setDeletingContentID(undefined);
+    }
+  };
+
   const runsPagination: CollectionWorkspacePagination = {
     page: runPage,
     hasNext: Boolean(runNextCursor),
@@ -148,12 +171,24 @@ export default function ContentsPage() {
         </div>
       ) : (
         <CollectionWorkspace
+          canManage={canManage}
           contents={contents}
           contentsPagination={contentsPagination}
+          deletingContentID={deletingContentID}
+          onDelete={setDeleteTarget}
           runs={runs}
           runsPagination={runsPagination}
         />
       )}
+      <ConfirmDeleteDialog
+        description="内容会从采集列表和后续候选中移除；系统保留生命周期墓碑，并清理已归档的 Markdown 证据。"
+        loading={deletingContentID === deleteTarget?.id}
+        onConfirm={deleteContent}
+        onOpenChange={(open) => !open && setDeleteTarget(undefined)}
+        open={deleteTarget != null}
+        resourceName={deleteTarget?.title || `内容 #${deleteTarget?.id ?? ""}`}
+        title="删除采集内容"
+      />
     </div>
   );
 }

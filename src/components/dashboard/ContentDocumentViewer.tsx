@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink, FileDown, FileText } from "lucide-react";
+import { ExternalLink, FileDown, FileText, Trash2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 
 type ContentDocumentViewerProps = {
   document: HotKeyAPI.ContentDocumentResponse;
+  canManage?: boolean;
+  deleting?: boolean;
+  onDelete?: () => void;
 };
 
 const formatDateTime = (value?: string) =>
@@ -18,7 +21,7 @@ const formatDateTime = (value?: string) =>
       }).format(new Date(value))
     : "—";
 
-export function ContentDocumentViewer({ document }: ContentDocumentViewerProps) {
+export function ContentDocumentViewer({ document, canManage = false, deleting = false, onDelete }: ContentDocumentViewerProps) {
   const ready = document.availability === "ready";
 
   return (
@@ -60,6 +63,18 @@ export function ContentDocumentViewer({ document }: ContentDocumentViewerProps) 
               <FileDown className="h-4 w-4" />
               打印 / 保存 PDF
             </Button>
+            {canManage && document.content_id != null && onDelete ? (
+              <Button
+                aria-label="删除内容"
+                className="gap-2"
+                disabled={deleting}
+                onClick={onDelete}
+                variant="destructive"
+              >
+                <Trash2 className="h-4 w-4" />
+                删除内容
+              </Button>
+            ) : null}
           </div>
         </div>
 

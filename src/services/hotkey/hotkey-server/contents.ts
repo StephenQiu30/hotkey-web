@@ -37,6 +37,23 @@ export async function getContentsId(
   );
 }
 
+/** Delete active content Soft-deletes one fetched Content and removes its archived evidence when available. DELETE /api/v1/contents/${param0} */
+export async function deleteContentsId(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: HotKeyAPI.deleteContentsIdParams,
+  options?: RequestOptions
+) {
+  const { id: param0, ...queryParams } = params;
+  return request<HotKeyAPI.ContentResultInternalModulesIngestionTransportHttpEmptyResponse>(
+    `/api/v1/contents/${param0}`,
+    {
+      method: "DELETE",
+      params: { ...queryParams },
+      ...(options || {}),
+    }
+  );
+}
+
 /** Get captured content Markdown document Returns not_captured as a successful empty state when no authorized Markdown asset exists. GET /api/v1/contents/${param0}/document */
 export async function getContentsIdDocument(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)

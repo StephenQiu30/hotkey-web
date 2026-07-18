@@ -1,5 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it } from "vitest";
+import { vi } from "vitest";
 import { CollectionWorkspace } from "@/components/dashboard/CollectionWorkspace";
 
 describe("CollectionWorkspace", () => {
@@ -46,6 +48,9 @@ describe("CollectionWorkspace", () => {
     expect(screen.getByTestId("collection-pipeline")).toHaveClass(
       "lg:grid-cols-2",
     );
+    expect(screen.getByTestId("collection-pipeline")).toHaveClass(
+      "items-stretch",
+    );
     expect(
       screen.getByRole("link", {
         name: "阅读归档：Agent systems are changing software development",
@@ -87,5 +92,28 @@ describe("CollectionWorkspace", () => {
     expect(
       screen.getByRole("link", { name: "阅读归档：Missing canonical URL" }),
     ).toHaveAttribute("href", "/dashboard/contents/9");
+  });
+
+  it("exposes content deletion only to callers with management permission", async () => {
+    const onDelete = vi.fn();
+    const content = { id: 9, title: "Content to remove" };
+    const { rerender } = render(
+      <CollectionWorkspace
+        canManage
+        contents={[content]}
+        onDelete={onDelete}
+        runs={[]}
+      />,
+    );
+
+    await userEvent.setup().click(
+      screen.getByRole("button", { name: "删除内容：Content to remove" }),
+    );
+    expect(onDelete).toHaveBeenCalledWith(content);
+
+    rerender(<CollectionWorkspace contents={[content]} runs={[]} />);
+    expect(
+      screen.queryByRole("button", { name: "删除内容：Content to remove" }),
+    ).not.toBeInTheDocument();
   });
 });

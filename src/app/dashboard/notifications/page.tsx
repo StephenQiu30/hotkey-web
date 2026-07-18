@@ -46,6 +46,9 @@ export default function SubscriptionsPage() {
   const [form, setForm] = useState({
     recipient: "",
   });
+  const recipientValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+    form.recipient.trim(),
+  );
 
   const loadPage = useCallback(async (cursor: string | undefined, pageNumber: number) => {
     setLoading(true);
@@ -89,7 +92,7 @@ export default function SubscriptionsPage() {
       const result = await postReportSubscriptions({
         channel: DeliveryChannel.Email,
         report_type: ReportType.Daily,
-        recipient: form.recipient,
+        recipient: form.recipient.trim(),
         schedule: "0 9 * * *",
         timezone: "Asia/Shanghai",
         enabled: true,
@@ -188,6 +191,11 @@ export default function SubscriptionsPage() {
                       setForm({ ...form, recipient: event.target.value })
                     }
                   />
+                  {form.recipient && !recipientValid && (
+                    <p className="mt-2 text-xs text-destructive" role="alert">
+                      请输入有效的邮箱地址。
+                    </p>
+                  )}
                   <p className="mt-2 text-xs text-muted-foreground">
                     系统每天 09:00 自动整理所有已启用关键词监测结果并发送邮件。
                   </p>
@@ -199,7 +207,7 @@ export default function SubscriptionsPage() {
                 </Button>
                 <Button
                   onClick={create}
-                  disabled={!form.recipient}
+                  disabled={!recipientValid}
                 >
                   创建订阅
                 </Button>

@@ -42,6 +42,7 @@ describe("Umi OpenAPI generation contract", () => {
     const typeSource = fs.readFileSync(generatedTypes, "utf8");
 
     expect(serviceSource).toContain("export async function getContentsIdDocument");
+    expect(serviceSource).toContain("export async function deleteContentsId");
     expect(serviceSource).toContain(
       "HotKeyAPI.ContentResultHttpContentDocumentResponse",
     );

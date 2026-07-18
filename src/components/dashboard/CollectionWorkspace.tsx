@@ -1,5 +1,6 @@
-import { ExternalLink, FileSearch, RadioTower } from "lucide-react";
+import { ExternalLink, FileSearch, RadioTower, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { CollectionRunStatus } from "@/lib/domainEnums";
 import { collectionRunPresentation } from "@/lib/domainPresentation";
 import { CursorPagination } from "@/components/dashboard/CursorPagination";
@@ -15,6 +16,9 @@ export type CollectionWorkspacePagination = {
 type CollectionWorkspaceProps = {
   runs: HotKeyAPI.CollectionRunResponse[];
   contents: HotKeyAPI.ContentResponse[];
+  canManage?: boolean;
+  deletingContentID?: number;
+  onDelete?: (content: HotKeyAPI.ContentResponse) => void;
   runsPagination?: CollectionWorkspacePagination;
   contentsPagination?: CollectionWorkspacePagination;
 };
@@ -32,6 +36,9 @@ const formatDateTime = (value?: string) =>
 export function CollectionWorkspace({
   runs,
   contents,
+  canManage = false,
+  deletingContentID,
+  onDelete,
   runsPagination,
   contentsPagination,
 }: CollectionWorkspaceProps) {
@@ -63,9 +70,9 @@ export function CollectionWorkspace({
         ))}
       </section>
 
-      <div data-testid="collection-pipeline" className="grid items-start gap-5 lg:grid-cols-2">
-        <section className="panel min-w-0 overflow-hidden">
-        <div className="flex items-center justify-between border-b border-border px-5 py-4">
+      <div data-testid="collection-pipeline" className="grid items-stretch gap-5 lg:grid-cols-2">
+        <section className="panel flex h-full min-w-0 flex-col overflow-hidden">
+        <div className="flex min-h-[84px] items-center justify-between border-b border-border px-5 py-4">
           <div>
             <h2 className="text-sm font-medium">采集批次（当前页）</h2>
             <p className="mt-1 text-xs text-muted-foreground">
@@ -75,7 +82,7 @@ export function CollectionWorkspace({
           <RadioTower className="h-4 w-4 text-muted-foreground" />
         </div>
         {runs.length ? (
-          <div className="divide-y divide-border">
+          <div className="flex-1 divide-y divide-border">
             {runs.map((run) => {
               const status = collectionRunPresentation(run.status);
               return (
@@ -112,7 +119,7 @@ export function CollectionWorkspace({
             })}
           </div>
         ) : (
-          <div className="flex min-h-48 flex-col items-center justify-center px-5 text-center">
+          <div className="flex min-h-48 flex-1 flex-col items-center justify-center px-5 text-center">
             <RadioTower className="mb-3 h-5 w-5 text-muted-foreground" />
             <p className="text-sm font-medium">尚未产生采集批次</p>
             <p className="mt-1 max-w-md text-xs leading-5 text-muted-foreground">
@@ -120,13 +127,13 @@ export function CollectionWorkspace({
             </p>
           </div>
         )}
-        {runsPagination && runs.length > 0 ? (
+        {runsPagination ? (
           <CursorPagination {...runsPagination} />
         ) : null}
         </section>
 
-        <section className="panel min-w-0 overflow-hidden">
-        <div className="flex items-center justify-between border-b border-border px-5 py-4">
+        <section className="panel flex h-full min-w-0 flex-col overflow-hidden">
+        <div className="flex min-h-[84px] items-center justify-between border-b border-border px-5 py-4">
           <div>
             <h2 className="text-sm font-medium">最近入库内容</h2>
             <p className="mt-1 text-xs text-muted-foreground">
@@ -136,7 +143,7 @@ export function CollectionWorkspace({
           <FileSearch className="h-4 w-4 text-muted-foreground" />
         </div>
         {contents.length ? (
-          <div className="divide-y divide-border">
+          <div className="flex-1 divide-y divide-border">
             {contents.map((content, index) => {
               const title = content.title || content.external_id || `内容 #${content.id ?? "—"}`;
               return (
@@ -182,6 +189,18 @@ export function CollectionWorkspace({
                         访问原站 <ExternalLink className="h-3 w-3" />
                       </a>
                     ) : null}
+                    {canManage && content.id != null && onDelete ? (
+                      <Button
+                        aria-label={`删除内容：${title}`}
+                        className="h-auto gap-1 px-0 py-0 text-destructive hover:bg-transparent hover:text-destructive"
+                        disabled={deletingContentID === content.id}
+                        onClick={() => onDelete(content)}
+                        variant="ghost"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                        删除
+                      </Button>
+                    ) : null}
                   </div>
                 </div>
                 </article>
@@ -189,7 +208,7 @@ export function CollectionWorkspace({
             })}
           </div>
         ) : (
-          <div className="flex min-h-48 flex-col items-center justify-center px-5 text-center">
+          <div className="flex min-h-48 flex-1 flex-col items-center justify-center px-5 text-center">
             <FileSearch className="mb-3 h-5 w-5 text-muted-foreground" />
             <p className="text-sm font-medium">暂时没有已入库内容</p>
             <p className="mt-1 max-w-md text-xs leading-5 text-muted-foreground">
@@ -201,7 +220,7 @@ export function CollectionWorkspace({
             </p>
           </div>
         )}
-        {contentsPagination && contents.length > 0 ? (
+        {contentsPagination ? (
           <CursorPagination {...contentsPagination} />
         ) : null}
         </section>

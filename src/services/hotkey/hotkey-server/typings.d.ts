@@ -313,6 +313,11 @@ required property without making explicit null impossible to bind. */
     id: number;
   };
 
+  type deleteContentsIdParams = {
+    /** content ID */
+    id: number;
+  };
+
   type deleteMonitorsIdParams = {
     /** monitor ID */
     id: number;
