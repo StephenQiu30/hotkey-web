@@ -68,18 +68,20 @@ npm run openapi:generate  # 从后端 OpenAPI 文档生成 API 请求与类型
 
 生成配置见 [`openapi2ts.config.ts`](./openapi2ts.config.ts)：
 
-- 规范来源：`../hotkey-server/docs/openapi/swagger.json`（后端契约事实源）
+- 默认规范来源：`http://127.0.0.1:8080/openapi.json`（当前运行中的后端注解生成文档）
+- 离线规范来源：`../hotkey-server/docs/openapi/swagger.json`（后端提交的确定性契约）
 - 输出目录：`src/services/hotkey/hotkey-server/`
 - 请求封装：`src/lib/request.ts`（基于 axios）
 
-生成结果包含每个后端模块的请求函数、请求参数和响应类型。生成过程不依赖正在运行的后端服务；`hotkey-server` 更新并提交 OpenAPI 文档后，前端重新执行命令即可同步全部 API 请求代码。生成目录只允许由该命令更新，不得手工维护。
+生成结果包含每个后端模块的请求函数、请求参数和响应类型。开发时执行 `npm run openapi:generate` 会直接读取当前后端的 `/openapi.json`；后端未运行或 CI 需要确定性输入时，执行 `npm run openapi:generate:local`。也可以通过 `HOTKEY_OPENAPI_SCHEMA` 指定其他 HTTP(S) 地址或本地文件。生成目录只允许由生成命令更新，不得手工维护。
 
 后端接口有变更时，按以下顺序操作：
 
 1. 在 `hotkey-server` 修改接口，并执行 `make openapi-check` 生成、校验和确认 OpenAPI 文档无漂移
-2. 在 `hotkey-web` 执行 `npm run openapi:generate`
-3. 检查 `src/services/hotkey/hotkey-server/` 的生成差异，并执行 `npm run typecheck` 与 `npm run test:unit`
-4. 在页面与组件中接入新接口并回归
+2. 启动 `hotkey-server`，确认接口文档可通过 `http://127.0.0.1:8080/docs` 访问
+3. 在 `hotkey-web` 执行 `npm run openapi:generate`；离线环境执行 `npm run openapi:generate:local`
+4. 检查 `src/services/hotkey/hotkey-server/` 的生成差异，并执行 `npm run typecheck` 与 `npm run test:unit`
+5. 在页面与组件中接入新接口并回归
 
 ## 目录结构
 
