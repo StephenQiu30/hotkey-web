@@ -42,13 +42,8 @@ import {
 } from "@/services/hotkey/hotkey-server/monitors";
 import { getSourceConnections } from "@/services/hotkey/hotkey-server/sources";
 import { PageHeader } from "@/components/dashboard/PageHeader";
-
-const statusLabel: Record<string, string> = {
-  draft: "草稿",
-  active: "运行中",
-  paused: "已暂停",
-  archived: "已归档",
-};
+import { MonitorAction, MonitorStatus } from "@/lib/domainEnums";
+import { monitorStatusLabel } from "@/lib/domainPresentation";
 
 export default function MonitorsPage() {
   const [monitors, setMonitors] = useState<HotKeyAPI.MonitorResponse[]>([]);
@@ -145,12 +140,12 @@ export default function MonitorsPage() {
 
   const operate = async (
     monitor: HotKeyAPI.MonitorResponse,
-    kind: "publish" | "pause" | "resume" | "archive",
+    kind: MonitorAction,
   ) => {
     if (monitor.id == null) return;
     setAction(monitor.id);
     try {
-      if (kind === "publish")
+      if (kind === MonitorAction.Publish)
         await postMonitorsIdPublish(
           { id: monitor.id },
           {
@@ -158,11 +153,11 @@ export default function MonitorsPage() {
             expected_monitor_version: monitor.version ?? 0,
           },
         );
-      else if (kind === "pause")
+      else if (kind === MonitorAction.Pause)
         await postMonitorsIdPause({ id: monitor.id }, {
           expected_monitor_version: monitor.version ?? 0,
         } as unknown as HotKeyAPI.LifecycleRequest);
-      else if (kind === "resume")
+      else if (kind === MonitorAction.Resume)
         await postMonitorsIdResume({ id: monitor.id }, {
           expected_monitor_version: monitor.version ?? 0,
         } as unknown as HotKeyAPI.LifecycleRequest);
@@ -392,13 +387,13 @@ export default function MonitorsPage() {
                       : "—"}
                   </span>
                   <Badge variant="outline" className="w-fit">
-                    {statusLabel[monitor.status || ""] || monitor.status}
+                    {monitorStatusLabel(monitor.status)}
                   </Badge>
                   <div className="flex flex-wrap justify-start gap-2 lg:justify-end">
-                    {monitor.status === "draft" && (
+                    {monitor.status === MonitorStatus.Draft && (
                       <Button
                         size="sm"
-                        onClick={() => operate(monitor, "publish")}
+                        onClick={() => operate(monitor, MonitorAction.Publish)}
                         disabled={action === monitor.id}
                         className="gap-1.5"
                       >
@@ -406,11 +401,11 @@ export default function MonitorsPage() {
                         发布
                       </Button>
                     )}
-                    {monitor.status === "active" && (
+                    {monitor.status === MonitorStatus.Active && (
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => operate(monitor, "pause")}
+                        onClick={() => operate(monitor, MonitorAction.Pause)}
                         disabled={action === monitor.id}
                         className="gap-1.5"
                       >
@@ -418,11 +413,11 @@ export default function MonitorsPage() {
                         暂停
                       </Button>
                     )}
-                    {monitor.status === "paused" && (
+                    {monitor.status === MonitorStatus.Paused && (
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => operate(monitor, "resume")}
+                        onClick={() => operate(monitor, MonitorAction.Resume)}
                         disabled={action === monitor.id}
                         className="gap-1.5"
                       >
@@ -430,11 +425,11 @@ export default function MonitorsPage() {
                         恢复
                       </Button>
                     )}
-                    {monitor.status !== "archived" && (
+                    {monitor.status !== MonitorStatus.Archived && (
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => operate(monitor, "archive")}
+                        onClick={() => operate(monitor, MonitorAction.Archive)}
                         disabled={action === monitor.id}
                         className="gap-1.5 text-muted-foreground"
                       >

@@ -3,6 +3,7 @@ import { Activity } from "lucide-react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import TopNav from "@/components/dashboard/TopNav";
 import { useAuthStore } from "@/stores/authStore";
+import { AuthStatus, UserRole } from "@/lib/domainEnums";
 
 vi.mock("next/navigation", () => ({
   usePathname: () => "/dashboard",
@@ -13,12 +14,12 @@ describe("TopNav", () => {
 
   beforeEach(() => {
     useAuthStore.setState({
-      status: "authenticated",
+      status: AuthStatus.Authenticated,
       user: {
         id: 2,
         email: "qa@example.test",
         display_name: "QA",
-        role: "admin",
+        role: UserRole.Admin,
         status: "active",
       },
       error: null,

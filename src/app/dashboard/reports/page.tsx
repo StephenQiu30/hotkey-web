@@ -22,6 +22,7 @@ import {
   postReportsIdPreview,
   postReportsIdPublish,
 } from "@/services/hotkey/hotkey-server/reports";
+import { ReportAction, ReportStatus } from "@/lib/domainEnums";
 
 const when = (value?: string) =>
   value
@@ -35,7 +36,7 @@ export default function ReportsPage() {
   const [reports, setReports] = useState<HotKeyAPI.ReportResponse[]>([]);
   const [selected, setSelected] = useState<HotKeyAPI.ReportResponse>();
   const [loading, setLoading] = useState(true);
-  const [action, setAction] = useState<string>();
+  const [action, setAction] = useState<ReportAction>();
   const [error, setError] = useState<string>();
 
   const load = useCallback(async () => {
@@ -60,7 +61,7 @@ export default function ReportsPage() {
 
   const selectReport = async (report: HotKeyAPI.ReportResponse) => {
     if (report.id == null) return;
-    setAction("select");
+    setAction(ReportAction.Select);
     try {
       setSelected((await getReportsId({ id: report.id })).data);
     } catch (reason) {
@@ -72,21 +73,23 @@ export default function ReportsPage() {
     }
   };
 
-  const run = async (kind: "build" | "preview" | "publish") => {
+  const run = async (
+    kind: ReportAction.Build | ReportAction.Preview | ReportAction.Publish,
+  ) => {
     if (selected?.id == null) return;
     setAction(kind);
     try {
-      if (kind === "build")
+      if (kind === ReportAction.Build)
         setSelected((await postReportsIdBuild({ id: selected.id })).data);
-      else if (kind === "preview")
+      else if (kind === ReportAction.Preview)
         setSelected(
           (await postReportsIdPreview({ id: selected.id })).data?.report,
         );
       else setSelected((await postReportsIdPublish({ id: selected.id })).data);
       toast.success(
-        kind === "build"
+        kind === ReportAction.Build
           ? "报告已构建"
-          : kind === "preview"
+          : kind === ReportAction.Preview
             ? "预览已生成"
             : "报告已发布",
       );
@@ -170,7 +173,7 @@ export default function ReportsPage() {
                 <>
                   <Button
                     variant="outline"
-                    onClick={() => run("build")}
+                    onClick={() => run(ReportAction.Build)}
                     disabled={!!action}
                     className="gap-2"
                   >
@@ -179,11 +182,11 @@ export default function ReportsPage() {
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() => run("preview")}
+                    onClick={() => run(ReportAction.Preview)}
                     disabled={!!action}
                     className="gap-2"
                   >
-                    {action === "preview" ? (
+                    {action === ReportAction.Preview ? (
                       <Loader2 className="animate-spin" />
                     ) : (
                       <FileText />
@@ -191,16 +194,20 @@ export default function ReportsPage() {
                     预览
                   </Button>
                   <Button
-                    onClick={() => run("publish")}
-                    disabled={!!action || selected.status === "published"}
+                    onClick={() => run(ReportAction.Publish)}
+                    disabled={
+                      !!action || selected.status === ReportStatus.Published
+                    }
                     className="gap-2"
                   >
-                    {selected.status === "published" ? (
+                    {selected.status === ReportStatus.Published ? (
                       <CheckCircle2 />
                     ) : (
                       <Send />
                     )}
-                    {selected.status === "published" ? "已发布" : "发布"}
+                    {selected.status === ReportStatus.Published
+                      ? "已发布"
+                      : "发布"}
                   </Button>
                 </>
               )}

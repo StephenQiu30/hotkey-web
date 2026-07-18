@@ -30,6 +30,11 @@ import {
   postReportSubscriptionsIdRssTokenRotate,
 } from "@/services/hotkey/hotkey-server/delivery";
 import { PageHeader } from "@/components/dashboard/PageHeader";
+import { DeliveryChannel, ReportType } from "@/lib/domainEnums";
+import {
+  deliveryChannelLabel,
+  reportTypeLabel,
+} from "@/lib/domainPresentation";
 
 export default function SubscriptionsPage() {
   const [subscriptions, setSubscriptions] = useState<
@@ -41,8 +46,8 @@ export default function SubscriptionsPage() {
   const [action, setAction] = useState<number>();
   const [form, setForm] = useState({
     monitor_id: "",
-    channel: "email" as "email" | "rss",
-    report_type: "daily" as "daily" | "weekly",
+    channel: DeliveryChannel.Email,
+    report_type: ReportType.Daily,
     recipient: "",
     schedule: "0 9 * * *",
     timezone: "Asia/Shanghai",
@@ -74,7 +79,8 @@ export default function SubscriptionsPage() {
         monitor_id: Number(form.monitor_id),
         channel: form.channel,
         report_type: form.report_type,
-        recipient: form.channel === "email" ? form.recipient : undefined,
+        recipient:
+          form.channel === DeliveryChannel.Email ? form.recipient : undefined,
         schedule: form.schedule,
         timezone: form.timezone,
         enabled: true,
@@ -175,16 +181,23 @@ export default function SubscriptionsPage() {
                     <Label>渠道</Label>
                     <Select
                       value={form.channel}
-                      onValueChange={(value: "email" | "rss") =>
-                        setForm({ ...form, channel: value })
+                      onValueChange={(value) =>
+                        setForm({
+                          ...form,
+                          channel: value as DeliveryChannel,
+                        })
                       }
                     >
                       <SelectTrigger className="mt-2">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="email">邮件</SelectItem>
-                        <SelectItem value="rss">私有 RSS</SelectItem>
+                        <SelectItem value={DeliveryChannel.Email}>
+                          邮件
+                        </SelectItem>
+                        <SelectItem value={DeliveryChannel.RSS}>
+                          私有 RSS
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -192,21 +205,21 @@ export default function SubscriptionsPage() {
                     <Label>报告类型</Label>
                     <Select
                       value={form.report_type}
-                      onValueChange={(value: "daily" | "weekly") =>
-                        setForm({ ...form, report_type: value })
+                      onValueChange={(value) =>
+                        setForm({ ...form, report_type: value as ReportType })
                       }
                     >
                       <SelectTrigger className="mt-2">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="daily">日报</SelectItem>
-                        <SelectItem value="weekly">周报</SelectItem>
+                        <SelectItem value={ReportType.Daily}>日报</SelectItem>
+                        <SelectItem value={ReportType.Weekly}>周报</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
-                {form.channel === "email" && (
+                {form.channel === DeliveryChannel.Email && (
                   <div>
                     <Label htmlFor="recipient">收件邮箱</Label>
                     <Input
@@ -240,7 +253,7 @@ export default function SubscriptionsPage() {
                   onClick={create}
                   disabled={
                     !form.monitor_id ||
-                    (form.channel === "email" && !form.recipient)
+                    (form.channel === DeliveryChannel.Email && !form.recipient)
                   }
                 >
                   创建订阅
@@ -275,14 +288,14 @@ export default function SubscriptionsPage() {
               >
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    {subscription.channel === "rss" ? (
+                    {subscription.channel === DeliveryChannel.RSS ? (
                       <Rss className="h-3.5 w-3.5 text-orange-400" />
                     ) : (
                       <Send className="h-3.5 w-3.5 text-blue-400" />
                     )}
                     <p className="text-sm font-medium">
-                      {subscription.report_type === "weekly" ? "周报" : "日报"}{" "}
-                      · {subscription.channel === "rss" ? "RSS" : "邮件"}
+                      {reportTypeLabel(subscription.report_type)} ·{" "}
+                      {deliveryChannelLabel(subscription.channel)}
                     </p>
                   </div>
                   <p className="mt-1 truncate text-xs text-muted-foreground">
@@ -297,7 +310,7 @@ export default function SubscriptionsPage() {
                   {subscription.schedule}
                 </span>
                 <div className="flex flex-wrap justify-start gap-2 md:justify-end">
-                  {subscription.channel === "rss" && (
+                  {subscription.channel === DeliveryChannel.RSS && (
                     <Button
                       variant="outline"
                       size="sm"

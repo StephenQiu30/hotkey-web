@@ -9,17 +9,23 @@ import {
   postAuthEmailVerifications,
   postAuthEmailVerificationsConfirm,
 } from "@/services/hotkey/hotkey-server/identity";
+import {
+  VerificationFlow,
+  VerificationPurpose,
+  VerificationStep,
+} from "@/lib/domainEnums";
 
 interface EmailVerificationStepProps {
-  purpose: "register" | "reset_password";
+  purpose: VerificationFlow;
   onConfirmed: (ticket: string, email: string) => void;
 }
 
-type Step = "send" | "confirm";
-
 export default function EmailVerificationStep({ purpose, onConfirmed }: EmailVerificationStepProps) {
-  const apiPurpose = purpose === "register" ? "registration" : "password_reset";
-  const [step, setStep] = useState<Step>("send");
+  const apiPurpose =
+    purpose === VerificationFlow.Registration
+      ? VerificationPurpose.Registration
+      : VerificationPurpose.PasswordReset;
+  const [step, setStep] = useState<VerificationStep>(VerificationStep.Send);
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
@@ -37,7 +43,7 @@ export default function EmailVerificationStep({ purpose, onConfirmed }: EmailVer
     setLoading(true); setSendError("");
     try {
       await postAuthEmailVerifications({ email, purpose: apiPurpose });
-      setStep("confirm"); setCountdown(60);
+      setStep(VerificationStep.Confirm); setCountdown(60);
     } catch (err: any) { setSendError(err.message ?? "操作失败"); }
     finally { setLoading(false); }
   }, [apiPurpose, email]);
@@ -53,7 +59,7 @@ export default function EmailVerificationStep({ purpose, onConfirmed }: EmailVer
     finally { setLoading(false); }
   }, [apiPurpose, email, code, onConfirmed]);
 
-  if (step === "send") {
+  if (step === VerificationStep.Send) {
     return (
       <div className="space-y-3">
         <div className="space-y-1.5">

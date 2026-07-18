@@ -17,11 +17,12 @@ vi.mock("@/lib/authSession", () => ({
 import { useAuthStore } from "@/stores/authStore";
 import * as authService from "@/services/hotkey/hotkey-server/identity";
 import * as authSession from "@/lib/authSession";
+import { AuthStatus } from "@/lib/domainEnums";
 
 beforeEach(() => {
   vi.clearAllMocks();
   localStorage.clear();
-  useAuthStore.setState({ status: "initializing", user: null, error: null });
+  useAuthStore.setState({ status: AuthStatus.Initializing, user: null, error: null });
 });
 
 describe("auth store state machine", () => {
@@ -122,7 +123,7 @@ describe("auth store state machine", () => {
   });
 
   it("logout calls API and clears state", async () => {
-    useAuthStore.setState({ status: "authenticated", user: { id: 1, email: "a@b.com" } as any });
+    useAuthStore.setState({ status: AuthStatus.Authenticated, user: { id: 1, email: "a@b.com" } as any });
     vi.mocked(authService.postAuthLogout).mockResolvedValueOnce({ code: 0, message: "success" } as any);
 
     await useAuthStore.getState().logout();
@@ -134,7 +135,7 @@ describe("auth store state machine", () => {
   });
 
   it("logout is idempotent when already unauthenticated", async () => {
-    useAuthStore.setState({ status: "unauthenticated", user: null });
+    useAuthStore.setState({ status: AuthStatus.Unauthenticated, user: null });
 
     await useAuthStore.getState().logout();
 
@@ -143,7 +144,7 @@ describe("auth store state machine", () => {
   });
 
   it("clearSession resets to unauthenticated", () => {
-    useAuthStore.setState({ status: "authenticated", user: { id: 1 } as any });
+    useAuthStore.setState({ status: AuthStatus.Authenticated, user: { id: 1 } as any });
 
     useAuthStore.getState().clearSession();
 

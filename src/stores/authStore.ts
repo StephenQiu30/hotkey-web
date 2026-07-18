@@ -7,8 +7,7 @@ import {
   postAuthRefresh,
 } from "@/services/hotkey/hotkey-server/identity";
 import { setAccessToken, clearAccessToken, getAccessToken } from "@/lib/authSession";
-
-export type AuthStatus = "initializing" | "authenticated" | "unauthenticated";
+import { AuthStatus } from "@/lib/domainEnums";
 
 interface AuthState {
   status: AuthStatus;
@@ -25,7 +24,7 @@ interface AuthState {
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
-      status: "initializing",
+      status: AuthStatus.Initializing,
       user: null,
       error: null,
 
@@ -40,17 +39,17 @@ export const useAuthStore = create<AuthState>()(
             if (!newToken) throw new Error("no token");
             setAccessToken(newToken, 900);
           } catch {
-            set({ status: "unauthenticated", user: null, error: null });
+            set({ status: AuthStatus.Unauthenticated, user: null, error: null });
             return;
           }
         }
         // Step 2: validate token and fetch user
         try {
           const res = await getAuthMe();
-          set({ status: "authenticated", user: res.data ?? null, error: null });
+          set({ status: AuthStatus.Authenticated, user: res.data ?? null, error: null });
         } catch {
           clearAccessToken();
-          set({ status: "unauthenticated", user: null, error: null });
+          set({ status: AuthStatus.Unauthenticated, user: null, error: null });
         }
       },
 
@@ -59,7 +58,7 @@ export const useAuthStore = create<AuthState>()(
         if (!token) throw new Error("登录响应无效");
         setAccessToken(token, 900);
         const meRes = await getAuthMe();
-        set({ status: "authenticated", user: meRes.data ?? null, error: null });
+        set({ status: AuthStatus.Authenticated, user: meRes.data ?? null, error: null });
       },
 
       login: async (input) => {
@@ -71,26 +70,26 @@ export const useAuthStore = create<AuthState>()(
 
           await get().establishSession({ access_token: token, user: userData });
         } catch (err: any) {
-          set({ status: "unauthenticated", user: null, error: err.message ?? null });
+          set({ status: AuthStatus.Unauthenticated, user: null, error: err.message ?? null });
           throw err;
         }
       },
 
       logout: async () => {
         const { status } = get();
-        if (status === "unauthenticated") return;
+        if (status === AuthStatus.Unauthenticated) return;
         try {
           await postAuthLogout();
         } catch {
           // API failure ignored — clear local state regardless
         }
         clearAccessToken();
-        set({ status: "unauthenticated", user: null, error: null });
+        set({ status: AuthStatus.Unauthenticated, user: null, error: null });
       },
 
       clearSession: () => {
         clearAccessToken();
-        set({ status: "unauthenticated", user: null, error: null });
+        set({ status: AuthStatus.Unauthenticated, user: null, error: null });
       },
     }),
     {

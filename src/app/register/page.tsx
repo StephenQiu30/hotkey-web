@@ -14,11 +14,10 @@ import EmailVerificationStep from "@/components/auth/EmailVerificationStep";
 import PasswordFields from "@/components/auth/PasswordFields";
 import { postAuthRegistrations } from "@/services/hotkey/hotkey-server/identity";
 import { createRegisterRequest } from "@/lib/registerRequest";
-
-type Step = "email" | "profile";
+import { RegistrationStep, VerificationFlow } from "@/lib/domainEnums";
 
 export default function RegisterPage() {
-  const [step, setStep] = useState<Step>("email");
+  const [step, setStep] = useState<RegistrationStep>(RegistrationStep.Email);
   const [ticket, setTicket] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,7 +33,7 @@ export default function RegisterPage() {
   }, { scope: containerRef, dependencies: [step] });
 
   const handleConfirmed = (tkt: string, eml: string) => {
-    setTicket(tkt); setEmail(eml); setStep("profile");
+    setTicket(tkt); setEmail(eml); setStep(RegistrationStep.Profile);
   };
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -56,9 +55,9 @@ export default function RegisterPage() {
     <div ref={containerRef}>
       <AuthShell title="创建账号" subtitle="开启热点创作之旅">
         <div className="rg-fade">
-          {step === "email" && <EmailVerificationStep purpose="register" onConfirmed={handleConfirmed} />}
+          {step === RegistrationStep.Email && <EmailVerificationStep purpose={VerificationFlow.Registration} onConfirmed={handleConfirmed} />}
 
-          {step === "profile" && (
+          {step === RegistrationStep.Profile && (
             <form onSubmit={handleRegister} className="space-y-3">
               <div className="space-y-1.5">
                 <Label htmlFor="display-name" className="text-sm font-medium">显示名称</Label>
