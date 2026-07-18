@@ -34,6 +34,14 @@ export enum MonitorStatus {
   Archived = "archived",
 }
 
+export enum CollectionRunStatus {
+  Queued = "queued",
+  Running = "running",
+  Succeeded = "succeeded",
+  Failed = "failed",
+  Cancelled = "cancelled",
+}
+
 export enum MonitorAction {
   Publish = "publish",
   Pause = "pause",

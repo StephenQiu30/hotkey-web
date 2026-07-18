@@ -1,4 +1,5 @@
 import {
+  CollectionRunStatus,
   DeliveryChannel,
   MonitorStatus,
   ReportType,
@@ -49,6 +50,32 @@ const deliveryChannelLabels: Record<DeliveryChannel, string> = {
   [DeliveryChannel.RSS]: "RSS",
 };
 
+const collectionRunPresentations: Record<
+  CollectionRunStatus,
+  StatusPresentation
+> = {
+  [CollectionRunStatus.Queued]: {
+    label: "排队中",
+    className: "text-muted-foreground",
+  },
+  [CollectionRunStatus.Running]: {
+    label: "采集中",
+    className: "text-blue-400",
+  },
+  [CollectionRunStatus.Succeeded]: {
+    label: "成功",
+    className: "text-green-500",
+  },
+  [CollectionRunStatus.Failed]: {
+    label: "失败",
+    className: "text-red-400",
+  },
+  [CollectionRunStatus.Cancelled]: {
+    label: "已取消",
+    className: "text-muted-foreground",
+  },
+};
+
 export function sourceHealthPresentation(
   status: string | undefined,
 ): StatusPresentation {
@@ -68,4 +95,15 @@ export function reportTypeLabel(type: string | undefined): string {
 
 export function deliveryChannelLabel(channel: string | undefined): string {
   return deliveryChannelLabels[channel as DeliveryChannel] ?? channel ?? "—";
+}
+
+export function collectionRunPresentation(
+  status: string | undefined,
+): StatusPresentation {
+  return (
+    collectionRunPresentations[status as CollectionRunStatus] ?? {
+      label: status ?? "未知",
+      className: "text-muted-foreground",
+    }
+  );
 }

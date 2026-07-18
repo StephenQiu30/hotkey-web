@@ -1,9 +1,9 @@
 import {
   Activity,
   ArrowUpRight,
-  CircleDashed,
+  DatabaseZap,
+  FileSearch,
   Radar,
-  Rocket,
   Workflow,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -14,24 +14,44 @@ import { monitorStatusLabel } from "@/lib/domainPresentation";
 type EmptyWorkspaceProps = {
   monitors: HotKeyAPI.MonitorResponse[];
   overview?: HotKeyAPI.RuntimeOverview;
+  collectionRuns?: HotKeyAPI.CollectionRunResponse[];
+  collectedContents?: HotKeyAPI.ContentResponse[];
 };
 
-export function EmptyWorkspace({ monitors, overview }: EmptyWorkspaceProps) {
+export function EmptyWorkspace({
+  monitors,
+  overview,
+  collectionRuns = [],
+  collectedContents = [],
+}: EmptyWorkspaceProps) {
   const visibleMonitors = monitors.filter(
     (monitor) => monitor.status !== MonitorStatus.Archived
   );
   const draftCount = visibleMonitors.filter(
-    (monitor) => monitor.status === MonitorStatus.Draft
+    (monitor) => monitor.status === MonitorStatus.Draft,
   ).length;
   const publishedCount = visibleMonitors.filter(
     (monitor) => monitor.published != null
   ).length;
   const runningJobs = overview?.running_jobs ?? 0;
+  const collectionStarted = collectionRuns.length > 0;
+  const contentsReady = collectedContents.length > 0;
+
+  const progressMessage =
+    draftCount > 0
+      ? "草稿不会创建采集任务"
+      : publishedCount === 0
+        ? "创建并发布监控后，系统才会开始采集与聚合"
+        : !collectionStarted
+          ? "监控已发布，但尚未产生采集任务。请确认后台调度器正在运行。"
+          : !contentsReady
+            ? "采集任务已经产生，内容会在标准化完成后进入工作台。"
+            : `已入库 ${collectedContents.length} 条内容，正在等待相关性匹配与事件聚合。`;
 
   const metrics = [
     { label: "已创建监控", value: visibleMonitors.length, icon: Radar },
-    { label: "待发布草稿", value: draftCount, icon: CircleDashed },
-    { label: "已发布监控", value: publishedCount, icon: Rocket },
+    { label: "最近采集批次", value: collectionRuns.length, icon: DatabaseZap },
+    { label: "已入库内容", value: collectedContents.length, icon: FileSearch },
     { label: "执行中任务", value: runningJobs, icon: Workflow },
   ];
 
@@ -65,16 +85,12 @@ export function EmptyWorkspace({ monitors, overview }: EmptyWorkspaceProps) {
           <div>
             <h2 className="text-sm font-medium">监控准备状态</h2>
             <p className="mt-1 text-xs text-muted-foreground">
-              {draftCount > 0
-                ? "草稿不会创建采集任务"
-                : publishedCount > 0
-                ? "监控已发布，正在等待采集内容形成聚合事件"
-                : "创建并发布监控后，系统才会开始采集与聚合"}
+              {progressMessage}
             </p>
           </div>
           <Button asChild size="sm" className="self-start sm:self-auto">
-            <a href="/dashboard/settings">
-              {draftCount > 0 ? "发布监控" : "管理监控"}
+            <a href={draftCount > 0 ? "/dashboard/settings" : "/dashboard/contents"}>
+              {draftCount > 0 ? "发布监控" : "查看采集内容"}
               <ArrowUpRight />
             </a>
           </Button>
@@ -126,7 +142,7 @@ export function EmptyWorkspace({ monitors, overview }: EmptyWorkspaceProps) {
         )}
       </section>
 
-      <section className="mt-5 grid overflow-hidden rounded-md border border-border md:grid-cols-3 md:divide-x md:divide-border">
+      <section className="mt-5 grid overflow-hidden rounded-md border border-border sm:grid-cols-2 xl:grid-cols-4 xl:divide-x xl:divide-border">
         {[
           {
             step: "01",
@@ -136,12 +152,18 @@ export function EmptyWorkspace({ monitors, overview }: EmptyWorkspaceProps) {
           },
           {
             step: "02",
-            title: "发布并采集",
-            detail: publishedCount ? "已进入运行阶段" : "等待发布草稿",
-            active: publishedCount > 0,
+            title: "创建采集任务",
+            detail: collectionStarted ? "已产生采集批次" : publishedCount ? "等待调度" : "等待发布草稿",
+            active: collectionStarted,
           },
           {
             step: "03",
+            title: "内容标准化",
+            detail: contentsReady ? `${collectedContents.length} 条已入库` : "尚无内容",
+            active: contentsReady,
+          },
+          {
+            step: "04",
             title: "形成聚合事件",
             detail: "尚无事件",
             active: false,

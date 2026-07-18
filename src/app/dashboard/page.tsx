@@ -16,6 +16,8 @@ import {
   postEventsIdIntelligenceSummaryRegenerate,
 } from "@/services/hotkey/hotkey-server/events";
 import { getContentsId } from "@/services/hotkey/hotkey-server/contents";
+import { getContents } from "@/services/hotkey/hotkey-server/contents";
+import { getCollectionRuns } from "@/services/hotkey/hotkey-server/collectionRuns";
 import { getMonitors } from "@/services/hotkey/hotkey-server/monitors";
 import { getOperationsOverview } from "@/services/hotkey/hotkey-server/operations";
 import { getReports, postReportsIdBuild, postReportsIdPreview } from "@/services/hotkey/hotkey-server/reports";
@@ -38,6 +40,8 @@ export default function DashboardPage() {
   const [reports, setReports] = useState<HotKeyAPI.ReportResponse[]>([]);
   const [monitors, setMonitors] = useState<HotKeyAPI.MonitorResponse[]>([]);
   const [overview, setOverview] = useState<HotKeyAPI.RuntimeOverview>();
+  const [collectionRuns, setCollectionRuns] = useState<HotKeyAPI.CollectionRunResponse[]>([]);
+  const [collectedContents, setCollectedContents] = useState<HotKeyAPI.ContentResponse[]>([]);
   const [tab, setTab] = useState<WorkspaceTab>(WorkspaceTab.Evidence);
   const [loading, setLoading] = useState(true);
   const [detailLoading, setDetailLoading] = useState(false);
@@ -49,17 +53,21 @@ export default function DashboardPage() {
   const loadWorkspace = useCallback(async () => {
     setLoading(true); setError(undefined);
     try {
-      const [eventResult, reportResult, monitorResult, overviewResult] = await Promise.all([
+      const [eventResult, reportResult, monitorResult, overviewResult, runResult, contentResult] = await Promise.all([
         getEvents({ limit: 50 }),
         getReports({ limit: 20 }),
         getMonitors({ limit: 100 }),
         getOperationsOverview().catch(() => undefined),
+        getCollectionRuns({ limit: 50 }),
+        getContents({ limit: 50 }),
       ]);
       const nextEvents = eventResult.data?.items ?? [];
       setEvents(nextEvents);
       setReports(reportResult.data?.items ?? []);
       setMonitors(monitorResult.data?.items ?? []);
       setOverview(overviewResult?.data);
+      setCollectionRuns(runResult.data?.items ?? []);
+      setCollectedContents(contentResult.data?.items ?? []);
       setSelectedId((current) => current ?? nextEvents[0]?.id);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "工作台加载失败");
@@ -125,7 +133,7 @@ export default function DashboardPage() {
   if (loading) return <div className="flex min-h-[calc(100vh-60px)] items-center justify-center"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>;
   if (error) return <div className="app-page"><div className="panel p-10 text-center"><p className="text-sm text-destructive">{error}</p><Button onClick={loadWorkspace} variant="outline" className="mt-4">重新加载</Button></div></div>;
   if (!events.length)
-    return <EmptyWorkspace monitors={monitors} overview={overview} />;
+    return <EmptyWorkspace monitors={monitors} overview={overview} collectionRuns={collectionRuns} collectedContents={collectedContents} />;
 
   return (
     <div className="grid min-h-[calc(100vh-60px)] grid-cols-1 xl:grid-cols-[minmax(0,1fr)_460px]">
