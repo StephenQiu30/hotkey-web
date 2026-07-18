@@ -29,6 +29,26 @@ describe("Umi OpenAPI generation contract", () => {
     );
   });
 
+  it("generates the content document reader from the server contract", () => {
+    const generatedContentsService = path.resolve(
+      repositoryRoot,
+      "src/services/hotkey/hotkey-server/contents.ts",
+    );
+    const generatedTypes = path.resolve(
+      repositoryRoot,
+      "src/services/hotkey/hotkey-server/typings.d.ts",
+    );
+    const serviceSource = fs.readFileSync(generatedContentsService, "utf8");
+    const typeSource = fs.readFileSync(generatedTypes, "utf8");
+
+    expect(serviceSource).toContain("export async function getContentsIdDocument");
+    expect(serviceSource).toContain("HotKeyAPI.ContentDocumentResponse");
+    expect(typeSource).toContain("type ContentDocumentResponse");
+    expect(typeSource).toMatch(
+      /availability\?:\s*["']ready["']\s*\|\s*["']not_captured["']/,
+    );
+  });
+
   it("keeps application code on the generated server client only", () => {
     const legacyServices = [
       "auth.ts",
@@ -63,6 +83,12 @@ describe("Umi OpenAPI generation contract", () => {
     for (const file of sourceFiles) {
       const source = fs.readFileSync(file, "utf8");
       expect(source, file).not.toMatch(/@\/services\/(?!hotkey\/hotkey-server)/);
+      if (!file.includes("/src/services/hotkey/hotkey-server/")) {
+        expect(source, file).not.toMatch(
+          /\/api\/v1\/contents\/[^'"`]+\/document/,
+        );
+        expect(source, file).not.toMatch(/interface\s+ContentDocument/);
+      }
     }
   });
 });
