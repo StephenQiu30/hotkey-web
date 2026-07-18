@@ -40,7 +40,7 @@ export default function TopNav({
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-black/95 backdrop-blur">
+    <header data-top-nav className="sticky top-0 z-50 border-b border-border bg-black/95 backdrop-blur">
       <div className="flex h-[60px] min-w-0 items-center gap-3 px-4 sm:gap-4 sm:px-5 lg:px-7 xl:gap-5">
         <Link
           href="/dashboard"
