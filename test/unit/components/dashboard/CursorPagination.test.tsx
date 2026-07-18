@@ -27,6 +27,29 @@ describe("CursorPagination", () => {
     expect(onNext).toHaveBeenCalledOnce();
   });
 
+  it("lets the user change the page size", async () => {
+    const user = userEvent.setup();
+    const onPageSizeChange = vi.fn();
+
+    render(
+      <CursorPagination
+        hasNext={false}
+        onNext={vi.fn()}
+        onPageSizeChange={onPageSizeChange}
+        onPrevious={vi.fn()}
+        page={1}
+        pageSize={20}
+      />,
+    );
+
+    expect(screen.getByRole("combobox", { name: "每页条数" })).toHaveValue("20");
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "每页条数" }),
+      "50",
+    );
+    expect(onPageSizeChange).toHaveBeenCalledWith(50);
+  });
+
   it("keeps previous navigation available after moving past the first page", () => {
     const onPrevious = vi.fn();
 

@@ -10,13 +10,16 @@ import {
   CollectionWorkspace,
   type CollectionWorkspacePagination,
 } from "@/components/dashboard/CollectionWorkspace";
+import {
+  DEFAULT_PAGE_SIZE,
+} from "@/components/dashboard/CursorPagination";
 import { getCollectionRuns } from "@/services/hotkey/hotkey-server/collectionRuns";
 import { deleteContentsId, getContents } from "@/services/hotkey/hotkey-server/contents";
 import { useAuthStore } from "@/stores/authStore";
 import { UserRole } from "@/lib/domainEnums";
 
 export default function ContentsPage() {
-  const pageSize = 20;
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const user = useAuthStore((state) => state.user);
   const canManage = user?.role === UserRole.Editor || user?.role === UserRole.Admin;
   const [runs, setRuns] = useState<HotKeyAPI.CollectionRunResponse[]>([]);
@@ -55,7 +58,7 @@ export default function ContentsPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [pageSize]);
 
   const loadRunsPage = async (cursor: string | undefined, page: number) => {
     setLoading(true);
@@ -117,6 +120,10 @@ export default function ContentsPage() {
     void loadContentsPage(contentCursors[contentPage - 2], contentPage - 1);
   };
 
+  const changePageSize = (nextPageSize: number) => {
+    setPageSize(nextPageSize);
+  };
+
   const deleteContent = async () => {
     const id = deleteTarget?.id;
     if (!canManage || id == null) return;
@@ -137,15 +144,19 @@ export default function ContentsPage() {
     page: runPage,
     hasNext: Boolean(runNextCursor),
     loading,
+    onPageSizeChange: changePageSize,
     onPrevious: previousRunPage,
     onNext: nextRunPage,
+    pageSize,
   };
   const contentsPagination: CollectionWorkspacePagination = {
     page: contentPage,
     hasNext: Boolean(contentNextCursor),
     loading,
+    onPageSizeChange: changePageSize,
     onPrevious: previousContentPage,
     onNext: nextContentPage,
+    pageSize,
   };
 
   useEffect(() => {

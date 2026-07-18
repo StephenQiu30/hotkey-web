@@ -53,7 +53,10 @@ import {
 import { getSourceConnections } from "@/services/hotkey/hotkey-server/sources";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog";
-import { CursorPagination } from "@/components/dashboard/CursorPagination";
+import {
+  CursorPagination,
+  DEFAULT_PAGE_SIZE,
+} from "@/components/dashboard/CursorPagination";
 import { MonitorAction, MonitorRegion, MonitorStatus } from "@/lib/domainEnums";
 import { monitorStatusLabel } from "@/lib/domainPresentation";
 import {
@@ -80,7 +83,7 @@ const createInitialForm = (): MonitorDraftForm => ({
 });
 
 export default function MonitorsPage() {
-  const pageSize = 20;
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [monitors, setMonitors] = useState<HotKeyAPI.MonitorResponse[]>([]);
   const [sources, setSources] = useState<HotKeyAPI.SourceReadResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -123,7 +126,7 @@ export default function MonitorsPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [pageSize]);
 
   const loadMonitorPage = async (
     cursor: string | undefined,
@@ -156,6 +159,10 @@ export default function MonitorsPage() {
   const previousPage = () => {
     if (page <= 1) return;
     void loadMonitorPage(cursors[page - 2], page - 1);
+  };
+
+  const changePageSize = (nextPageSize: number) => {
+    setPageSize(nextPageSize);
   };
   useEffect(() => {
     load();
@@ -557,8 +564,10 @@ export default function MonitorsPage() {
             hasNext={nextCursor != null}
             loading={loading}
             onNext={nextPage}
+            onPageSizeChange={changePageSize}
             onPrevious={previousPage}
             page={page}
+            pageSize={pageSize}
           />
         </div>
       ) : (

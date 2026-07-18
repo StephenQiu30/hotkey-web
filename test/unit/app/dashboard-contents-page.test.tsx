@@ -39,7 +39,8 @@ describe("ContentsPage pagination", () => {
     mocks.getContents.mockResolvedValue({ data: { items: [] } });
 
     render(<ContentsPage />);
-    await userEvent.setup().click(await screen.findByRole("button", { name: "下一页" }));
+    const nextButtons = await screen.findAllByRole("button", { name: "下一页" });
+    await userEvent.setup().click(nextButtons[0]);
 
     await waitFor(() =>
       expect(mocks.getCollectionRuns).toHaveBeenLastCalledWith({
@@ -47,6 +48,26 @@ describe("ContentsPage pagination", () => {
         limit: 20,
       }),
     );
+  });
+
+  it("reloads both collection lists with the selected page size", async () => {
+    mocks.getCollectionRuns.mockResolvedValue({
+      data: { items: [{ id: 1, status: "succeeded" }] },
+    });
+    mocks.getContents.mockResolvedValue({
+      data: { items: [{ id: 7, title: "Fetched content" }] },
+    });
+
+    render(<ContentsPage />);
+    const pageSizeSelectors = await screen.findAllByRole("combobox", {
+      name: "每页条数",
+    });
+    await userEvent.setup().selectOptions(pageSizeSelectors[0], "50");
+
+    await waitFor(() => {
+      expect(mocks.getCollectionRuns).toHaveBeenLastCalledWith({ limit: 50 });
+      expect(mocks.getContents).toHaveBeenLastCalledWith({ limit: 50 });
+    });
   });
 
   it("confirms and deletes a fetched content, then refreshes the content page", async () => {

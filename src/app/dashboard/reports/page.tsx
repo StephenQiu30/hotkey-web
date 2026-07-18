@@ -23,7 +23,10 @@ import {
   postReportsIdPublish,
 } from "@/services/hotkey/hotkey-server/reports";
 import { ReportAction, ReportStatus } from "@/lib/domainEnums";
-import { CursorPagination } from "@/components/dashboard/CursorPagination";
+import {
+  CursorPagination,
+  DEFAULT_PAGE_SIZE,
+} from "@/components/dashboard/CursorPagination";
 
 const when = (value?: string) =>
   value
@@ -34,7 +37,7 @@ const when = (value?: string) =>
     : "—";
 
 export default function ReportsPage() {
-  const pageSize = 20;
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [reports, setReports] = useState<HotKeyAPI.ReportResponse[]>([]);
   const [selected, setSelected] = useState<HotKeyAPI.ReportResponse>();
   const selectedIdRef = useRef<number | undefined>(undefined);
@@ -79,7 +82,7 @@ export default function ReportsPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [pageSize]);
 
   const load = useCallback(async () => {
     setCursors([undefined]);
@@ -144,6 +147,10 @@ export default function ReportsPage() {
     void loadPage(cursors[page - 2], page - 1);
   };
 
+  const changePageSize = (nextPageSize: number) => {
+    setPageSize(nextPageSize);
+  };
+
   return (
     <div className="app-page">
       <PageHeader
@@ -203,8 +210,10 @@ export default function ReportsPage() {
               hasNext={nextCursor != null}
               loading={loading}
               onNext={nextPage}
+              onPageSizeChange={changePageSize}
               onPrevious={previousPage}
               page={page}
+              pageSize={pageSize}
             />
           </div>
           <article className="panel min-w-0 overflow-hidden">

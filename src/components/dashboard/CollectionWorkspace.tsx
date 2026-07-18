@@ -3,12 +3,17 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CollectionRunStatus } from "@/lib/domainEnums";
 import { collectionRunPresentation } from "@/lib/domainPresentation";
-import { CursorPagination } from "@/components/dashboard/CursorPagination";
+import {
+  CursorPagination,
+  DEFAULT_PAGE_SIZE,
+} from "@/components/dashboard/CursorPagination";
 
 export type CollectionWorkspacePagination = {
   page: number;
   hasNext: boolean;
   loading?: boolean;
+  pageSize?: number;
+  onPageSizeChange?: (pageSize: number) => void;
   onPrevious: () => void;
   onNext: () => void;
 };
@@ -76,7 +81,7 @@ export function CollectionWorkspace({
           <div>
             <h2 className="text-sm font-medium">采集批次（当前页）</h2>
             <p className="mt-1 text-xs text-muted-foreground">
-              按批次编号展示调度器与来源连接的真实执行结果，每页 20 条。
+              按批次编号展示调度器与来源连接的真实执行结果，每页 {runsPagination?.pageSize ?? DEFAULT_PAGE_SIZE} 条。
             </p>
           </div>
           <RadioTower className="h-4 w-4 text-muted-foreground" />
@@ -137,7 +142,7 @@ export function CollectionWorkspace({
           <div>
             <h2 className="text-sm font-medium">最近入库内容</h2>
             <p className="mt-1 text-xs text-muted-foreground">
-              采集成功后完成标准化的真实内容，每页 20 条。
+              采集成功后完成标准化的真实内容，每页 {contentsPagination?.pageSize ?? DEFAULT_PAGE_SIZE} 条。
             </p>
           </div>
           <FileSearch className="h-4 w-4 text-muted-foreground" />

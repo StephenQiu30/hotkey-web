@@ -47,7 +47,10 @@ import { SourceAction, SourceType, UserRole } from "@/lib/domainEnums";
 import { sourceHealthPresentation } from "@/lib/domainPresentation";
 import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CursorPagination } from "@/components/dashboard/CursorPagination";
+import {
+  CursorPagination,
+  DEFAULT_PAGE_SIZE,
+} from "@/components/dashboard/CursorPagination";
 
 const emptySourceForm = () => ({
   name: "",
@@ -68,7 +71,7 @@ function sourceStatus(source: HotKeyAPI.SourceReadResponse) {
 }
 
 export default function SourcesPage() {
-  const pageSize = 20;
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const user = useAuthStore((state) => state.user);
   const canManage = user?.role === UserRole.Admin;
   const [sources, setSources] = useState<HotKeyAPI.SourceReadResponse[]>([]);
@@ -101,7 +104,7 @@ export default function SourcesPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [pageSize]);
 
   const load = useCallback(async () => {
     setCursors([undefined]);
@@ -121,6 +124,10 @@ export default function SourcesPage() {
   const previousPage = () => {
     if (page <= 1) return;
     void loadPage(cursors[page - 2], page - 1);
+  };
+
+  const changePageSize = (nextPageSize: number) => {
+    setPageSize(nextPageSize);
   };
 
   const create = async () => {
@@ -358,8 +365,10 @@ export default function SourcesPage() {
             hasNext={nextCursor != null}
             loading={loading}
             onNext={nextPage}
+            onPageSizeChange={changePageSize}
             onPrevious={previousPage}
             page={page}
+            pageSize={pageSize}
           />
         </div>
       ) : (

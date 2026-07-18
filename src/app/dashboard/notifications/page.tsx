@@ -24,7 +24,10 @@ import {
 } from "@/services/hotkey/hotkey-server/delivery";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog";
-import { CursorPagination } from "@/components/dashboard/CursorPagination";
+import {
+  CursorPagination,
+  DEFAULT_PAGE_SIZE,
+} from "@/components/dashboard/CursorPagination";
 import { DeliveryChannel, ReportType } from "@/lib/domainEnums";
 import {
   deliveryChannelLabel,
@@ -32,7 +35,7 @@ import {
 } from "@/lib/domainPresentation";
 
 export default function SubscriptionsPage() {
-  const pageSize = 20;
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [subscriptions, setSubscriptions] = useState<
     HotKeyAPI.SubscriptionResponse[]
   >([]);
@@ -65,7 +68,7 @@ export default function SubscriptionsPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [pageSize]);
 
   const load = useCallback(async () => {
     setCursors([undefined]);
@@ -85,6 +88,10 @@ export default function SubscriptionsPage() {
   const previousPage = () => {
     if (page <= 1) return;
     void loadPage(cursors[page - 2], page - 1);
+  };
+
+  const changePageSize = (nextPageSize: number) => {
+    setPageSize(nextPageSize);
   };
 
   const create = async () => {
@@ -302,8 +309,10 @@ export default function SubscriptionsPage() {
             hasNext={nextCursor != null}
             loading={loading}
             onNext={nextPage}
+            onPageSizeChange={changePageSize}
             onPrevious={previousPage}
             page={page}
+            pageSize={pageSize}
           />
         </div>
       )}
