@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
@@ -23,6 +23,7 @@ import {
   postReportsIdPublish,
 } from "@/services/hotkey/hotkey-server/reports";
 import { ReportAction, ReportStatus } from "@/lib/domainEnums";
+import { CursorPagination } from "@/components/dashboard/CursorPagination";
 
 const when = (value?: string) =>
   value
@@ -33,37 +34,67 @@ const when = (value?: string) =>
     : "—";
 
 export default function ReportsPage() {
+  const pageSize = 20;
   const [reports, setReports] = useState<HotKeyAPI.ReportResponse[]>([]);
   const [selected, setSelected] = useState<HotKeyAPI.ReportResponse>();
+  const selectedIdRef = useRef<number | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [action, setAction] = useState<ReportAction>();
   const [error, setError] = useState<string>();
+  const [page, setPage] = useState(1);
+  const [cursors, setCursors] = useState<(number | undefined)[]>([undefined]);
+  const [nextCursor, setNextCursor] = useState<number>();
 
-  const load = useCallback(async () => {
+  const setCurrentReport = (report?: HotKeyAPI.ReportResponse) => {
+    selectedIdRef.current = report?.id;
+    setSelected(report);
+  };
+
+  const loadPage = useCallback(async (cursor: number | undefined, pageNumber: number) => {
     setLoading(true);
     setError(undefined);
     try {
-      const result = await getReports({ limit: 50 });
+      const result = await getReports({
+        limit: pageSize,
+        ...(cursor != null ? { cursor } : {}),
+      });
       const items = result.data?.items ?? [];
       setReports(items);
-      const id = selected?.id ?? items[0]?.id;
-      if (id != null) setSelected((await getReportsId({ id })).data);
+      setPage(pageNumber);
+      setNextCursor(result.data?.next_cursor);
+      const currentID = selectedIdRef.current;
+      const id =
+        currentID != null && items.some((report) => report.id === currentID)
+          ? currentID
+          : items[0]?.id;
+      if (id == null) {
+        setCurrentReport(undefined);
+      } else if (id !== currentID) {
+        const summary = items.find((report) => report.id === id);
+        setCurrentReport(summary);
+        setCurrentReport((await getReportsId({ id })).data);
+      }
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "报告加载失败");
     } finally {
       setLoading(false);
     }
-  }, [selected?.id]);
+  }, []);
+
+  const load = useCallback(async () => {
+    setCursors([undefined]);
+    await loadPage(undefined, 1);
+  }, [loadPage]);
 
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
 
   const selectReport = async (report: HotKeyAPI.ReportResponse) => {
     if (report.id == null) return;
     setAction(ReportAction.Select);
     try {
-      setSelected((await getReportsId({ id: report.id })).data);
+      setCurrentReport((await getReportsId({ id: report.id })).data);
     } catch (reason) {
       toast.error(
         reason instanceof Error ? reason.message : "报告详情加载失败",
@@ -80,12 +111,12 @@ export default function ReportsPage() {
     setAction(kind);
     try {
       if (kind === ReportAction.Build)
-        setSelected((await postReportsIdBuild({ id: selected.id })).data);
+        setCurrentReport((await postReportsIdBuild({ id: selected.id })).data);
       else if (kind === ReportAction.Preview)
-        setSelected(
+        setCurrentReport(
           (await postReportsIdPreview({ id: selected.id })).data?.report,
         );
-      else setSelected((await postReportsIdPublish({ id: selected.id })).data);
+      else setCurrentReport((await postReportsIdPublish({ id: selected.id })).data);
       toast.success(
         kind === ReportAction.Build
           ? "报告已构建"
@@ -93,13 +124,24 @@ export default function ReportsPage() {
             ? "预览已生成"
             : "报告已发布",
       );
-      const list = await getReports({ limit: 50 });
-      setReports(list.data?.items ?? []);
+      await loadPage(cursors[page - 1], page);
     } catch (reason) {
       toast.error(reason instanceof Error ? reason.message : "报告操作失败");
     } finally {
       setAction(undefined);
     }
+  };
+
+  const nextPage = () => {
+    if (nextCursor == null) return;
+    const nextPageNumber = page + 1;
+    setCursors((history) => [...history.slice(0, page), nextCursor]);
+    void loadPage(nextCursor, nextPageNumber);
+  };
+
+  const previousPage = () => {
+    if (page <= 1) return;
+    void loadPage(cursors[page - 2], page - 1);
   };
 
   return (
@@ -157,6 +199,13 @@ export default function ReportsPage() {
                 </p>
               </button>
             ))}
+            <CursorPagination
+              hasNext={nextCursor != null}
+              loading={loading}
+              onNext={nextPage}
+              onPrevious={previousPage}
+              page={page}
+            />
           </div>
           <article className="panel min-w-0 overflow-hidden">
             <div className="panel-header flex flex-wrap items-center gap-2">

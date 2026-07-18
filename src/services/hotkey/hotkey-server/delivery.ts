@@ -3,11 +3,18 @@
 import { request, type RequestOptions } from "@/lib/request";
 
 /** List the current user's report subscriptions GET /api/v1/report-subscriptions */
-export async function getReportSubscriptions(options?: RequestOptions) {
-  return request<HotKeyAPI.DeliveryResultArrayHttpSubscriptionResponse>(
+export async function getReportSubscriptions(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: HotKeyAPI.getReportSubscriptionsParams,
+  options?: RequestOptions
+) {
+  return request<HotKeyAPI.DeliveryResultHttpSubscriptionPageResponse>(
     "/api/v1/report-subscriptions",
     {
       method: "GET",
+      params: {
+        ...params,
+      },
       ...(options || {}),
     }
   );

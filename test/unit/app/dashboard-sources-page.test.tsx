@@ -165,4 +165,25 @@ describe("SourcesPage body storage authorization", () => {
       ),
     );
   });
+
+  it("requests the next source page with the returned cursor", async () => {
+    mocks.getSourceConnections
+      .mockResolvedValueOnce({
+        data: {
+          items: [{ id: 3, name: "First source", deleted: false }],
+          next_cursor: "source-cursor-1",
+        },
+      })
+      .mockResolvedValueOnce({ data: { items: [], next_cursor: undefined } });
+
+    render(<SourcesPage />);
+    await userEvent.setup().click(await screen.findByRole("button", { name: "下一页" }));
+
+    await waitFor(() =>
+      expect(mocks.getSourceConnections).toHaveBeenLastCalledWith({
+        cursor: "source-cursor-1",
+        limit: 20,
+      }),
+    );
+  });
 });

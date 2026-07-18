@@ -47,6 +47,7 @@ import { SourceAction, SourceType, UserRole } from "@/lib/domainEnums";
 import { sourceHealthPresentation } from "@/lib/domainPresentation";
 import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import { CursorPagination } from "@/components/dashboard/CursorPagination";
 
 const emptySourceForm = () => ({
   name: "",
@@ -67,6 +68,7 @@ function sourceStatus(source: HotKeyAPI.SourceReadResponse) {
 }
 
 export default function SourcesPage() {
+  const pageSize = 20;
   const user = useAuthStore((state) => state.user);
   const canManage = user?.role === UserRole.Admin;
   const [sources, setSources] = useState<HotKeyAPI.SourceReadResponse[]>([]);
@@ -75,29 +77,51 @@ export default function SourcesPage() {
   const [action, setAction] = useState<number>();
   const [deleteTarget, setDeleteTarget] = useState<HotKeyAPI.SourceReadResponse>();
   const [form, setForm] = useState(emptySourceForm);
+  const [page, setPage] = useState(1);
+  const [cursors, setCursors] = useState<(string | undefined)[]>([undefined]);
+  const [nextCursor, setNextCursor] = useState<string>();
 
   const changeDialog = (open: boolean) => {
     setDialog(open);
     if (!open) setForm(emptySourceForm());
   };
 
-  const load = useCallback(async () => {
+  const loadPage = useCallback(async (cursor: string | undefined, pageNumber: number) => {
     setLoading(true);
     try {
-      setSources(
-        ((await getSourceConnections({ limit: 100 })).data?.items ?? []).filter(
-          (source) => !source.deleted,
-        ),
-      );
+      const result = await getSourceConnections({
+        limit: pageSize,
+        ...(cursor ? { cursor } : {}),
+      });
+      setSources((result.data?.items ?? []).filter((source) => !source.deleted));
+      setPage(pageNumber);
+      setNextCursor(result.data?.next_cursor);
     } catch (reason) {
       toast.error(reason instanceof Error ? reason.message : "来源加载失败");
     } finally {
       setLoading(false);
     }
   }, []);
+
+  const load = useCallback(async () => {
+    setCursors([undefined]);
+    await loadPage(undefined, 1);
+  }, [loadPage]);
   useEffect(() => {
     load();
   }, [load]);
+
+  const nextPage = () => {
+    if (!nextCursor) return;
+    const nextPageNumber = page + 1;
+    setCursors((history) => [...history.slice(0, page), nextCursor]);
+    void loadPage(nextCursor, nextPageNumber);
+  };
+
+  const previousPage = () => {
+    if (page <= 1) return;
+    void loadPage(cursors[page - 2], page - 1);
+  };
 
   const create = async () => {
     if (!canManage || !form.name || !form.endpoint) return;
@@ -325,9 +349,18 @@ export default function SourcesPage() {
           <Loader2 className="animate-spin text-muted-foreground" />
         </div>
       ) : !sources.length ? (
-        <div className="panel mt-6 flex h-72 flex-col items-center justify-center">
-          <Database className="mb-3 h-6 w-6 text-muted-foreground" />
-          <p className="text-sm">还没有来源连接</p>
+        <div className="panel mt-6">
+          <div className="flex h-72 flex-col items-center justify-center">
+            <Database className="mb-3 h-6 w-6 text-muted-foreground" />
+            <p className="text-sm">还没有来源连接</p>
+          </div>
+          <CursorPagination
+            hasNext={nextCursor != null}
+            loading={loading}
+            onNext={nextPage}
+            onPrevious={previousPage}
+            page={page}
+          />
         </div>
       ) : (
         <div className="panel mt-6 overflow-hidden">
@@ -422,6 +455,13 @@ export default function SourcesPage() {
               );
             })}
           </div>
+          <CursorPagination
+            hasNext={nextCursor != null}
+            loading={loading}
+            onNext={nextPage}
+            onPrevious={previousPage}
+            page={page}
+          />
         </div>
       )}
       <div className="mt-4 flex justify-end">

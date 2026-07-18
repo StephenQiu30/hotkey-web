@@ -53,6 +53,7 @@ import {
 import { getSourceConnections } from "@/services/hotkey/hotkey-server/sources";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog";
+import { CursorPagination } from "@/components/dashboard/CursorPagination";
 import { MonitorAction, MonitorRegion, MonitorStatus } from "@/lib/domainEnums";
 import { monitorStatusLabel } from "@/lib/domainPresentation";
 import {
@@ -79,6 +80,7 @@ const createInitialForm = (): MonitorDraftForm => ({
 });
 
 export default function MonitorsPage() {
+  const pageSize = 20;
   const [monitors, setMonitors] = useState<HotKeyAPI.MonitorResponse[]>([]);
   const [sources, setSources] = useState<HotKeyAPI.SourceReadResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -87,15 +89,21 @@ export default function MonitorsPage() {
   const [creating, setCreating] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<HotKeyAPI.MonitorResponse>();
   const [form, setForm] = useState<MonitorDraftForm>(createInitialForm);
+  const [page, setPage] = useState(1);
+  const [cursors, setCursors] = useState<(string | undefined)[]>([undefined]);
+  const [nextCursor, setNextCursor] = useState<string>();
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const [monitorResult, sourceResult] = await Promise.all([
-        getMonitors({ limit: 100 }),
+        getMonitors({ limit: pageSize }),
         getSourceConnections({ limit: 100 }),
       ]);
       setMonitors(monitorResult.data?.items ?? []);
+      setPage(1);
+      setCursors([undefined]);
+      setNextCursor(monitorResult.data?.next_cursor);
       setSources(
         (sourceResult.data?.items ?? []).filter(
           (source) => source.enabled && !source.deleted
@@ -107,6 +115,39 @@ export default function MonitorsPage() {
       setLoading(false);
     }
   }, []);
+
+  const loadMonitorPage = async (
+    cursor: string | undefined,
+    pageNumber: number,
+  ) => {
+    setLoading(true);
+    try {
+      const result = await getMonitors({
+        limit: pageSize,
+        ...(cursor ? { cursor } : {}),
+      });
+      setMonitors(result.data?.items ?? []);
+      setPage(pageNumber);
+      setNextCursor(result.data?.next_cursor);
+    } catch (reason) {
+      toast.error(reason instanceof Error ? reason.message : "监控加载失败");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const nextPage = () => {
+    if (!nextCursor) return;
+    const nextPageNumber = page + 1;
+    const cursor = nextCursor;
+    setCursors((history) => [...history.slice(0, page), cursor]);
+    void loadMonitorPage(cursor, nextPageNumber);
+  };
+
+  const previousPage = () => {
+    if (page <= 1) return;
+    void loadMonitorPage(cursors[page - 2], page - 1);
+  };
   useEffect(() => {
     load();
   }, [load]);
@@ -477,12 +518,21 @@ export default function MonitorsPage() {
           <Loader2 className="animate-spin text-muted-foreground" />
         </div>
       ) : !monitors.length ? (
-        <div className="panel mt-6 flex h-72 flex-col items-center justify-center text-center">
-          <Radar className="mb-3 h-6 w-6 text-muted-foreground" />
-          <p className="text-sm font-medium">还没有热点监控</p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            至少需要一个已启用来源才能创建监控。
-          </p>
+        <div className="panel mt-6">
+          <div className="flex h-72 flex-col items-center justify-center text-center">
+            <Radar className="mb-3 h-6 w-6 text-muted-foreground" />
+            <p className="text-sm font-medium">还没有热点监控</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              至少需要一个已启用来源才能创建监控。
+            </p>
+          </div>
+          <CursorPagination
+            hasNext={nextCursor != null}
+            loading={loading}
+            onNext={nextPage}
+            onPrevious={previousPage}
+            page={page}
+          />
         </div>
       ) : (
         <div className="panel mt-6 overflow-hidden">
@@ -597,6 +647,13 @@ export default function MonitorsPage() {
               );
             })}
           </div>
+          <CursorPagination
+            hasNext={nextCursor != null}
+            loading={loading}
+            onNext={nextPage}
+            onPrevious={previousPage}
+            page={page}
+          />
         </div>
       )}
       <ConfirmDeleteDialog

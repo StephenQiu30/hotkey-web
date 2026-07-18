@@ -32,6 +32,7 @@ import {
 } from "@/services/hotkey/hotkey-server/delivery";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog";
+import { CursorPagination } from "@/components/dashboard/CursorPagination";
 import { DeliveryChannel, ReportType } from "@/lib/domainEnums";
 import {
   deliveryChannelLabel,
@@ -39,6 +40,7 @@ import {
 } from "@/lib/domainPresentation";
 
 export default function SubscriptionsPage() {
+  const pageSize = 20;
   const [subscriptions, setSubscriptions] = useState<
     HotKeyAPI.SubscriptionResponse[]
   >([]);
@@ -47,6 +49,9 @@ export default function SubscriptionsPage() {
   const [dialog, setDialog] = useState(false);
   const [action, setAction] = useState<number>();
   const [deleteTarget, setDeleteTarget] = useState<HotKeyAPI.SubscriptionResponse>();
+  const [page, setPage] = useState(1);
+  const [cursors, setCursors] = useState<(string | undefined)[]>([undefined]);
+  const [nextCursor, setNextCursor] = useState<string>();
   const [form, setForm] = useState({
     monitor_id: "",
     channel: DeliveryChannel.Email,
@@ -56,14 +61,19 @@ export default function SubscriptionsPage() {
     timezone: "Asia/Shanghai",
   });
 
-  const load = useCallback(async () => {
+  const loadPage = useCallback(async (cursor: string | undefined, pageNumber: number) => {
     setLoading(true);
     try {
       const [subscriptionResult, monitorResult] = await Promise.all([
-        getReportSubscriptions(),
+        getReportSubscriptions({
+          limit: pageSize,
+          ...(cursor ? { cursor } : {}),
+        }),
         getMonitors({ limit: 100 }),
       ]);
-      setSubscriptions(subscriptionResult.data ?? []);
+      setSubscriptions(subscriptionResult.data?.items ?? []);
+      setNextCursor(subscriptionResult.data?.next_cursor);
+      setPage(pageNumber);
       setMonitors(monitorResult.data?.items ?? []);
     } catch (reason) {
       toast.error(reason instanceof Error ? reason.message : "订阅加载失败");
@@ -71,9 +81,26 @@ export default function SubscriptionsPage() {
       setLoading(false);
     }
   }, []);
+
+  const load = useCallback(async () => {
+    setCursors([undefined]);
+    await loadPage(undefined, 1);
+  }, [loadPage]);
   useEffect(() => {
     load();
   }, [load]);
+
+  const nextPage = () => {
+    if (!nextCursor) return;
+    const nextPageNumber = page + 1;
+    setCursors((history) => [...history.slice(0, page), nextCursor]);
+    void loadPage(nextCursor, nextPageNumber);
+  };
+
+  const previousPage = () => {
+    if (page <= 1) return;
+    void loadPage(cursors[page - 2], page - 1);
+  };
 
   const create = async () => {
     if (!form.monitor_id) return;
@@ -366,6 +393,13 @@ export default function SubscriptionsPage() {
               </div>
             ))}
           </div>
+          <CursorPagination
+            hasNext={nextCursor != null}
+            loading={loading}
+            onNext={nextPage}
+            onPrevious={previousPage}
+            page={page}
+          />
         </div>
       )}
       <ConfirmDeleteDialog

@@ -2,10 +2,21 @@ import { ExternalLink, FileSearch, RadioTower } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CollectionRunStatus } from "@/lib/domainEnums";
 import { collectionRunPresentation } from "@/lib/domainPresentation";
+import { CursorPagination } from "@/components/dashboard/CursorPagination";
+
+export type CollectionWorkspacePagination = {
+  page: number;
+  hasNext: boolean;
+  loading?: boolean;
+  onPrevious: () => void;
+  onNext: () => void;
+};
 
 type CollectionWorkspaceProps = {
   runs: HotKeyAPI.CollectionRunResponse[];
   contents: HotKeyAPI.ContentResponse[];
+  runsPagination?: CollectionWorkspacePagination;
+  contentsPagination?: CollectionWorkspacePagination;
 };
 
 const formatDateTime = (value?: string) =>
@@ -21,6 +32,8 @@ const formatDateTime = (value?: string) =>
 export function CollectionWorkspace({
   runs,
   contents,
+  runsPagination,
+  contentsPagination,
 }: CollectionWorkspaceProps) {
   const succeeded = runs.filter(
     (run) => run.status === CollectionRunStatus.Succeeded,
@@ -56,7 +69,7 @@ export function CollectionWorkspace({
           <div>
             <h2 className="text-sm font-medium">采集批次（当前页）</h2>
             <p className="mt-1 text-xs text-muted-foreground">
-              按批次编号展示调度器与来源连接的真实执行结果，当前页最多 50 条。
+              按批次编号展示调度器与来源连接的真实执行结果，每页 20 条。
             </p>
           </div>
           <RadioTower className="h-4 w-4 text-muted-foreground" />
@@ -107,6 +120,9 @@ export function CollectionWorkspace({
             </p>
           </div>
         )}
+        {runsPagination && runs.length > 0 ? (
+          <CursorPagination {...runsPagination} />
+        ) : null}
         </section>
 
         <section className="panel min-w-0 overflow-hidden">
@@ -114,7 +130,7 @@ export function CollectionWorkspace({
           <div>
             <h2 className="text-sm font-medium">最近入库内容</h2>
             <p className="mt-1 text-xs text-muted-foreground">
-              采集成功后完成标准化的真实内容，最多显示最近 50 条。
+              采集成功后完成标准化的真实内容，每页 20 条。
             </p>
           </div>
           <FileSearch className="h-4 w-4 text-muted-foreground" />
@@ -185,6 +201,9 @@ export function CollectionWorkspace({
             </p>
           </div>
         )}
+        {contentsPagination && contents.length > 0 ? (
+          <CursorPagination {...contentsPagination} />
+        ) : null}
         </section>
       </div>
     </div>

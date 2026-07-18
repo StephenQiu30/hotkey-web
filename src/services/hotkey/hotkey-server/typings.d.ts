@@ -334,15 +334,15 @@ required property without making explicit null impossible to bind. */
 
   type DeliveryEmptyResponse = true;
 
-  type DeliveryResultArrayHttpSubscriptionResponse = {
-    code?: number;
-    data?: SubscriptionResponse[];
-    message?: string;
-  };
-
   type DeliveryResultHttpDeliveryEmptyResponse = {
     code?: number;
     data?: DeliveryEmptyResponse;
+    message?: string;
+  };
+
+  type DeliveryResultHttpSubscriptionPageResponse = {
+    code?: number;
+    data?: SubscriptionPageResponse;
     message?: string;
   };
 
@@ -659,6 +659,13 @@ required property without making explicit null impossible to bind. */
   type getReportSubscriptionsIdParams = {
     /** subscription ID */
     id: number;
+  };
+
+  type getReportSubscriptionsParams = {
+    /** opaque subscription cursor */
+    cursor?: string;
+    /** page size */
+    limit?: number;
   };
 
   type getSourceConnectionsIdParams = {
@@ -1677,6 +1684,11 @@ required property without making explicit null impossible to bind. */
     members: SplitMemberRequest[];
     reason: string;
     source_expected_version: number;
+  };
+
+  type SubscriptionPageResponse = {
+    items?: SubscriptionResponse[];
+    next_cursor?: string;
   };
 
   type SubscriptionResponse = {
