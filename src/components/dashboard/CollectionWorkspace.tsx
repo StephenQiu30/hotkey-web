@@ -38,10 +38,10 @@ export function CollectionWorkspace({
     <div className="mt-6 space-y-5">
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {[
-          ["最近采集批次", runs.length],
+          ["当前页采集批次", runs.length],
           ["处理中", active],
           ["采集成功", succeeded],
-          ["已入库内容", contents.length],
+          ["最近入库内容", contents.length],
         ].map(([label, value]) => (
           <div className="panel p-4" key={label}>
             <p className="text-xs text-muted-foreground">{label}</p>
@@ -53,9 +53,9 @@ export function CollectionWorkspace({
       <section className="panel overflow-hidden">
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
           <div>
-            <h2 className="text-sm font-medium">最近采集批次</h2>
+            <h2 className="text-sm font-medium">采集批次（当前页）</h2>
             <p className="mt-1 text-xs text-muted-foreground">
-              展示调度器与来源连接的真实执行结果，最多显示最近 50 条。
+              按批次编号展示调度器与来源连接的真实执行结果，当前页最多 50 条。
             </p>
           </div>
           <RadioTower className="h-4 w-4 text-muted-foreground" />
@@ -111,7 +111,7 @@ export function CollectionWorkspace({
       <section className="panel overflow-hidden">
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
           <div>
-            <h2 className="text-sm font-medium">已入库内容</h2>
+            <h2 className="text-sm font-medium">最近入库内容</h2>
             <p className="mt-1 text-xs text-muted-foreground">
               采集成功后完成标准化的真实内容，最多显示最近 50 条。
             </p>

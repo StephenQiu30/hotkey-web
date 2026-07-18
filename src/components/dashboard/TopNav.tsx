@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, LogOut, Menu, Search, User, X } from "lucide-react";
+import { ChevronDown, FileSearch, LogOut, Menu, User, X } from "lucide-react";
 import { useState } from "react";
 import { BrandLogo } from "@/components/BrandLogo";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -71,17 +71,14 @@ export default function TopNav({
             );
           })}
         </nav>
-        <div
-          role="search"
-          aria-label="工作台搜索"
-          className="ml-auto hidden min-w-0 flex-1 items-center md:flex md:max-w-[420px] xl:max-w-[260px] 2xl:max-w-[330px]"
+        <Link
+          href="/dashboard/contents"
+          aria-label="查看采集数据"
+          className="ml-auto hidden h-8 min-w-0 flex-1 items-center gap-2 rounded-md border border-border bg-[#080808] px-3 text-xs text-muted-foreground no-underline transition-colors hover:border-white/20 hover:text-foreground md:flex md:max-w-[220px]"
         >
-          <div className="flex h-8 w-full items-center gap-2 rounded-md border border-border bg-[#080808] px-3 text-xs text-muted-foreground">
-            <Search className="h-3.5 w-3.5" />
-            <span className="truncate">搜索事件、来源或报告</span>
-            <kbd className="ml-auto mono text-[10px]">⌘ K</kbd>
-          </div>
-        </div>
+          <FileSearch className="h-3.5 w-3.5" />
+          <span className="truncate">查看采集数据</span>
+        </Link>
         <Button
           variant="ghost"
           size="icon"

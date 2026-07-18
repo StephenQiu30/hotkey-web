@@ -46,12 +46,12 @@ export function EmptyWorkspace({
           ? "监控已发布，但尚未产生采集任务。请确认后台调度器正在运行。"
           : !contentsReady
             ? "采集任务已经产生，内容会在标准化完成后进入工作台。"
-            : `已入库 ${collectedContents.length} 条内容，正在等待相关性匹配与事件聚合。`;
+            : `最近一页已有 ${collectedContents.length} 条内容，正在等待相关性匹配与事件聚合。`;
 
   const metrics = [
     { label: "已创建监控", value: visibleMonitors.length, icon: Radar },
-    { label: "最近采集批次", value: collectionRuns.length, icon: DatabaseZap },
-    { label: "已入库内容", value: collectedContents.length, icon: FileSearch },
+    { label: "当前页采集批次", value: collectionRuns.length, icon: DatabaseZap },
+    { label: "最近入库内容", value: collectedContents.length, icon: FileSearch },
     { label: "执行中任务", value: runningJobs, icon: Workflow },
   ];
 
@@ -61,7 +61,7 @@ export function EmptyWorkspace({
         <p className="eyebrow">Workspace</p>
         <h1 className="mt-2 text-2xl font-semibold">工作台运行概览</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          监控配置、后台任务和聚合事件是三个不同阶段，这里展示当前真实进度。
+          监控配置、采集批次、内容入库与事件聚合是连续阶段，这里展示当前真实进度。
         </p>
       </div>
 
