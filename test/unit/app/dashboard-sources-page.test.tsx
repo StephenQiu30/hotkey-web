@@ -8,11 +8,13 @@ import { AuthStatus, UserRole } from "@/lib/domainEnums";
 const mocks = vi.hoisted(() => ({
   getSourceConnections: vi.fn(),
   postSourceConnections: vi.fn(),
+  patchSourceConnectionsId: vi.fn(),
 }));
 
 vi.mock("@/services/hotkey/hotkey-server/sources", () => ({
   getSourceConnections: mocks.getSourceConnections,
   postSourceConnections: mocks.postSourceConnections,
+  patchSourceConnectionsId: mocks.patchSourceConnectionsId,
   postSourceConnectionsIdDisable: vi.fn(),
   postSourceConnectionsIdEnable: vi.fn(),
   postSourceConnectionsIdHealth: vi.fn(),
@@ -129,4 +131,38 @@ describe("SourcesPage body storage authorization", () => {
       ).not.toBeInTheDocument();
     },
   );
+
+  it("lets an admin explicitly enable Feed body storage for an existing source", async () => {
+    vi.stubGlobal("confirm", vi.fn(() => true));
+    mocks.getSourceConnections
+      .mockResolvedValueOnce({
+        data: {
+          items: [
+            {
+              id: 3,
+              version: 4,
+              name: "bioRxiv · Bioinformatics",
+              source_type: "rss",
+              enabled: true,
+              deleted: false,
+              config: { allow_body_storage: false },
+            },
+          ],
+        },
+      })
+      .mockResolvedValueOnce({ data: { items: [] } });
+
+    render(<SourcesPage />);
+    await userEvent.setup().click(await screen.findByRole("button", { name: "开启归档" }));
+
+    await waitFor(() =>
+      expect(mocks.patchSourceConnectionsId).toHaveBeenCalledWith(
+        { id: 3 },
+        {
+          expected_source_version: 4,
+          config: { allow_body_storage: true },
+        },
+      ),
+    );
+  });
 });

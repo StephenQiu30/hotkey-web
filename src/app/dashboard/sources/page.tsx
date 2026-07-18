@@ -5,6 +5,7 @@ import {
   Activity,
   Database,
   Eye,
+  FileText,
   Loader2,
   Plus,
   Power,
@@ -32,6 +33,7 @@ import {
 } from "@/components/ui/select";
 import {
   getSourceConnections,
+  patchSourceConnectionsId,
   postSourceConnections,
   postSourceConnectionsIdDisable,
   postSourceConnectionsIdEnable,
@@ -163,6 +165,34 @@ export default function SourcesPage() {
       toast.success("来源已删除，已采集内容仍保留");
     } catch (reason) {
       toast.error(reason instanceof Error ? reason.message : "来源删除失败");
+    } finally {
+      setAction(undefined);
+    }
+  };
+
+  const enableBodyStorage = async (source: HotKeyAPI.SourceReadResponse) => {
+    if (!canManage || source.id == null || source.config?.allow_body_storage) return;
+    if (
+      typeof window !== "undefined" &&
+      !window.confirm(
+        "确认保存该来源 Feed 实际提供的正文/摘要吗？不会抓取原网页；开启后将在后续采集时归档。",
+      )
+    ) {
+      return;
+    }
+    setAction(source.id);
+    try {
+      await patchSourceConnectionsId(
+        { id: source.id },
+        {
+          expected_source_version: source.version ?? 0,
+          config: { allow_body_storage: true },
+        },
+      );
+      await load();
+      toast.success("已开启正文/摘要归档，下一次采集将更新内容");
+    } catch (reason) {
+      toast.error(reason instanceof Error ? reason.message : "开启归档失败");
     } finally {
       setAction(undefined);
     }
@@ -343,6 +373,18 @@ export default function SourcesPage() {
                   </span>
                   {canManage && (
                     <div className="flex flex-wrap justify-start gap-2 md:justify-end">
+                      {!source.config?.allow_body_storage && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => enableBodyStorage(source)}
+                          disabled={action === source.id || source.deleted}
+                          className="gap-1.5"
+                        >
+                          <FileText />
+                          开启归档
+                        </Button>
+                      )}
                       <Button
                         variant="outline"
                         size="sm"
