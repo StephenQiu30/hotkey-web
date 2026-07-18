@@ -33,7 +33,7 @@ export function ContentDocumentViewer({ document }: ContentDocumentViewerProps) 
               </Badge>
             </div>
             <h1 className="mt-3 text-2xl font-semibold sm:text-3xl">
-              归档内容 #{document.content_id ?? "—"}
+              {document.title || `归档内容 #${document.content_id ?? "—"}`}
             </h1>
             <p className="mt-3 text-sm text-muted-foreground">
               {document.source_name || "未知来源"} · 发布于 {formatDateTime(document.published_at)}
