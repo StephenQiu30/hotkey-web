@@ -1,7 +1,17 @@
 {
   "name": "hotkey-web",
   "version": "0.2.0",
+  "description": "面向内容创作者与研究者的开源 AI 热点情报工作台",
   "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/StephenQiu30/hotkey-web.git"
+  },
+  "bugs": {
+    "url": "https://github.com/StephenQiu30/hotkey-web/issues"
+  },
+  "homepage": "https://github.com/StephenQiu30/hotkey-web#readme",
   "type": "module",
   "scripts": {
     "dev": "next dev",

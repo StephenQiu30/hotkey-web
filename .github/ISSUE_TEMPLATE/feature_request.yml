@@ -1,0 +1,52 @@
+name: 功能或体验建议
+description: 提议新的页面、工作流、可视化或体验改进
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 用户问题
+      description: 谁在什么场景遇到了什么问题？
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: 期望结果
+      description: 改进后用户能更好地完成什么？
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 建议方案
+      description: 可附草图、参考产品或交互说明。
+  - type: dropdown
+    id: area
+    attributes:
+      label: 主要领域
+      options:
+        - 首页与上手
+        - 热点与事件
+        - 监控主题与来源
+        - 内容与证据
+        - 报告与通知
+        - 账号与设置
+        - 可访问性与响应式
+        - 性能与开发体验
+        - 其他
+    validations:
+      required: true
+  - type: textarea
+    id: api
+    attributes:
+      label: 后端契约影响
+      description: 是否需要 hotkey-server 新增或调整 OpenAPI？
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 提交前确认
+      options:
+        - label: 我已搜索现有 Issue，未发现相同建议。
+          required: true
