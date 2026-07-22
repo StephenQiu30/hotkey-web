@@ -47,6 +47,9 @@ hotkey-miniapp ──── 微信端轻量入口
 ```bash
 npm install
 
+# 创建本地配置；按需修改 HOTKEY_API_ORIGIN
+cp .env.example .env
+
 # 根据后端仓库已提交的 OpenAPI 文档生成 TypeScript 请求客户端
 npm run openapi:generate
 
@@ -55,6 +58,16 @@ npm run dev
 ```
 
 浏览器访问 [http://localhost:3000](http://localhost:3000)。
+
+环境变量说明：
+
+| 变量 | 用途 | 默认示例 |
+|------|------|----------|
+| `HOTKEY_API_ORIGIN` | Next.js 服务端 rewrites 的后端地址，不暴露给浏览器 | `http://127.0.0.1:8080` |
+| `NEXT_OUTPUT` | 设为 `standalone` 时生成 Docker 使用的独立运行产物 | 留空 |
+| `WEB_PORT` | `docker compose` 暴露的 Web 端口 | `3000` |
+
+完整模板见 [`.env.example`](.env.example)。`.env`、`.env.local` 等本地配置均已被 Git 忽略。
 
 > 本地开发必须使用 `npm run dev`。`npm run start` 是生产模式，只能在
 > `npm run build` 之后运行，不提供代码修改后的热更新。

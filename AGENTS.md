@@ -178,4 +178,6 @@ npm run openapi:generate   # 从服务器 OpenAPI 重新生成 API 客户端
 ## 环境配置
 
 复制 `.env.example` 到 `.env` 并配置。关键变量：
-- `NEXT_PUBLIC_API_BASE_URL` — API 服务器地址（通过 Next.js rewrites 代理同源请求）
+- `HOTKEY_API_ORIGIN` — API 服务器地址（仅由 Next.js 服务端 rewrites 使用，不暴露给浏览器）
+- `NEXT_OUTPUT` — 可选；设为 `standalone` 时生成 Docker 使用的独立运行产物
+- `WEB_PORT` — 可选；`docker compose` 对外暴露的 Web 端口
