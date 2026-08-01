@@ -45,5 +45,8 @@ temp/
 # Playwright MCP 测试产物
 .playwright-mcp/
 
+# 产品设计与浏览器验收临时产物
+.product-design/
+
 # 日志文件
 *.log
