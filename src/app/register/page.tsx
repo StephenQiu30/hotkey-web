@@ -29,7 +29,7 @@ export default function RegisterPage() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
-    gsap.from(".rg-fade", { y: 10, opacity: 0, duration: 0.4, ease: "power3.out" });
+    gsap.from(".rg-fade", { y: 10, duration: 0.4, ease: "power3.out" });
   }, { scope: containerRef, dependencies: [step] });
 
   const handleConfirmed = (tkt: string, eml: string) => {

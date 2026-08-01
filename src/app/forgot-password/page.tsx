@@ -10,7 +10,7 @@ import { VerificationFlow } from "@/lib/domainEnums";
 export default function ForgotPasswordPage() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(() => { gsap.from(".fp-fade", { y: 10, opacity: 0, duration: 0.4, ease: "power3.out" }); }, { scope: containerRef });
+  useGSAP(() => { gsap.from(".fp-fade", { y: 10, duration: 0.4, ease: "power3.out" }); }, { scope: containerRef });
 
   const handleConfirmed = (_ticket: string) => {
     sessionStorage.setItem("verification_ticket", _ticket);

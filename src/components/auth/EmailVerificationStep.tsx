@@ -61,26 +61,39 @@ export default function EmailVerificationStep({ purpose, onConfirmed }: EmailVer
 
   if (step === VerificationStep.Send) {
     return (
-      <div className="space-y-3">
+      <form
+        className="space-y-3"
+        onSubmit={(event) => {
+          event.preventDefault();
+          void handleSend();
+        }}
+      >
         <div className="space-y-1.5">
           <Label htmlFor="verify-email" className="text-sm font-medium">邮箱</Label>
           <div className="relative">
             <Mail className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-            <Input id="verify-email" type="email" placeholder="name@example.com" autoComplete="email"
+            <Input id="verify-email" type="email" placeholder="name@example.com" autoComplete="email" required
+              autoCapitalize="none" spellCheck={false}
               value={email} onChange={(e) => { setEmail(e.target.value); setSendError(""); }}
               className={`h-9 rounded-md border-border bg-black/40 pl-8 text-xs ${sendError ? "border-destructive" : ""}`} />
           </div>
-          {sendError && <p className="text-xs text-destructive">{sendError}</p>}
+          {sendError && <p role="alert" className="text-xs text-destructive">{sendError}</p>}
         </div>
-        <Button onClick={handleSend} disabled={!email || loading} className="h-10 w-full rounded-md text-sm font-medium shadow-button">
+        <Button type="submit" disabled={!email || loading} className="h-10 w-full rounded-md text-sm font-medium shadow-button">
           {loading ? "发送中..." : "发送验证码"}
         </Button>
-      </div>
+      </form>
     );
   }
 
   return (
-    <div className="space-y-3">
+    <form
+      className="space-y-3"
+      onSubmit={(event) => {
+        event.preventDefault();
+        void handleConfirm();
+      }}
+    >
       <p className="text-center text-sm text-muted-foreground">
         验证码已发送至 <span className="font-medium text-foreground">{email}</span>
       </p>
@@ -90,15 +103,15 @@ export default function EmailVerificationStep({ purpose, onConfirmed }: EmailVer
           autoComplete="one-time-code"
           value={code} onChange={(e) => { setCode(e.target.value.replace(/\D/g, "")); setSendError(""); }}
           className={`h-9 rounded-md border-border bg-black/40 text-center font-mono text-sm tracking-[0.3em] ${sendError ? "border-destructive" : ""}`} />
-        {sendError && <p className="text-xs text-destructive">{sendError}</p>}
+        {sendError && <p role="alert" className="text-xs text-destructive">{sendError}</p>}
       </div>
-      <Button onClick={handleConfirm} disabled={code.length !== 6 || loading} className="h-10 w-full rounded-md text-sm font-medium shadow-button">
+      <Button type="submit" disabled={code.length !== 6 || loading} className="h-10 w-full rounded-md text-sm font-medium shadow-button">
         {loading ? "验证中..." : "验证"}
       </Button>
-      <button onClick={handleSend} disabled={countdown > 0}
+      <button type="button" onClick={handleSend} disabled={countdown > 0}
         className={`w-full text-center text-xs no-underline ${countdown > 0 ? "cursor-not-allowed text-muted-foreground" : "cursor-pointer text-primary hover:text-primary/80"}`}>
         {countdown > 0 ? `${countdown}秒后可重新发送` : "重新发送验证码"}
       </button>
-    </div>
+    </form>
   );
 }
