@@ -53,14 +53,16 @@ describe("ContentDocumentViewer", () => {
     expect(
       screen.getByText(/仅包含来源 Feed 实际提供并获准归档的正文或摘要/),
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "访问原站" })).toHaveAttribute(
+    const sourceLink = screen.getByRole("link", { name: "访问原站" });
+    expect(sourceLink).toHaveAttribute(
       "href",
       "https://example.test/papers/7",
     );
-    expect(screen.getByRole("link", { name: "访问原站" })).toHaveAttribute(
+    expect(sourceLink).toHaveAttribute(
       "rel",
       "noreferrer",
     );
+    expect(sourceLink.querySelector("button")).toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: "打印 / 保存 PDF" }));
     expect(window.print).toHaveBeenCalledTimes(1);

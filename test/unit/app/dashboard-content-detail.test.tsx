@@ -48,6 +48,7 @@ describe("ContentDetailPage", () => {
     expect(
       await screen.findByRole("heading", { name: "Release notes" }),
     ).toBeInTheDocument();
+    expect(screen.queryByRole("main")).not.toBeInTheDocument();
     expect(mocks.getContentsIdDocument).toHaveBeenCalledWith({ id: 7 });
   });
 
@@ -64,10 +65,13 @@ describe("ContentDetailPage", () => {
 
     expect(await screen.findByText(message)).toBeInTheDocument();
     expect(screen.queryByText("internal object store details")).not.toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "返回采集内容" })).toHaveAttribute(
+    const backLink = screen.getByRole("link", { name: "返回采集内容" });
+    expect(backLink).toHaveAttribute(
       "href",
       "/dashboard/contents",
     );
+    expect(backLink.querySelector("button")).toBeNull();
+    expect(screen.queryByRole("main")).not.toBeInTheDocument();
   });
 
   it("rejects an invalid content id without issuing a request", async () => {
