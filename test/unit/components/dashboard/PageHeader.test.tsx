@@ -13,7 +13,7 @@ describe("PageHeader", () => {
       />,
     );
 
-    const header = screen.getByRole("banner", { name: "来源管理" });
+    const header = screen.getByRole("group", { name: "来源管理" });
     expect(header).toHaveClass("flex-col", "sm:flex-row");
     expect(screen.getByTestId("page-header-action")).toHaveClass(
       "w-full",

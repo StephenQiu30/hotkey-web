@@ -63,6 +63,12 @@ describe("DashboardPage", () => {
       await screen.findByRole("heading", { name: "A collected research event" }),
     ).toBeInTheDocument();
     expect(screen.getByText("暂无已验证声明，可重新提取事件情报。")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "刷新工作台数据" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "进入报告" }).querySelector("button"),
+    ).toBeNull();
   });
 
   it("uses the shared centered page width and only pins intelligence on desktop", async () => {

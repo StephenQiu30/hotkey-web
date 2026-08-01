@@ -5,12 +5,14 @@ import ContentsPage from "@/app/dashboard/contents/page";
 
 const mocks = vi.hoisted(() => ({
   getCollectionRuns: vi.fn(),
+  retryCollectionRun: vi.fn(),
   getContents: vi.fn(),
   deleteContentsId: vi.fn(),
 }));
 
 vi.mock("@/services/hotkey/hotkey-server/collectionRuns", () => ({
   getCollectionRuns: mocks.getCollectionRuns,
+  postCollectionRunsIdRetry: mocks.retryCollectionRun,
 }));
 vi.mock("@/services/hotkey/hotkey-server/contents", () => ({
   getContents: mocks.getContents,
@@ -87,5 +89,29 @@ describe("ContentsPage pagination", () => {
 
     await waitFor(() => expect(mocks.deleteContentsId).toHaveBeenCalledWith({ id: 7 }));
     expect(mocks.getContents).toHaveBeenCalledTimes(2);
+  });
+
+  it("lets an administrator retry a failed collection run", async () => {
+    mocks.getCollectionRuns
+      .mockResolvedValueOnce({
+        data: { items: [{ id: 3, status: "failed", error_code: "temporary" }] },
+      })
+      .mockResolvedValueOnce({
+        data: { items: [{ id: 3, status: "queued" }] },
+      });
+    mocks.getContents.mockResolvedValue({ data: { items: [] } });
+    mocks.retryCollectionRun.mockResolvedValue({
+      data: { id: 3, status: "queued" },
+    });
+
+    render(<ContentsPage />);
+    await userEvent.setup().click(
+      await screen.findByRole("button", { name: "重试采集批次 #3" }),
+    );
+
+    await waitFor(() =>
+      expect(mocks.retryCollectionRun).toHaveBeenCalledWith({ id: 3 }),
+    );
+    expect(mocks.getCollectionRuns).toHaveBeenCalledTimes(2);
   });
 });
