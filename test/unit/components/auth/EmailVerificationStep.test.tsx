@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import EmailVerificationStep from "@/components/auth/EmailVerificationStep";
@@ -36,6 +36,7 @@ describe("EmailVerificationStep", () => {
   });
 
   it("submits a valid email when the user presses Enter", async () => {
+    const user = userEvent.setup();
     render(
       <EmailVerificationStep
         purpose={VerificationFlow.PasswordReset}
@@ -43,13 +44,10 @@ describe("EmailVerificationStep", () => {
       />,
     );
 
-    fireEvent.change(screen.getByRole("textbox", { name: "邮箱" }), {
-      target: { value: "reader@example.com" },
-    });
-    fireEvent.keyDown(screen.getByRole("textbox", { name: "邮箱" }), {
-      key: "Enter",
-      code: "Enter",
-    });
+    await user.type(
+      screen.getByRole("textbox", { name: "邮箱" }),
+      "reader@example.com{enter}",
+    );
 
     await waitFor(() => {
       expect(mocks.sendVerification).toHaveBeenCalledWith({
