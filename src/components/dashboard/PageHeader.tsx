@@ -16,6 +16,7 @@ export function PageHeader({
   return (
     <header
       aria-label={title}
+      role="group"
       className="flex flex-col gap-5 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between"
     >
       <div className="min-w-0">

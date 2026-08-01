@@ -101,17 +101,17 @@ export default function ContentDetailPage() {
   if (error || !document) {
     const copy = errorCopy[error ?? 503];
     return (
-      <main className="app-page">
+      <div className="app-page">
         <div className="panel mx-auto flex min-h-80 max-w-2xl flex-col items-center justify-center px-6 text-center">
           <ShieldAlert className="mb-4 h-6 w-6 text-muted-foreground" />
           <h1 className="text-xl font-semibold">{copy.title}</h1>
           <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">{copy.description}</p>
           <div className="mt-6 flex flex-wrap justify-center gap-2">
-            <a href="/dashboard/contents">
-              <Button variant="outline" className="gap-2">
+            <Button asChild variant="outline" className="gap-2">
+              <a href="/dashboard/contents">
                 <ArrowLeft className="h-4 w-4" /> 返回采集内容
-              </Button>
-            </a>
+              </a>
+            </Button>
             {error === 503 ? (
               <Button onClick={load} className="gap-2">
                 <RefreshCw className="h-4 w-4" /> 重试
@@ -119,12 +119,12 @@ export default function ContentDetailPage() {
             ) : null}
           </div>
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="app-page document-page">
+    <div className="app-page document-page">
       <ContentDocumentViewer
         canManage={canManage}
         deleting={deleting}
@@ -140,6 +140,6 @@ export default function ContentDetailPage() {
         resourceName={document.title || `内容 #${document.content_id ?? ""}`}
         title="删除采集内容"
       />
-    </main>
+    </div>
   );
 }

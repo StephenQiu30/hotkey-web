@@ -13,7 +13,10 @@ import {
 import {
   DEFAULT_PAGE_SIZE,
 } from "@/components/dashboard/CursorPagination";
-import { getCollectionRuns } from "@/services/hotkey/hotkey-server/collectionRuns";
+import {
+  getCollectionRuns,
+  postCollectionRunsIdRetry,
+} from "@/services/hotkey/hotkey-server/collectionRuns";
 import { deleteContentsId, getContents } from "@/services/hotkey/hotkey-server/contents";
 import { useAuthStore } from "@/stores/authStore";
 import { UserRole } from "@/lib/domainEnums";
@@ -37,6 +40,7 @@ export default function ContentsPage() {
   const [contentNextCursor, setContentNextCursor] = useState<string>();
   const [deleteTarget, setDeleteTarget] = useState<HotKeyAPI.ContentResponse>();
   const [deletingContentID, setDeletingContentID] = useState<number>();
+  const [retryingRunID, setRetryingRunID] = useState<number>();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -140,6 +144,20 @@ export default function ContentsPage() {
     }
   };
 
+  const retryRun = async (run: HotKeyAPI.CollectionRunResponse) => {
+    if (!canManage || run.id == null) return;
+    setRetryingRunID(run.id);
+    try {
+      await postCollectionRunsIdRetry({ id: run.id });
+      await loadRunsPage(runCursors[runPage - 1], runPage);
+      toast.success(`采集批次 #${run.id} 已重新进入队列`);
+    } catch (reason) {
+      toast.error(reason instanceof Error ? reason.message : "采集批次重试失败");
+    } finally {
+      setRetryingRunID(undefined);
+    }
+  };
+
   const runsPagination: CollectionWorkspacePagination = {
     page: runPage,
     hasNext: Boolean(runNextCursor),
@@ -187,6 +205,8 @@ export default function ContentsPage() {
           contentsPagination={contentsPagination}
           deletingContentID={deletingContentID}
           onDelete={setDeleteTarget}
+          onRetry={retryRun}
+          retryingRunID={retryingRunID}
           runs={runs}
           runsPagination={runsPagination}
         />

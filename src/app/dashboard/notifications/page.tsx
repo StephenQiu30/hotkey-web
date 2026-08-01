@@ -259,7 +259,9 @@ export default function SubscriptionsPage() {
                     </p>
                   </div>
                   <p className="mt-1 truncate text-xs text-muted-foreground">
-                    监控 #{subscription.monitor_id} ·{" "}
+                    {subscription.monitor_id == null
+                      ? "全部已启用监控"
+                      : `监控 #${subscription.monitor_id}`} ·{" "}
                     {subscription.recipient || subscription.timezone}
                   </p>
                 </div>

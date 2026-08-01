@@ -1,4 +1,4 @@
-import { ExternalLink, FileSearch, RadioTower, Trash2 } from "lucide-react";
+import { ExternalLink, FileSearch, RadioTower, RotateCcw, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CollectionRunStatus } from "@/lib/domainEnums";
@@ -23,7 +23,9 @@ type CollectionWorkspaceProps = {
   contents: HotKeyAPI.ContentResponse[];
   canManage?: boolean;
   deletingContentID?: number;
+  retryingRunID?: number;
   onDelete?: (content: HotKeyAPI.ContentResponse) => void;
+  onRetry?: (run: HotKeyAPI.CollectionRunResponse) => void;
   runsPagination?: CollectionWorkspacePagination;
   contentsPagination?: CollectionWorkspacePagination;
 };
@@ -43,7 +45,9 @@ export function CollectionWorkspace({
   contents,
   canManage = false,
   deletingContentID,
+  retryingRunID,
   onDelete,
+  onRetry,
   runsPagination,
   contentsPagination,
 }: CollectionWorkspaceProps) {
@@ -113,12 +117,31 @@ export function CollectionWorkspace({
                       </span>
                     )}
                   </span>
-                  <Badge
-                    className={`w-fit sm:ml-auto ${status.className}`}
-                    variant="outline"
-                  >
-                    {status.label}
-                  </Badge>
+                  <span className="flex items-center gap-2 sm:ml-auto">
+                    <Badge
+                      className={`w-fit ${status.className}`}
+                      variant="outline"
+                    >
+                      {status.label}
+                    </Badge>
+                    {canManage &&
+                    run.id != null &&
+                    onRetry &&
+                    (run.status === CollectionRunStatus.Failed ||
+                      run.status === CollectionRunStatus.Cancelled) ? (
+                      <Button
+                        aria-label={`重试采集批次 #${run.id}`}
+                        className="h-7 gap-1 px-2 text-xs"
+                        disabled={retryingRunID === run.id}
+                        onClick={() => onRetry(run)}
+                        size="sm"
+                        variant="outline"
+                      >
+                        <RotateCcw className={retryingRunID === run.id ? "animate-spin" : ""} />
+                        重试
+                      </Button>
+                    ) : null}
+                  </span>
                 </article>
               );
             })}

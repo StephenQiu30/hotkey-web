@@ -44,16 +44,16 @@ export function ContentDocumentViewer({ document, canManage = false, deleting = 
           </div>
           <div className="document-actions flex shrink-0 flex-wrap gap-2">
             {document.canonical_url ? (
-              <a
-                aria-label="访问原站"
-                href={document.canonical_url}
-                rel="noreferrer"
-                target="_blank"
-              >
-                <Button variant="outline" className="gap-2">
+              <Button asChild variant="outline" className="gap-2">
+                <a
+                  aria-label="访问原站"
+                  href={document.canonical_url}
+                  rel="noreferrer"
+                  target="_blank"
+                >
                   访问原站 <ExternalLink className="h-3.5 w-3.5" />
-                </Button>
-              </a>
+                </a>
+              </Button>
             ) : null}
             <Button
               className="gap-2"

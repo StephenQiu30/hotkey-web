@@ -161,7 +161,7 @@ export default function DashboardPage() {
       <section className="min-w-0 px-5 py-7 lg:px-9 xl:border-r xl:border-border">
         <div className="flex flex-col gap-4 border-b border-border pb-6 lg:flex-row lg:items-start lg:justify-between">
           <div><p className="text-lg font-semibold">Editorial Intelligence Canvas</p><p className="mt-1 text-xs text-muted-foreground">发现事件，验证证据，生成可发布报告</p></div>
-          <div className="flex items-center gap-3 text-xs text-muted-foreground"><span>{new Intl.DateTimeFormat("zh-CN", { dateStyle: "medium" }).format(new Date())}</span><span>·</span><span>事件 {events.length}</span><Button size="icon" variant="ghost" onClick={loadWorkspace} className="h-7 w-7"><RefreshCw className="h-3.5 w-3.5" /></Button></div>
+          <div className="flex items-center gap-3 text-xs text-muted-foreground"><span>{new Intl.DateTimeFormat("zh-CN", { dateStyle: "medium" }).format(new Date())}</span><span>·</span><span>事件 {events.length}</span><Button aria-label="刷新工作台数据" title="刷新工作台数据" size="icon" variant="ghost" onClick={loadWorkspace} className="h-7 w-7"><RefreshCw className="h-3.5 w-3.5" /></Button></div>
         </div>
 
         <div className="py-7">
@@ -169,7 +169,7 @@ export default function DashboardPage() {
           {detailLoading || !selected ? <div className="flex h-56 items-center justify-center"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div> : <>
             <div className="mt-6 flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
               <div className="max-w-3xl"><div className="flex flex-wrap items-center gap-2"><h2 className="text-2xl font-semibold leading-tight">{selected.title_zh || selected.title_en || `事件 #${selected.id}`}</h2><Badge variant="outline" className="border-blue-500/40 bg-blue-500/10 text-blue-400">{selected.trend_status || "事件"}</Badge></div><p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">{selected.summary || "该事件尚未生成摘要，可在右侧重新生成事件情报。"}</p></div>
-              <a href="/dashboard/reports"><Button className="shrink-0 gap-2">进入报告 <ArrowUpRight className="h-3.5 w-3.5" /></Button></a>
+              <Button asChild className="shrink-0 gap-2"><a href="/dashboard/reports">进入报告 <ArrowUpRight className="h-3.5 w-3.5" /></a></Button>
             </div>
             <div className="mt-6 grid grid-cols-2 divide-x divide-border border-y border-border py-4 sm:grid-cols-4">
               {[{ label: "热度", value: score(heat?.heat_score ?? selected.heat_score), tone: "signal-text" }, { label: "趋势", value: score(heat?.trend_score ?? selected.trend_score), tone: "signal-text" }, { label: "确认来源", value: heat?.source_count == null ? "—" : `${heat.source_count} 个`, tone: "signal-text" }, { label: "内容证据", value: heat?.content_count == null ? "—" : `${heat.content_count} 条`, tone: "success-text" }].map((item) => <div key={item.label} className="px-4 first:pl-0"><p className="text-xs text-muted-foreground">{item.label}</p><p className={`mono mt-2 text-xl font-medium ${item.tone}`}>{item.value}</p></div>)}
