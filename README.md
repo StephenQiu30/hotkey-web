@@ -79,6 +79,29 @@ HOTKEY_API_ORIGIN=http://127.0.0.1:8080
 
 `HOTKEY_API_ORIGIN` 只由 Next.js 服务端 rewrites 使用，不会作为 `NEXT_PUBLIC_*` 变量暴露给浏览器。完整说明见 [`.env.example`](.env.example)。
 
+### WebStorm 一键启动
+
+使用 WebStorm 打开本仓库后，创建一个 npm Run/Debug Configuration：
+
+- `package.json`：仓库根目录的 `package.json`
+- Command：`run`
+- Scripts：`dev`
+- Node.js：建议使用 Node.js 22
+- Working directory：仓库根目录
+
+之后直接点击运行或调试即可启动 Web，不需要 `.sh` 文件。后端应由 GoLand 中 `hotkey-server` 的 `HotKey 后端一键启动` 独立运行；两端职责分离，WebStorm 不负责拉起 Go 服务。
+
+### 注册与邮件验证码排查
+
+注册和找回密码会调用后端 SMTP 服务。页面提示“服务暂时不可用”时，按顺序确认：
+
+1. `http://127.0.0.1:8080/readyz` 返回 200。
+2. 当前 `.env` 的 `HOTKEY_API_ORIGIN` 指向实际后端。
+3. 后端已经启用并正确填写 SMTP 用户名、发件地址和授权码。
+4. 修改后端 `.env` 后已经在 GoLand 中重启服务。
+
+首位用户仍通过页面正常完成邮箱验证和注册，初始角色为 viewer；管理员身份由后端数据库操作流程指定，不在 Web 配置中保存管理员密码。
+
 ### Docker
 
 后端已运行在宿主机 `8080` 端口时，可以直接构建 Web 容器：
@@ -131,6 +154,8 @@ docs/                            # PRD、设计、计划、验收与运维文档
 HotKey Web 正处于积极开发阶段。登录、注册、热点工作台、监控主题、来源、内容详情、报告、收藏、通知、个人资料和设置页面已经接入真实后端契约；1.0 前的导航、视觉细节和部分工作流仍会持续调整。
 
 当前版本适合本地体验、自托管评估和共同建设。发现界面或交互问题时，欢迎附带浏览器、视口、复现步骤和截图创建 Issue。
+
+当前 `main` 已覆盖并验证：首页真实入口、中文 404、邮箱格式校验、Enter 提交、注册与登录、受保护路由、工作台导航、来源与监控生命周期、采集内容、失败批次重试、报告和订阅。已审计页面通过 axe 自动检查，工作台主要页面在 320px 宽度下无水平溢出；后端原子重试证据见 [hotkey-server Acceptance-024](https://github.com/StephenQiu30/hotkey-server/blob/main/docs/acceptance/archive/024-%E9%87%87%E9%9B%86%E6%89%B9%E6%AC%A1%E5%8E%9F%E5%AD%90%E9%87%8D%E8%AF%95%E9%AA%8C%E6%94%B6.md)。
 
 ## 参与贡献
 

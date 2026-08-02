@@ -79,6 +79,29 @@ HOTKEY_API_ORIGIN=http://127.0.0.1:8080
 
 This variable is server-only and is not exposed to the browser as `NEXT_PUBLIC_*`. See [`.env.example`](.env.example) for the complete configuration.
 
+### One-click startup in WebStorm
+
+Open this repository in WebStorm and create an npm Run/Debug Configuration with:
+
+- `package.json`: the repository-root `package.json`
+- Command: `run`
+- Script: `dev`
+- Node.js: version 22 is recommended
+- Working directory: the repository root
+
+Run or debug that configuration to start the Web application; no `.sh` launcher is required. Start `hotkey-server` independently with the shared `HotKey 后端一键启动` configuration in GoLand. WebStorm is intentionally not responsible for launching the Go process.
+
+### Registration and email verification troubleshooting
+
+Registration and password recovery use the backend SMTP service. If the page reports a temporary service-unavailable error, verify these items in order:
+
+1. `http://127.0.0.1:8080/readyz` returns 200.
+2. The local `HOTKEY_API_ORIGIN` points to the running backend.
+3. SMTP is enabled on the backend with a matching username, sender address, and authorization code.
+4. The backend was restarted in GoLand after its `.env` changed.
+
+The first user still completes normal email verification and registration through the page and starts as a viewer. Administrator status is designated through the backend database operation; the Web configuration stores no bootstrap administrator password.
+
 ### Docker
 
 With the backend running on port `8080` of the host:
@@ -119,6 +142,8 @@ docs/                            # Product, design, plan, acceptance, and operat
 HotKey Web is under active development. Authentication, the main intelligence workspace, monitors, sources, content evidence, reports, favorites, notifications, profile, and settings are connected to the real backend contract. Navigation, visual details, and selected workflows will continue to evolve before 1.0.
 
 The current version is intended for local use, self-hosted evaluation, and collaborative development.
+
+The current `main` branch covers and verifies real homepage navigation, a Chinese 404 page, email validation, Enter submission, registration and login, protected routes, workspace navigation, source and monitor lifecycles, collected content, failed-run retry, reports, and subscriptions. Audited pages pass automated axe checks, and the primary workspace pages have no horizontal overflow at 320px. Backend retry evidence is recorded in [hotkey-server Acceptance-024](https://github.com/StephenQiu30/hotkey-server/blob/main/docs/acceptance/archive/024-%E9%87%87%E9%9B%86%E6%89%B9%E6%AC%A1%E5%8E%9F%E5%AD%90%E9%87%8D%E8%AF%95%E9%AA%8C%E6%94%B6.md).
 
 ## Contributing
 
