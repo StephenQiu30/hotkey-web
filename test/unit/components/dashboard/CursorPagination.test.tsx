@@ -1,7 +1,10 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { CursorPagination } from "@/components/dashboard/CursorPagination";
+import {
+  CursorPagination,
+  hasNextCursor,
+} from "@/components/dashboard/CursorPagination";
 
 describe("CursorPagination", () => {
   afterEach(() => {
@@ -25,6 +28,15 @@ describe("CursorPagination", () => {
     expect(screen.getByRole("button", { name: "上一页" })).toBeDisabled();
     await user.click(screen.getByRole("button", { name: "下一页" }));
     expect(onNext).toHaveBeenCalledOnce();
+  });
+
+  it("treats a missing or blank server cursor as the end of the list", () => {
+    expect(hasNextCursor(undefined)).toBe(false);
+    expect(hasNextCursor(null)).toBe(false);
+    expect(hasNextCursor("")).toBe(false);
+    expect(hasNextCursor("   ")).toBe(false);
+    expect(hasNextCursor("cursor-2")).toBe(true);
+    expect(hasNextCursor(42)).toBe(true);
   });
 
   it("lets the user change the page size", async () => {
