@@ -56,6 +56,7 @@ import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog"
 import {
   CursorPagination,
   DEFAULT_PAGE_SIZE,
+  hasNextCursor,
 } from "@/components/dashboard/CursorPagination";
 import { MonitorAction, MonitorRegion, MonitorStatus } from "@/lib/domainEnums";
 import { monitorStatusLabel } from "@/lib/domainPresentation";
@@ -561,7 +562,7 @@ export default function MonitorsPage() {
             </p>
           </div>
           <CursorPagination
-            hasNext={nextCursor != null}
+            hasNext={hasNextCursor(nextCursor)}
             loading={loading}
             onNext={nextPage}
             onPageSizeChange={changePageSize}
@@ -684,7 +685,7 @@ export default function MonitorsPage() {
             })}
           </div>
           <CursorPagination
-            hasNext={nextCursor != null}
+            hasNext={hasNextCursor(nextCursor)}
             loading={loading}
             onNext={nextPage}
             onPrevious={previousPage}

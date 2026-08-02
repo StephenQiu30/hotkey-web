@@ -50,6 +50,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   CursorPagination,
   DEFAULT_PAGE_SIZE,
+  hasNextCursor,
 } from "@/components/dashboard/CursorPagination";
 
 const emptySourceForm = () => ({
@@ -362,7 +363,7 @@ export default function SourcesPage() {
             <p className="text-sm">还没有来源连接</p>
           </div>
           <CursorPagination
-            hasNext={nextCursor != null}
+            hasNext={hasNextCursor(nextCursor)}
             loading={loading}
             onNext={nextPage}
             onPageSizeChange={changePageSize}
@@ -465,7 +466,7 @@ export default function SourcesPage() {
             })}
           </div>
           <CursorPagination
-            hasNext={nextCursor != null}
+            hasNext={hasNextCursor(nextCursor)}
             loading={loading}
             onNext={nextPage}
             onPrevious={previousPage}

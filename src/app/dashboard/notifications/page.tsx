@@ -27,6 +27,7 @@ import { ConfirmDeleteDialog } from "@/components/dashboard/ConfirmDeleteDialog"
 import {
   CursorPagination,
   DEFAULT_PAGE_SIZE,
+  hasNextCursor,
 } from "@/components/dashboard/CursorPagination";
 import { DeliveryChannel, ReportType } from "@/lib/domainEnums";
 import {
@@ -308,7 +309,7 @@ export default function SubscriptionsPage() {
             ))}
           </div>
           <CursorPagination
-            hasNext={nextCursor != null}
+            hasNext={hasNextCursor(nextCursor)}
             loading={loading}
             onNext={nextPage}
             onPageSizeChange={changePageSize}

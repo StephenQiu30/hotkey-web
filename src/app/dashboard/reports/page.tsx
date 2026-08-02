@@ -26,6 +26,7 @@ import { ReportAction, ReportStatus } from "@/lib/domainEnums";
 import {
   CursorPagination,
   DEFAULT_PAGE_SIZE,
+  hasNextCursor,
 } from "@/components/dashboard/CursorPagination";
 
 const when = (value?: string) =>
@@ -207,7 +208,7 @@ export default function ReportsPage() {
               </button>
             ))}
             <CursorPagination
-              hasNext={nextCursor != null}
+              hasNext={hasNextCursor(nextCursor)}
               loading={loading}
               onNext={nextPage}
               onPageSizeChange={changePageSize}
