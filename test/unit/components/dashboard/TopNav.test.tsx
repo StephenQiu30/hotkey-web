@@ -5,14 +5,17 @@ import TopNav from "@/components/dashboard/TopNav";
 import { useAuthStore } from "@/stores/authStore";
 import { AuthStatus, UserRole } from "@/lib/domainEnums";
 
+const navigationMocks = vi.hoisted(() => ({ pathname: "/dashboard" }));
+
 vi.mock("next/navigation", () => ({
-  usePathname: () => "/dashboard",
+  usePathname: () => navigationMocks.pathname,
 }));
 
 describe("TopNav", () => {
   afterEach(cleanup);
 
   beforeEach(() => {
+    navigationMocks.pathname = "/dashboard";
     useAuthStore.setState({
       status: AuthStatus.Authenticated,
       user: {
@@ -45,6 +48,10 @@ describe("TopNav", () => {
     expect(screen.getByRole("button", { name: "切换导航" })).toHaveClass(
       "xl:hidden",
     );
+    expect(screen.getByRole("button", { name: "账户菜单" })).toHaveAttribute(
+      "data-nav-menu-trigger",
+      "account",
+    );
   });
 
   it("offers a working shortcut to collected data without a fake search control", () => {
@@ -67,7 +74,9 @@ describe("TopNav", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: "管理" })).toHaveClass("ring-offset-background");
+    const managementMenu = screen.getByRole("button", { name: "管理" });
+    expect(managementMenu).toHaveAttribute("data-nav-menu-trigger", "management");
+    expect(managementMenu).not.toHaveClass("ring-offset-background");
 
     useAuthStore.setState((state) => ({
       ...state,
@@ -83,5 +92,23 @@ describe("TopNav", () => {
     );
 
     expect(screen.queryByRole("button", { name: "管理" })).not.toBeInTheDocument();
+  });
+
+  it("shows the management menu as the active navigation item on operational pages", () => {
+    navigationMocks.pathname = "/dashboard/sources";
+
+    render(
+      <TopNav
+        menuItems={[]}
+        adminMenuItems={[
+          { path: "/dashboard/sources", name: "来源管理", icon: <Database /> },
+        ]}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "管理" })).toHaveAttribute(
+      "data-active",
+      "true",
+    );
   });
 });
