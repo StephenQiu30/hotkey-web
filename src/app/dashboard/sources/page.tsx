@@ -13,6 +13,16 @@ import {
   Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -79,7 +89,10 @@ export default function SourcesPage() {
   const [loading, setLoading] = useState(true);
   const [dialog, setDialog] = useState(false);
   const [action, setAction] = useState<number>();
-  const [deleteTarget, setDeleteTarget] = useState<HotKeyAPI.SourceReadResponse>();
+  const [deleteTarget, setDeleteTarget] =
+    useState<HotKeyAPI.SourceReadResponse>();
+  const [bodyStorageTarget, setBodyStorageTarget] =
+    useState<HotKeyAPI.SourceReadResponse>();
   const [form, setForm] = useState(emptySourceForm);
   const [page, setPage] = useState(1);
   const [cursors, setCursors] = useState<(string | undefined)[]>([undefined]);
@@ -90,22 +103,27 @@ export default function SourcesPage() {
     if (!open) setForm(emptySourceForm());
   };
 
-  const loadPage = useCallback(async (cursor: string | undefined, pageNumber: number) => {
-    setLoading(true);
-    try {
-      const result = await getSourceConnections({
-        limit: pageSize,
-        ...(cursor ? { cursor } : {}),
-      });
-      setSources((result.data?.items ?? []).filter((source) => !source.deleted));
-      setPage(pageNumber);
-      setNextCursor(result.data?.next_cursor);
-    } catch (reason) {
-      toast.error(reason instanceof Error ? reason.message : "来源加载失败");
-    } finally {
-      setLoading(false);
-    }
-  }, [pageSize]);
+  const loadPage = useCallback(
+    async (cursor: string | undefined, pageNumber: number) => {
+      setLoading(true);
+      try {
+        const result = await getSourceConnections({
+          limit: pageSize,
+          ...(cursor ? { cursor } : {}),
+        });
+        setSources(
+          (result.data?.items ?? []).filter((source) => !source.deleted),
+        );
+        setPage(pageNumber);
+        setNextCursor(result.data?.next_cursor);
+      } catch (reason) {
+        toast.error(reason instanceof Error ? reason.message : "来源加载失败");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [pageSize],
+  );
 
   const load = useCallback(async () => {
     setCursors([undefined]);
@@ -202,16 +220,10 @@ export default function SourcesPage() {
     }
   };
 
-  const enableBodyStorage = async (source: HotKeyAPI.SourceReadResponse) => {
-    if (!canManage || source.id == null || source.config?.allow_body_storage) return;
-    if (
-      typeof window !== "undefined" &&
-      !window.confirm(
-        "确认保存该来源 Feed 实际提供的正文/摘要吗？不会抓取原网页；开启后将在后续采集时归档。",
-      )
-    ) {
+  const enableBodyStorage = async () => {
+    const source = bodyStorageTarget;
+    if (!canManage || source?.id == null || source.config?.allow_body_storage)
       return;
-    }
     setAction(source.id);
     try {
       await patchSourceConnectionsId(
@@ -221,6 +233,7 @@ export default function SourcesPage() {
           config: { allow_body_storage: true },
         },
       );
+      setBodyStorageTarget(undefined);
       await load();
       toast.success("已开启正文/摘要归档，下一次采集将更新内容");
     } catch (reason) {
@@ -282,7 +295,9 @@ export default function SourcesPage() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value={SourceType.RSS}>RSS / Atom</SelectItem>
+                        <SelectItem value={SourceType.RSS}>
+                          RSS / Atom
+                        </SelectItem>
                         <SelectItem value={SourceType.HackerNews}>
                           Hacker News
                         </SelectItem>
@@ -319,7 +334,8 @@ export default function SourcesPage() {
                           保存来源正文/摘要用于归档预览
                         </Label>
                         <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                          只保存来源 Feed 实际提供的正文/摘要，不抓取原网页；启用前确认来源条款。
+                          只保存来源 Feed
+                          实际提供的正文/摘要，不抓取原网页；启用前确认来源条款。
                         </p>
                       </div>
                     </div>
@@ -347,7 +363,8 @@ export default function SourcesPage() {
           <div>
             <p className="font-medium">只读来源目录</p>
             <p className="mt-1 text-xs leading-5 text-muted-foreground">
-              当前 {user?.role ?? UserRole.Viewer} 角色可以查看来源状态；新增、探测和启停来源仅对管理员开放。
+              当前 {user?.role ?? UserRole.Viewer}{" "}
+              角色可以查看来源状态；新增、探测和启停来源仅对管理员开放。
             </p>
           </div>
         </div>
@@ -420,7 +437,7 @@ export default function SourcesPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => enableBodyStorage(source)}
+                          onClick={() => setBodyStorageTarget(source)}
                           disabled={action === source.id || source.deleted}
                           className="gap-1.5"
                         >
@@ -493,6 +510,32 @@ export default function SourcesPage() {
         onConfirm={deleteSource}
         loading={action === deleteTarget?.id}
       />
+      <AlertDialog
+        open={bodyStorageTarget != null}
+        onOpenChange={(open) => !open && setBodyStorageTarget(undefined)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>开启正文与摘要归档？</AlertDialogTitle>
+            <AlertDialogDescription>
+              只保存该来源 Feed
+              实际提供的正文或摘要，不抓取原网页。开启后将在后续采集时归档，请先确认来源条款允许保存。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={action === bodyStorageTarget?.id}>
+              取消
+            </AlertDialogCancel>
+            <AlertDialogAction
+              aria-label="确认开启"
+              disabled={action === bodyStorageTarget?.id}
+              onClick={() => void enableBodyStorage()}
+            >
+              确认开启
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

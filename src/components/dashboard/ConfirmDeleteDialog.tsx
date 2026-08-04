@@ -1,15 +1,16 @@
 "use client";
 
 import { Loader2, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 type ConfirmDeleteDialogProps = {
   open: boolean;
@@ -31,32 +32,30 @@ export function ConfirmDeleteDialog({
   loading = false,
 }: ConfirmDeleteDialogProps) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription className="pt-2 leading-6">
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent className="sm:max-w-md">
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription className="pt-2 leading-6">
             {description}
-          </DialogDescription>
-        </DialogHeader>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
         <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm">
           <span className="text-muted-foreground">即将删除：</span>
           <p className="mt-1 break-words font-medium">{resourceName}</p>
         </div>
-        <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={loading}>取消</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={onConfirm}
             disabled={loading}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            取消
-          </Button>
-          <Button variant="destructive" onClick={onConfirm} disabled={loading}>
             {loading ? <Loader2 className="animate-spin" /> : <Trash2 />}
             {loading ? "删除中" : "确认删除"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

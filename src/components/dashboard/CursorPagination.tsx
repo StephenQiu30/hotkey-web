@@ -1,5 +1,12 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const DEFAULT_PAGE_SIZE = 20;
 export const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
@@ -39,22 +46,28 @@ export function CursorPagination({
       <span className="text-xs text-muted-foreground">第 {page} 页</span>
       <div className="flex flex-wrap items-center justify-end gap-3">
         {onPageSizeChange ? (
-          <label className="flex items-center gap-2 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <span>每页</span>
-            <select
-              aria-label="每页条数"
-              className="h-8 rounded-md border border-input bg-background px-2 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring"
+            <Select
               disabled={loading}
-              onChange={(event) => onPageSizeChange(Number(event.target.value))}
-              value={pageSize}
+              onValueChange={(value) => onPageSizeChange(Number(value))}
+              value={String(pageSize)}
             >
-              {pageSizeOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option} 条
-                </option>
-              ))}
-            </select>
-          </label>
+              <SelectTrigger
+                aria-label="每页条数"
+                className="h-8 w-[84px] text-xs"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {pageSizeOptions.map((option) => (
+                  <SelectItem key={option} value={String(option)}>
+                    {option} 条
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         ) : null}
         <div className="flex items-center gap-2">
           <Button

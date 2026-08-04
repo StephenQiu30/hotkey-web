@@ -54,36 +54,39 @@ export default function ReportsPage() {
     setSelected(report);
   };
 
-  const loadPage = useCallback(async (cursor: number | undefined, pageNumber: number) => {
-    setLoading(true);
-    setError(undefined);
-    try {
-      const result = await getReports({
-        limit: pageSize,
-        ...(cursor != null ? { cursor } : {}),
-      });
-      const items = result.data?.items ?? [];
-      setReports(items);
-      setPage(pageNumber);
-      setNextCursor(result.data?.next_cursor);
-      const currentID = selectedIdRef.current;
-      const id =
-        currentID != null && items.some((report) => report.id === currentID)
-          ? currentID
-          : items[0]?.id;
-      if (id == null) {
-        setCurrentReport(undefined);
-      } else if (id !== currentID) {
-        const summary = items.find((report) => report.id === id);
-        setCurrentReport(summary);
-        setCurrentReport((await getReportsId({ id })).data);
+  const loadPage = useCallback(
+    async (cursor: number | undefined, pageNumber: number) => {
+      setLoading(true);
+      setError(undefined);
+      try {
+        const result = await getReports({
+          limit: pageSize,
+          ...(cursor != null ? { cursor } : {}),
+        });
+        const items = result.data?.items ?? [];
+        setReports(items);
+        setPage(pageNumber);
+        setNextCursor(result.data?.next_cursor);
+        const currentID = selectedIdRef.current;
+        const id =
+          currentID != null && items.some((report) => report.id === currentID)
+            ? currentID
+            : items[0]?.id;
+        if (id == null) {
+          setCurrentReport(undefined);
+        } else if (id !== currentID) {
+          const summary = items.find((report) => report.id === id);
+          setCurrentReport(summary);
+          setCurrentReport((await getReportsId({ id })).data);
+        }
+      } catch (reason) {
+        setError(reason instanceof Error ? reason.message : "报告加载失败");
+      } finally {
+        setLoading(false);
       }
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "报告加载失败");
-    } finally {
-      setLoading(false);
-    }
-  }, [pageSize]);
+    },
+    [pageSize],
+  );
 
   const load = useCallback(async () => {
     setCursors([undefined]);
@@ -120,7 +123,10 @@ export default function ReportsPage() {
         setCurrentReport(
           (await postReportsIdPreview({ id: selected.id })).data?.report,
         );
-      else setCurrentReport((await postReportsIdPublish({ id: selected.id })).data);
+      else
+        setCurrentReport(
+          (await postReportsIdPublish({ id: selected.id })).data,
+        );
       toast.success(
         kind === ReportAction.Build
           ? "报告已构建"
@@ -185,10 +191,12 @@ export default function ReportsPage() {
         <div className="mt-6 grid gap-5 lg:grid-cols-[360px_minmax(0,1fr)]">
           <div className="panel h-fit divide-y divide-border overflow-hidden">
             {reports.map((report) => (
-              <button
+              <Button
                 key={report.id}
+                type="button"
+                variant="ghost"
                 onClick={() => selectReport(report)}
-                className={`w-full px-4 py-4 text-left transition-colors ${selected?.id === report.id ? "bg-white/[.06]" : "hover:bg-white/[.03]"}`}
+                className={`h-auto w-full flex-col items-stretch rounded-none px-4 py-4 text-left whitespace-normal ${selected?.id === report.id ? "bg-accent" : ""}`}
               >
                 <div className="flex items-center gap-2">
                   <span className="truncate text-sm font-medium">
@@ -205,7 +213,7 @@ export default function ReportsPage() {
                   {report.summary ||
                     `${report.type || "报告"} · ${when(report.generated_at)}`}
                 </p>
-              </button>
+              </Button>
             ))}
             <CursorPagination
               hasNext={hasNextCursor(nextCursor)}
