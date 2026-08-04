@@ -110,9 +110,12 @@ npm run typecheck
 npm run test:unit
 npm run build
 npm run openapi:generate
+npm run openapi:check
 ```
 
 Only regenerate the client when the backend OpenAPI contract changes. Generated files live under `src/services/hotkey/hotkey-server/` and should not be edited manually.
+
+The integration uses the official `@umijs/openapi` `openapi2ts` CLI. Update the backend contract first, regenerate the client, review the generated diff, and run `openapi:check` to verify the live contract and generated output are in sync. Application code should call generated functions instead of declaring endpoint paths, request DTOs, or response types by hand.
 
 ## Project structure
 

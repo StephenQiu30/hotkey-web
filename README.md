@@ -114,6 +114,7 @@ npm run typecheck         # TypeScript 类型检查
 npm run test:unit         # 单元测试
 npm run build             # 生产构建
 npm run openapi:generate  # 从运行中的后端重新生成 API Client
+npm run openapi:check     # 校验契约可用性并检查生成客户端是否同步
 ```
 
 只有后端 OpenAPI 契约发生变化时才需要运行 `openapi:generate`。生成结果位于 `src/services/hotkey/hotkey-server/`，请勿手工修改。
@@ -135,9 +136,10 @@ docs/                            # PRD、设计、计划、验收与运维文档
 
 1. 在 `hotkey-server` 修改接口并执行 `make openapi-check`。
 2. 启动后端，确认 `http://127.0.0.1:8080/openapi.json` 可访问。
-3. 在本仓执行 `npm run openapi:generate`。
-4. 审查生成差异，运行 `npm run typecheck`、`npm run test:unit` 和 `npm run build`。
-5. 再在页面或组件中接入新能力。
+3. 在本仓执行 `npm run openapi:generate`，只使用官方 `openapi2ts` CLI 生成客户端。
+4. 审查生成差异，业务代码只调用 `src/services/hotkey/hotkey-server/` 中的生成函数，不手写接口路径、请求 DTO 或响应类型。
+5. 执行 `npm run openapi:check`，确认服务契约可用且再次生成不会产生漂移。
+6. 运行 `npm run typecheck`、`npm run test:unit` 和 `npm run build`，再在页面或组件中接入新能力。
 
 ## 项目状态
 
