@@ -108,7 +108,7 @@ export function EmptyWorkspace({
                 <a
                   key={monitor.id}
                   href="/dashboard/settings"
-                  className="grid gap-3 px-5 py-4 text-foreground no-underline hover:bg-white/[.025] sm:grid-cols-[minmax(0,1fr)_120px_110px] sm:items-center"
+                  className="grid gap-3 px-5 py-4 text-foreground no-underline hover:bg-blue-50/60 sm:grid-cols-[minmax(0,1fr)_120px_110px] sm:items-center"
                 >
                   <span className="min-w-0">
                     <span className="block truncate text-sm font-medium">

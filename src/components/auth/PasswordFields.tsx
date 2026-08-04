@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Lock } from "lucide-react";
+import PasswordInput from "@/components/auth/PasswordInput";
 
 interface PasswordFieldsProps {
   prefix?: string;
@@ -38,28 +37,22 @@ export default function PasswordFields({
     <div className="space-y-3">
       <div className="space-y-1.5">
         <Label htmlFor={`${prefix}-password`} className="text-xs font-medium">密码</Label>
-        <div className="relative">
-          <Lock className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-          <Input id={`${prefix}-password`} type="password" placeholder="至少 8 位，含大小写字母和数字"
-            autoComplete="new-password"
-            value={onPasswordChange ? password : localPassword}
-            onChange={(e) => handlePasswordChange(e.target.value)}
-            className="h-10 rounded-md border-border bg-black/40 pl-8 text-sm" />
-        </div>
+        <PasswordInput id={`${prefix}-password`} placeholder="至少 8 位，含大小写字母和数字"
+          autoComplete="new-password"
+          value={onPasswordChange ? password : localPassword}
+          onChange={(e) => handlePasswordChange(e.target.value)}
+          className="h-10 rounded-lg border-border bg-slate-50 text-sm" />
       </div>
       <div className="space-y-1.5">
         <Label htmlFor={`${prefix}-confirm`} className="text-xs font-medium">确认密码</Label>
-        <div className="relative">
-          <Lock className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-          <Input id={`${prefix}-confirm`} type="password" placeholder="再次输入密码"
-            autoComplete="new-password"
-            value={onConfirmChange ? confirmPassword : localConfirm}
-            onChange={(e) => handleConfirmChange(e.target.value)}
-            className={`h-9 rounded-md border-border bg-black/40 pl-8 text-xs ${displayError ? "border-destructive" : ""}`} />
-        </div>
+        <PasswordInput id={`${prefix}-confirm`} placeholder="再次输入密码"
+          autoComplete="new-password"
+          value={onConfirmChange ? confirmPassword : localConfirm}
+          onChange={(e) => handleConfirmChange(e.target.value)}
+          className={`h-9 rounded-lg border-border bg-slate-50 text-xs ${displayError ? "border-destructive" : ""}`} />
       </div>
-      {displayError && <p className="text-xs text-destructive">{displayError}</p>}
-      <p className="text-[11px] text-muted-foreground">密码要求：至少 8 位，含大小写字母和数字</p>
+      {displayError && <p className="text-xs text-red-700">{displayError}</p>}
+      <p className="text-[11px] text-slate-600">密码要求：至少 8 位，含大小写字母和数字</p>
     </div>
   );
 }

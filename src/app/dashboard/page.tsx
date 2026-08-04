@@ -150,61 +150,131 @@ export default function DashboardPage() {
     finally { setAction(undefined); }
   };
 
-  if (loading) return <div className="flex min-h-[calc(100vh-60px)] items-center justify-center"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>;
+  if (loading) return <div className="flex min-h-[calc(100vh-68px)] items-center justify-center"><Loader2 className="h-5 w-5 animate-spin text-blue-600" /></div>;
   if (error) return <div className="app-page"><div className="panel p-10 text-center"><p className="text-sm text-destructive">{error}</p><Button onClick={loadWorkspace} variant="outline" className="mt-4">重新加载</Button></div></div>;
   if (!events.length)
     return <EmptyWorkspace monitors={monitors} overview={overview} collectionRuns={collectionRuns} collectedContents={collectedContents} />;
 
   return (
     <div data-testid="dashboard-shell" className="app-page !py-0">
-    <div data-testid="dashboard-workspace" className="grid min-h-[calc(100vh-60px)] grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px]">
-      <section className="min-w-0 px-5 py-7 lg:px-9 xl:border-r xl:border-border">
-        <div className="flex flex-col gap-4 border-b border-border pb-6 lg:flex-row lg:items-start lg:justify-between">
-          <div><p className="text-lg font-semibold">Editorial Intelligence Canvas</p><p className="mt-1 text-xs text-muted-foreground">发现事件，验证证据，生成可发布报告</p></div>
-          <div className="flex items-center gap-3 text-xs text-muted-foreground"><span>{new Intl.DateTimeFormat("zh-CN", { dateStyle: "medium" }).format(new Date())}</span><span>·</span><span>事件 {events.length}</span><Button aria-label="刷新工作台数据" title="刷新工作台数据" size="icon" variant="ghost" onClick={loadWorkspace} className="h-7 w-7"><RefreshCw className="h-3.5 w-3.5" /></Button></div>
-        </div>
-
-        <div className="py-7">
-          <div className="flex items-center gap-2"><h1 className="text-sm font-semibold">今日值得关注</h1><span className="h-1.5 w-1.5 rounded-full bg-blue-500" /><span className="text-xs text-muted-foreground">{sortedEvents.length} 个事件</span></div>
-          {detailLoading || !selected ? <div className="flex h-56 items-center justify-center"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div> : <>
-            <div className="mt-6 flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-              <div className="max-w-3xl"><div className="flex flex-wrap items-center gap-2"><h2 className="text-2xl font-semibold leading-tight">{selected.title_zh || selected.title_en || `事件 #${selected.id}`}</h2><Badge variant="outline" className="border-blue-500/40 bg-blue-500/10 text-blue-400">{selected.trend_status || "事件"}</Badge></div><p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">{selected.summary || "该事件尚未生成摘要，可在右侧重新生成事件情报。"}</p></div>
-              <Button asChild className="shrink-0 gap-2"><a href="/dashboard/reports">进入报告 <ArrowUpRight className="h-3.5 w-3.5" /></a></Button>
+      <div data-testid="dashboard-workspace" className="grid min-h-[calc(100vh-68px)] grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <section className="min-w-0 px-1 py-7 sm:px-5 lg:px-8 xl:border-r xl:border-border">
+          <div className="flex flex-col gap-4 pb-7 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-bold tracking-[-.035em] text-slate-950">热点态势中心</h1>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold text-emerald-700">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />监控运行中
+                </span>
+              </div>
+              <p className="mt-2 text-sm text-muted-foreground">追踪正在加速的事件，验证来源证据，形成可交付情报</p>
             </div>
-            <div className="mt-6 grid grid-cols-2 divide-x divide-border border-y border-border py-4 sm:grid-cols-4">
-              {[{ label: "热度", value: score(heat?.heat_score ?? selected.heat_score), tone: "signal-text" }, { label: "趋势", value: score(heat?.trend_score ?? selected.trend_score), tone: "signal-text" }, { label: "确认来源", value: heat?.source_count == null ? "—" : `${heat.source_count} 个`, tone: "signal-text" }, { label: "内容证据", value: heat?.content_count == null ? "—" : `${heat.content_count} 条`, tone: "success-text" }].map((item) => <div key={item.label} className="px-4 first:pl-0"><p className="text-xs text-muted-foreground">{item.label}</p><p className={`mono mt-2 text-xl font-medium ${item.tone}`}>{item.value}</p></div>)}
+            <div className="flex items-center gap-3 rounded-xl border border-border bg-white px-3 py-2 text-xs text-muted-foreground shadow-sm">
+              <span>{new Intl.DateTimeFormat("zh-CN", { dateStyle: "medium" }).format(new Date())}</span>
+              <span className="h-3 w-px bg-border" />
+              <span>{events.length} 个活跃事件</span>
+              <Button aria-label="刷新工作台数据" title="刷新工作台数据" size="icon" variant="ghost" onClick={loadWorkspace} className="h-7 w-7 text-blue-700"><RefreshCw className="h-3.5 w-3.5" /></Button>
             </div>
-          </>}
-        </div>
+          </div>
 
-        <div className="flex gap-7 border-b border-border">
-          {([[WorkspaceTab.Signal, "信号"], [WorkspaceTab.Evidence, "证据"], [WorkspaceTab.Report, "报告"]] as const).map(([value, label]) => <button key={value} onClick={() => setTab(value)} className={`relative pb-3 text-sm ${tab === value ? "text-blue-400" : "text-muted-foreground hover:text-foreground"}`}>{label}{tab === value && <span className="absolute inset-x-0 bottom-0 h-0.5 bg-blue-500" />}</button>)}
-        </div>
+          <div className="panel overflow-hidden border-blue-100 shadow-[0_12px_40px_rgba(30,83,160,.07)]">
+            <div className="flex items-center justify-between border-b border-blue-100 bg-blue-50/70 px-5 py-3.5 sm:px-6">
+              <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-blue-600" /><p className="text-xs font-semibold text-blue-800">今日首要关注</p></div>
+              <span className="text-[11px] text-blue-700">按综合热度排序 · {sortedEvents.length} 个事件</span>
+            </div>
+            {detailLoading || !selected ? (
+              <div className="flex h-72 items-center justify-center"><Loader2 className="h-5 w-5 animate-spin text-blue-600" /></div>
+            ) : (
+              <div className="p-5 sm:p-6">
+                <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                  <div className="max-w-3xl">
+                    <div className="flex flex-wrap items-center gap-2.5">
+                      <h2 className="text-2xl font-bold leading-tight tracking-[-.025em] text-slate-950">{selected.title_zh || selected.title_en || `事件 #${selected.id}`}</h2>
+                      <Badge variant="outline" className="border-blue-200 bg-blue-50 text-blue-700">{selected.trend_status || "持续追踪"}</Badge>
+                    </div>
+                    <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">{selected.summary || "该事件尚未生成摘要，可使用右侧 AI 情报助手生成最新研判。"}</p>
+                  </div>
+                  <Button asChild className="shrink-0 gap-2"><a href="/dashboard/reports">进入报告 <ArrowUpRight className="h-3.5 w-3.5" /></a></Button>
+                </div>
+                <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  {[
+                    { label: "综合热度", value: score(heat?.heat_score ?? selected.heat_score), tone: "text-blue-700", meta: "实时评分" },
+                    { label: "上升趋势", value: score(heat?.trend_score ?? selected.trend_score), tone: "text-blue-700", meta: "近 24 小时" },
+                    { label: "确认来源", value: heat?.source_count == null ? "—" : `${heat.source_count}`, tone: "text-slate-900", meta: "独立信源" },
+                    { label: "内容证据", value: heat?.content_count == null ? "—" : `${heat.content_count}`, tone: "text-emerald-700", meta: "可追溯内容" },
+                  ].map((item) => (
+                    <div key={item.label} className="rounded-xl border border-border bg-slate-50/70 p-3.5">
+                      <p className="text-[11px] text-muted-foreground">{item.label}</p>
+                      <p className={`mono mt-1.5 text-2xl font-semibold ${item.tone}`}>{item.value}</p>
+                      <p className="mt-1 text-[9px] text-muted-foreground">{item.meta}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
 
-        {tab === WorkspaceTab.Evidence && (
-          <EventEvidenceTimeline
-            contents={contents}
-            failedCount={evidenceFailures}
-            totalCount={evidenceTotal}
-            unavailable={evidenceUnavailable}
-          />
-        )}
+          <div className="mt-6 inline-flex gap-1 rounded-xl border border-border bg-white p-1 shadow-sm">
+            {([[WorkspaceTab.Signal, "信号"], [WorkspaceTab.Evidence, "证据"], [WorkspaceTab.Report, "报告"]] as const).map(([value, label]) => (
+              <button key={value} onClick={() => setTab(value)} className={`rounded-lg px-4 py-2 text-xs font-medium transition-colors ${tab === value ? "bg-blue-600 text-white shadow-sm" : "text-muted-foreground hover:bg-blue-50 hover:text-blue-700"}`}>{label}</button>
+            ))}
+          </div>
 
-        {tab === WorkspaceTab.Signal && <div className="space-y-6 py-6"><EventHeatComparison events={sortedEvents} /><div className="panel divide-y divide-border px-5">{sortedEvents.slice(0, 12).map((event, index) => <button key={event.id} onClick={() => setSelectedId(event.id)} className={`grid w-full grid-cols-[32px_minmax(0,1fr)_80px] items-center gap-3 py-4 text-left ${event.id === selectedId ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}><span className="mono text-xs">{String(index + 1).padStart(2, '0')}</span><span><span className="block truncate text-sm font-medium">{event.title_zh || event.title_en || `事件 #${event.id}`}</span><span className="mt-1 block text-xs text-muted-foreground">{formatDateTime(event.last_seen_at)} · {event.lifecycle_status}</span></span><span className="mono text-right text-sm signal-text">{score(event.heat_score)}</span></button>)}</div></div>}
+          {tab === WorkspaceTab.Evidence && <EventEvidenceTimeline contents={contents} failedCount={evidenceFailures} totalCount={evidenceTotal} unavailable={evidenceUnavailable} />}
 
-        {tab === WorkspaceTab.Report && <div className="py-6">{reports.length ? <div className="divide-y divide-border">{reports.slice(0, 8).map((report) => <a key={report.id} href="/dashboard/reports" className="grid grid-cols-[minmax(0,1fr)_100px] gap-4 py-4 text-foreground no-underline"><span><span className="block text-sm font-medium">{report.title || `报告 #${report.id}`}</span><span className="mt-1 block text-xs text-muted-foreground">{report.summary || `${report.type || "报告"} · ${formatDateTime(report.generated_at)}`}</span></span><span className="text-right text-xs text-muted-foreground">{report.status}</span></a>)}</div> : <p className="py-10 text-sm text-muted-foreground">暂时没有可用报告。</p>}</div>}
+          {tab === WorkspaceTab.Signal && (
+            <div className="space-y-6 py-6">
+              <EventHeatComparison events={sortedEvents} />
+              <div className="panel divide-y divide-border px-5">
+                {sortedEvents.slice(0, 12).map((event, index) => (
+                  <button key={event.id} onClick={() => setSelectedId(event.id)} className={`grid w-full grid-cols-[32px_minmax(0,1fr)_80px] items-center gap-3 py-4 text-left ${event.id === selectedId ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+                    <span className="mono text-xs text-blue-600">{String(index + 1).padStart(2, "0")}</span>
+                    <span><span className="block truncate text-sm font-medium">{event.title_zh || event.title_en || `事件 #${event.id}`}</span><span className="mt-1 block text-xs text-muted-foreground">{formatDateTime(event.last_seen_at)} · {event.lifecycle_status}</span></span>
+                    <span className="mono text-right text-sm font-semibold text-blue-700">{score(event.heat_score)}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
-        <div className="border-t border-border py-5"><h3 className="text-sm font-medium">其他高潜事件</h3><div className="mt-4 grid gap-3 sm:grid-cols-3">{sortedEvents.slice(1,4).map((event, index) => <button key={event.id} onClick={() => setSelectedId(event.id)} className="flex min-w-0 items-center gap-3 border-r border-border pr-3 text-left last:border-0"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-foreground text-xs font-semibold text-background">{index + 1}</span><span className="min-w-0"><span className="block truncate text-xs font-medium">{event.title_zh || event.title_en}</span><span className="mono mt-1 block text-[11px] text-muted-foreground">热度 {score(event.heat_score)} · 趋势 {score(event.trend_score)}</span></span></button>)}</div></div>
-      </section>
+          {tab === WorkspaceTab.Report && <div className="py-6">{reports.length ? <div className="panel divide-y divide-border px-5">{reports.slice(0, 8).map((report) => <a key={report.id} href="/dashboard/reports" className="grid grid-cols-[minmax(0,1fr)_100px] gap-4 py-4 text-foreground no-underline"><span><span className="block text-sm font-medium">{report.title || `报告 #${report.id}`}</span><span className="mt-1 block text-xs text-muted-foreground">{report.summary || `${report.type || "报告"} · ${formatDateTime(report.generated_at)}`}</span></span><span className="text-right text-xs text-muted-foreground">{report.status}</span></a>)}</div> : <p className="panel py-10 text-center text-sm text-muted-foreground">暂时没有可用报告。</p>}</div>}
 
-      <aside className="static max-h-none overflow-visible border-t border-border bg-[#030303] px-5 py-7 xl:sticky xl:top-[76px] xl:max-h-[calc(100vh-92px)] xl:self-start xl:overflow-y-auto xl:border-t-0 xl:px-7">
-        <div className="flex items-start justify-between border-b border-border pb-5"><div><h2 className="text-base font-semibold">事件情报与报告</h2><p className="mt-1 text-xs text-muted-foreground">所有操作均由后端任务执行</p></div><Sparkles className="h-4 w-4 text-muted-foreground" /></div>
-        <div className="py-6"><p className="text-xs font-medium">已验证声明</p><div className="mt-3 space-y-2">{intelligence?.claims?.length ? intelligence.claims.slice(0,4).map((claim) => <div key={claim.id ?? claim.claim_hash} className="panel p-3"><div className="flex items-start gap-2"><Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-green-500" /><p className="text-xs leading-5">{claim.normalized_claim}</p></div><div className="mt-2 flex justify-between text-[11px] text-muted-foreground"><span>{claim.evidence?.length ?? 0} 条证据</span><span className="mono">置信度 {claim.confidence == null ? "—" : Math.round(claim.confidence * 100)}</span></div></div>) : <div className="panel p-5 text-xs text-muted-foreground">暂无已验证声明，可重新提取事件情报。</div>}</div></div>
-        <div className="border-t border-border py-6"><p className="text-xs font-medium">情报任务</p><div className="mt-3 grid grid-cols-2 gap-2"><Button variant="outline" onClick={() => runEventAction(EventAction.Extract)} disabled={!!action} className="gap-2 text-xs">{action === EventAction.Extract ? <Loader2 className="animate-spin" /> : <BookOpen />}提取实体</Button><Button onClick={() => runEventAction(EventAction.Summary)} disabled={!!action} className="gap-2 text-xs">{action === EventAction.Summary ? <Loader2 className="animate-spin" /> : <Sparkles />}重新生成摘要</Button></div></div>
-        <div className="border-t border-border py-6"><div className="flex items-center justify-between"><p className="text-xs font-medium">最近报告</p><a href="/dashboard/reports" className="text-[11px] text-blue-400">查看全部</a></div>{recentReport ? <div className="panel mt-3 p-4"><div className="flex items-center gap-2"><FileText className="h-4 w-4 text-muted-foreground" /><p className="truncate text-sm font-medium">{recentReport.title || `报告 #${recentReport.id}`}</p></div><p className="mt-2 line-clamp-3 text-xs leading-5 text-muted-foreground">{recentReport.summary || "该报告尚未生成摘要。"}</p><div className="mt-3 flex items-center justify-between text-[11px] text-muted-foreground"><span>{recentReport.type}</span><span>{recentReport.status}</span></div><div className="mt-4 grid grid-cols-2 gap-2"><Button variant="outline" onClick={() => runReportAction(ReportAction.Preview)} disabled={!!action} className="text-xs">预览</Button><Button onClick={() => runReportAction(ReportAction.Build)} disabled={!!action} className="text-xs">构建报告</Button></div></div> : <div className="panel mt-3 p-5 text-xs text-muted-foreground">后端尚未生成报告记录。</div>}</div>
-        <div className="border-t border-border pt-5 text-[11px] leading-5 text-muted-foreground"><p>事件 ID：{selected?.id ?? "—"}</p><p>情报实体：{intelligence?.entities?.length ?? 0}</p><p>最近计算：{formatDateTime(heat?.captured_at || selected?.calculated_at)}</p></div>
-      </aside>
-    </div>
+          <div className="border-t border-border py-6">
+            <div className="flex items-center justify-between"><h3 className="text-sm font-semibold">其他高潜事件</h3><span className="text-[11px] text-muted-foreground">点击切换关注事件</span></div>
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              {sortedEvents.slice(1, 4).map((event, index) => (
+                <button key={event.id} onClick={() => setSelectedId(event.id)} className="flex min-w-0 items-center gap-3 rounded-xl border border-border bg-white p-3 text-left shadow-sm transition-colors hover:border-blue-200 hover:bg-blue-50/50">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-xs font-bold text-blue-700">{index + 1}</span>
+                  <span className="min-w-0"><span className="block truncate text-xs font-medium">{event.title_zh || event.title_en}</span><span className="mono mt-1 block text-[10px] text-muted-foreground">热度 {score(event.heat_score)} · 趋势 {score(event.trend_score)}</span></span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <aside className="static max-h-none overflow-visible border-t border-border bg-transparent px-1 py-7 sm:px-5 xl:sticky xl:top-[84px] xl:max-h-[calc(100vh-100px)] xl:self-start xl:overflow-y-auto xl:border-t-0 xl:px-6">
+          <div className="panel overflow-hidden">
+            <div className="flex items-start justify-between border-b border-blue-100 bg-blue-50/70 p-5">
+              <div><p className="eyebrow">AI COPILOT</p><h2 className="mt-1.5 text-base font-semibold">AI 情报助手</h2><p className="mt-1 text-xs text-muted-foreground">基于事件证据生成实时研判</p></div>
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-blue-700 shadow-sm"><Sparkles className="h-4 w-4" /></span>
+            </div>
+            <div className="p-5">
+              <p className="text-xs font-semibold">已验证声明</p>
+              <div className="mt-3 space-y-2">
+                {intelligence?.claims?.length ? intelligence.claims.slice(0, 4).map((claim) => (
+                  <div key={claim.id ?? claim.claim_hash} className="rounded-xl border border-border bg-slate-50/60 p-3">
+                    <div className="flex items-start gap-2"><Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600" /><p className="text-xs leading-5">{claim.normalized_claim}</p></div>
+                    <div className="mt-2 flex justify-between text-[10px] text-muted-foreground"><span>{claim.evidence?.length ?? 0} 条证据</span><span className="mono">置信度 {claim.confidence == null ? "—" : Math.round(claim.confidence * 100)}</span></div>
+                  </div>
+                )) : <div className="rounded-xl border border-dashed border-blue-200 bg-blue-50/40 p-5 text-xs leading-5 text-muted-foreground">暂无已验证声明，可重新提取事件情报。</div>}
+              </div>
+            </div>
+            <div className="border-t border-border p-5"><p className="text-xs font-semibold">情报任务</p><div className="mt-3 grid grid-cols-2 gap-2"><Button variant="outline" onClick={() => runEventAction(EventAction.Extract)} disabled={!!action} className="gap-2 text-xs">{action === EventAction.Extract ? <Loader2 className="animate-spin" /> : <BookOpen />}提取实体</Button><Button onClick={() => runEventAction(EventAction.Summary)} disabled={!!action} className="gap-2 text-xs">{action === EventAction.Summary ? <Loader2 className="animate-spin" /> : <Sparkles />}生成摘要</Button></div></div>
+            <div className="border-t border-border p-5"><div className="flex items-center justify-between"><p className="text-xs font-semibold">最近报告</p><a href="/dashboard/reports" className="text-[11px] font-medium text-blue-700">查看全部</a></div>{recentReport ? <div className="mt-3 rounded-xl border border-border p-4"><div className="flex items-center gap-2"><FileText className="h-4 w-4 text-blue-600" /><p className="truncate text-sm font-medium">{recentReport.title || `报告 #${recentReport.id}`}</p></div><p className="mt-2 line-clamp-3 text-xs leading-5 text-muted-foreground">{recentReport.summary || "该报告尚未生成摘要。"}</p><div className="mt-3 flex items-center justify-between text-[10px] text-muted-foreground"><span>{recentReport.type}</span><span>{recentReport.status}</span></div><div className="mt-4 grid grid-cols-2 gap-2"><Button variant="outline" onClick={() => runReportAction(ReportAction.Preview)} disabled={!!action} className="text-xs">预览</Button><Button onClick={() => runReportAction(ReportAction.Build)} disabled={!!action} className="text-xs">构建报告</Button></div></div> : <div className="mt-3 rounded-xl border border-dashed border-border p-5 text-xs text-muted-foreground">后端尚未生成报告记录。</div>}</div>
+            <div className="grid grid-cols-3 border-t border-border bg-slate-50/70 px-5 py-4 text-center text-[10px] text-muted-foreground"><div><p className="mono text-sm font-semibold text-slate-800">{selected?.id ?? "—"}</p><p className="mt-1">事件 ID</p></div><div className="border-x border-border"><p className="mono text-sm font-semibold text-slate-800">{intelligence?.entities?.length ?? 0}</p><p className="mt-1">情报实体</p></div><div><p className="mono text-[11px] font-semibold text-slate-800">{formatDateTime(heat?.captured_at || selected?.calculated_at)}</p><p className="mt-1">最近计算</p></div></div>
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }

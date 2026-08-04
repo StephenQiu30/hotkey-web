@@ -40,17 +40,19 @@ export function EventHeatComparison({ events }: EventHeatComparisonProps) {
                 axisLine={false}
                 tickLine={false}
                 width={120}
-                tick={{ fill: "#8a8a8a", fontSize: 11 }}
+                tick={{ fill: "#65758b", fontSize: 11 }}
               />
               <Tooltip
                 contentStyle={{
-                  background: "#0a0a0a",
-                  border: "1px solid #242424",
-                  borderRadius: 6,
+                  background: "#ffffff",
+                  border: "1px solid #dce6f2",
+                  borderRadius: 10,
+                  color: "#10213b",
                   fontSize: 11,
+                  boxShadow: "0 12px 32px rgba(22, 52, 85, .12)",
                 }}
               />
-              <Bar dataKey="heat" fill="#3b82f6" radius={[0, 3, 3, 0]} />
+              <Bar dataKey="heat" fill="#1769e0" radius={[0, 5, 5, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

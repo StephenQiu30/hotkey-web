@@ -37,9 +37,10 @@ function isNoRefreshPath(url: string = ""): boolean {
 
 export class HotKeyAPIError extends Error {
   constructor(
-    public code: number,
+    public status: number,
     message: string = "操作失败，请稍后重试",
     public data: unknown = null,
+    public code: number = status,
   ) {
     super(message);
     this.name = "HotKeyAPIError";
@@ -76,10 +77,10 @@ apiClient.interceptors.response.use(
         error.code === "ERR_NETWORK" || error.message?.includes("ECONNREFUSED")
           ? "无法连接到服务器，请确认 hotkey-server 已启动"
           : `网络错误：${error.message ?? "请检查网络连接"}`;
-      return Promise.reject(new HotKeyAPIError(0, networkMsg));
+      throw new HotKeyAPIError(0, networkMsg);
     }
 
-    const code = error.response?.status ?? 0;
+    const status = error.response?.status ?? 0;
     const body = error.response?.data;
     const requestUrl = error.config?.url ?? "";
     const isRetry = (error.config as any)?.[RETRY_MARKER] === true;
@@ -89,7 +90,7 @@ apiClient.interceptors.response.use(
     const errorData = body?.data ?? null;
 
     // 401 handling: refresh + retry (once per request)
-    if (code === 401 && !isRetry && !isNoRefreshPath(requestUrl)) {
+    if (status === 401 && !isRetry && !isNoRefreshPath(requestUrl)) {
       try {
         // Single-flight: all concurrent 401s share one refresh
         const newToken = await refreshAccessToken(async () => {
@@ -121,21 +122,19 @@ apiClient.interceptors.response.use(
         if (typeof window !== "undefined" && !shouldSkipRedirect(window.location.pathname)) {
           window.location.href = "/login";
         }
-        return Promise.reject(
-          new HotKeyAPIError(401, "登录已过期，请重新登录"),
-        );
+        throw new HotKeyAPIError(401, "登录已过期，请重新登录");
       }
     }
 
     // 401 on auth endpoints or retry — fail immediately
-    if (code === 401) {
+    if (status === 401) {
       clearAccessToken();
       if (typeof window !== "undefined" && !shouldSkipRedirect(window.location.pathname)) {
         window.location.href = "/login";
       }
     }
 
-    return Promise.reject(new HotKeyAPIError(code, errorMessage, errorData));
+    throw new HotKeyAPIError(status, errorMessage, errorData, body?.code ?? status);
   },
 );
 

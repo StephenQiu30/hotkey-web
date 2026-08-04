@@ -21,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="zh-CN" data-theme="dark" data-scroll-behavior="smooth">
+    <html lang="zh-CN" data-theme="light" data-scroll-behavior="smooth">
       <body>
         <ThemeProvider>
           <AppProvider>{children}</AppProvider>

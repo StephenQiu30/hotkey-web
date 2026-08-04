@@ -10,7 +10,7 @@ export default function BasicLayout({ children, menuItems, title = "HotKey" }: {
   title?: string;
 }) {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground">
       <TopNav menuItems={menuItems} title={title} />
       <main>{children}</main>
     </div>

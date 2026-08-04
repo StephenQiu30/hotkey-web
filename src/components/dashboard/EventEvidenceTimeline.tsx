@@ -38,7 +38,7 @@ export function EventEvidenceTimeline({
           </p>
         </div>
         {failedCount > 0 ? (
-          <p className="text-xs text-amber-400">部分证据暂不可读（{failedCount} 条）</p>
+          <p className="text-xs text-amber-700">部分证据暂不可读（{failedCount} 条）</p>
         ) : null}
       </div>
 
@@ -57,7 +57,7 @@ export function EventEvidenceTimeline({
                 key={content.id ?? `${content.external_id ?? title}-${index}`}
                 className="relative border-b border-border py-5 last:border-b-0"
               >
-                <span className="absolute -left-[25px] top-6 h-2 w-2 rounded-full border-2 border-blue-500 bg-black" />
+                <span className="absolute -left-[25px] top-6 h-2 w-2 rounded-full border-2 border-blue-600 bg-white" />
                 <div className="flex flex-wrap items-center gap-2 text-xs">
                   <span className="signal-text mono">{formatDateTime(content.published_at)}</span>
                   <span className="font-medium">{content.source_name || content.source_type || "来源"}</span>
@@ -73,7 +73,7 @@ export function EventEvidenceTimeline({
                     {content.id != null ? (
                       <a
                         aria-label={`阅读归档：${title}`}
-                        className="text-blue-400 no-underline"
+                        className="font-medium text-blue-700 no-underline hover:text-blue-800"
                         href={`/dashboard/contents/${content.id}`}
                       >
                         阅读归档

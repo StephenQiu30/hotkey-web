@@ -63,7 +63,7 @@ export default function ResetPasswordPage() {
           <form onSubmit={handleReset} className="space-y-3">
             <PasswordFields prefix="reset" password={password} confirmPassword={confirmPassword}
               onPasswordChange={setPassword} onConfirmChange={setConfirmPassword} />
-            {error && <p className="text-xs text-destructive">{error}</p>}
+            {error && <p className="text-xs text-red-700">{error}</p>}
             <Button type="submit" disabled={loading || !password} className="h-10 w-full rounded-md text-sm font-medium shadow-button">
               {loading ? "重置中..." : "重置密码"}
             </Button>

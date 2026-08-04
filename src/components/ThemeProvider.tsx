@@ -2,10 +2,10 @@
 
 import { createContext, useContext } from "react";
 
-type Theme = "dark";
+type Theme = "light" | "dark";
 
 const ThemeContext = createContext({
-  theme: "dark" as Theme,
+  theme: "light" as Theme,
   toggleTheme: () => {},
   setTheme: (_theme: Theme) => {},
 });
@@ -13,9 +13,9 @@ const ThemeContext = createContext({
 export function useTheme() { return useContext(ThemeContext); }
 
 export function ThemeScript() {
-  return <script dangerouslySetInnerHTML={{ __html: "document.documentElement.dataset.theme='dark'" }} />;
+  return <script dangerouslySetInnerHTML={{ __html: "document.documentElement.dataset.theme='light'" }} />;
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  return <ThemeContext.Provider value={{ theme: "dark", toggleTheme: () => {}, setTheme: () => {} }}>{children}</ThemeContext.Provider>;
+  return <ThemeContext.Provider value={{ theme: "light", toggleTheme: () => {}, setTheme: () => {} }}>{children}</ThemeContext.Provider>;
 }

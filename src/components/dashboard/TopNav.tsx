@@ -40,13 +40,13 @@ export default function TopNav({
   };
 
   return (
-    <header data-top-nav className="sticky top-0 z-50 border-b border-border bg-black/95 backdrop-blur">
-      <div className="flex h-[60px] min-w-0 items-center gap-3 px-4 sm:gap-4 sm:px-5 lg:px-7 xl:gap-5">
+    <header data-top-nav className="sticky top-0 z-50 border-b border-border bg-white/90 shadow-[0_1px_12px_rgba(30,64,104,.04)] backdrop-blur-xl">
+      <div className="flex h-[68px] min-w-0 items-center gap-3 px-4 sm:gap-4 sm:px-5 lg:px-7 xl:gap-5">
         <Link
           href="/dashboard"
-          className="flex shrink-0 items-center gap-2 text-sm font-semibold text-foreground no-underline"
+          className="flex shrink-0 items-center gap-2 text-sm font-bold text-foreground no-underline"
         >
-          <BrandLogo title={title} />
+          <BrandLogo title={title} markClassName="h-5 w-5" />
         </Link>
         <nav
           aria-label="主导航"
@@ -60,12 +60,12 @@ export default function TopNav({
               <Link
                 key={item.path}
                 href={item.path}
-                className={`relative flex h-full items-center gap-1.5 whitespace-nowrap px-3 text-xs no-underline transition-colors 2xl:px-4 ${active ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                className={`relative flex h-9 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-xs font-medium no-underline transition-colors 2xl:px-4 ${active ? "bg-blue-50 text-blue-700" : "text-muted-foreground hover:bg-slate-50 hover:text-foreground"}`}
               >
                 {item.icon}
                 {item.name}
                 {active && (
-                  <span className="absolute inset-x-4 bottom-0 h-0.5 bg-foreground" />
+                  <span className="absolute inset-x-3 -bottom-[16px] h-0.5 rounded-full bg-blue-600" />
                 )}
               </Link>
             );
@@ -74,7 +74,7 @@ export default function TopNav({
         <Link
           href="/dashboard/contents"
           aria-label="查看采集数据"
-          className="ml-auto hidden h-8 min-w-0 flex-1 items-center gap-2 rounded-md border border-border bg-[#080808] px-3 text-xs text-muted-foreground no-underline transition-colors hover:border-white/20 hover:text-foreground md:flex md:max-w-[220px]"
+          className="ml-auto hidden h-9 min-w-0 flex-1 items-center gap-2 rounded-lg border border-border bg-slate-50 px-3 text-xs text-muted-foreground no-underline transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 md:flex md:max-w-[220px]"
         >
           <FileSearch className="h-3.5 w-3.5" />
           <span className="truncate">查看采集数据</span>
@@ -92,7 +92,7 @@ export default function TopNav({
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 rounded-md p-1 text-xs text-muted-foreground outline-none hover:text-foreground">
               <Avatar className="h-7 w-7">
-                <AvatarFallback className="bg-foreground text-[10px] text-background">
+                <AvatarFallback className="bg-blue-100 text-[10px] font-semibold text-blue-700">
                   {user?.display_name?.slice(0, 1)?.toUpperCase() || (
                     <User className="h-3 w-3" />
                   )}
@@ -135,14 +135,14 @@ export default function TopNav({
       {mobileOpen && (
         <nav
           aria-label="折叠导航"
-          className="border-t border-border px-3 py-2 xl:hidden"
+          className="border-t border-border bg-white px-3 py-2 xl:hidden"
         >
           {menuItems.map((item) => (
             <Link
               key={item.path}
               href={item.path}
               onClick={() => setMobileOpen(false)}
-              className="flex items-center gap-2 rounded-md px-3 py-2 text-xs text-muted-foreground no-underline hover:bg-secondary hover:text-foreground"
+              className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-xs text-muted-foreground no-underline hover:bg-blue-50 hover:text-blue-700"
             >
               {item.icon}
               {item.name}

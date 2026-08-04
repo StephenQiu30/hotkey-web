@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 export default function NotFound() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-black px-5 py-12">
+    <main className="flex min-h-screen items-center justify-center bg-background px-5 py-12">
       <div className="w-full max-w-lg text-center">
         <Link
           href="/"
