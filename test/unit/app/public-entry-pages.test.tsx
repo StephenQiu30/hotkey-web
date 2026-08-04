@@ -29,6 +29,21 @@ describe("公开入口页面", () => {
     );
   });
 
+  it("首页的小字号辅助文字使用满足浅色背景对比度的颜色", () => {
+    render(<HomePage />);
+
+    expect(
+      screen.getByText("从海量噪声中，锁定真正重要的变化，给团队清晰可行动的判断。"),
+    ).toHaveClass("text-slate-600");
+    expect(screen.getByText("2026-08-04")).toHaveClass("text-slate-600");
+    expect(screen.getByText("连续 4 天上升")).toHaveClass("text-emerald-700");
+    expect(screen.getByText("/100")).toHaveClass("text-slate-600");
+    expect(screen.getAllByText(/小时前$/)).toHaveLength(3);
+    for (const timestamp of screen.getAllByText(/小时前$/)) {
+      expect(timestamp).toHaveClass("text-slate-600");
+    }
+  });
+
   it("认证页的品牌介绍区域使用可识别的辅助地标", () => {
     render(
       <AuthShell title="登录" subtitle="继续使用">
@@ -50,5 +65,14 @@ describe("公开入口页面", () => {
       "href",
       "/login",
     );
+  });
+
+  it("未找到页面的编号与说明使用可读的前景色", () => {
+    render(<NotFound />);
+
+    expect(screen.getByText("404")).toHaveClass("text-blue-700");
+    expect(
+      screen.getByText("你访问的地址可能已被移动或删除。可以返回首页，或登录后继续使用工作台。"),
+    ).toHaveClass("text-slate-600");
   });
 });

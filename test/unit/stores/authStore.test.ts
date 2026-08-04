@@ -51,6 +51,42 @@ describe("auth store state machine", () => {
     expect(useAuthStore.getState().user).toEqual(userData);
   });
 
+  it("does not refresh an anonymous session without local credentials", async () => {
+    vi.mocked(authSession.getAccessToken).mockReturnValueOnce("");
+    useAuthStore.setState({ status: AuthStatus.Initializing, user: null, error: null });
+
+    await useAuthStore.getState().initialize();
+
+    expect(authService.postAuthRefresh).not.toHaveBeenCalled();
+    expect(authService.getAuthMe).not.toHaveBeenCalled();
+    expect(useAuthStore.getState().status).toBe(AuthStatus.Unauthenticated);
+  });
+
+  it("refreshes a persisted session when its access token is missing", async () => {
+    const persistedUser = {
+      id: 1,
+      email: "a@b.com",
+      display_name: "Alice",
+    } as HotKeyAPI.UserResponse;
+    vi.mocked(authSession.getAccessToken).mockReturnValueOnce("");
+    vi.mocked(authService.postAuthRefresh).mockResolvedValueOnce({
+      data: { access_token: "refreshed-token", user: persistedUser },
+    } as any);
+    vi.mocked(authService.getAuthMe).mockResolvedValueOnce({ data: persistedUser } as any);
+    useAuthStore.setState({
+      status: AuthStatus.Initializing,
+      user: persistedUser,
+      error: null,
+    });
+
+    await useAuthStore.getState().initialize();
+
+    expect(authService.postAuthRefresh).toHaveBeenCalledOnce();
+    expect(authSession.setAccessToken).toHaveBeenCalledWith("refreshed-token", 900);
+    expect(authService.getAuthMe).toHaveBeenCalledOnce();
+    expect(useAuthStore.getState().status).toBe(AuthStatus.Authenticated);
+  });
+
   it("initialize transitions to unauthenticated when me fails", async () => {
     vi.mocked(authSession.getAccessToken).mockReturnValueOnce("valid-token");
     vi.mocked(authSession.isAccessTokenExpired).mockReturnValueOnce(false);
