@@ -98,41 +98,38 @@ Docker 启动会显式加载 `.env.<环境>`，默认环境为 `prod`。首次�
 
 ```bash
 cp .env.prod.example .env.prod
-npm run docker:up
+docker compose --env-file .env.prod -f docker-compose.yml up --build
 ```
 
-默认命令等价于 `docker compose --env-file .env.prod up --build`。需要后台运行时追加 `-d`：
+需要后台运行时追加 `-d`：
 
 ```bash
-npm run docker:up -- -d
+docker compose --env-file .env.prod -f docker-compose.yml up --build -d
 ```
 
-其他部署环境使用 `--env` 选择对应文件。例如 `.env.staging`：
+其他部署环境继续使用同一个 `docker-compose.yml`，只切换 `--env-file`。例如 `.env.staging`：
 
 ```bash
 cp .env.prod.example .env.staging
-# 将 .env.staging 中的 HOTKEY_DEPLOY_ENV、COMPOSE_PROJECT_NAME、端口和后端地址改为预发布配置
-npm run docker:config -- --env staging
-npm run docker:up -- --env staging -d
+# 将 HOTKEY_DEPLOY_ENV 改为 staging，并调整端口和后端地址
+docker compose --env-file .env.staging -f docker-compose.yml config
+docker compose --env-file .env.staging -f docker-compose.yml up --build -d
 ```
 
-`-env staging` 也可作为 `--env staging` 的兼容写法。环境名只用于选择部署配置；容器内的 `NODE_ENV` 始终为 `production`，`HOTKEY_DEPLOY_ENV` 和 `COMPOSE_PROJECT_NAME` 用于区分镜像标签及 Compose 网络、容器等资源。
+`.env.prod` 中的 `HOTKEY_DEPLOY_ENV=prod` 会生成 `hotkey-web-prod` Compose 项目和 `hotkey-web:prod` 镜像。容器内的 `NODE_ENV` 始终为 `production`；部署环境只通过 env 文件区分。
 
 常用 Docker 命令：
 
 ```bash
-npm run docker:config                 # 校验默认 .env.prod
-npm run docker:logs                   # 查看默认生产环境日志
-npm run docker:down                   # 停止默认生产环境
-npm run docker:down -- --env staging  # 停止预发布环境
+docker compose --env-file .env.prod -f docker-compose.yml config
+docker compose --env-file .env.prod -f docker-compose.yml logs --follow
+docker compose --env-file .env.prod -f docker-compose.yml down
 ```
 
 ## 常用命令
 
 ```bash
 npm run dev               # 本地开发与 Fast Refresh
-npm run docker:up         # 使用 .env.prod 构建并启动 Docker
-npm run docker:config     # 校验 .env.prod 对应的 Compose 配置
 npm run typecheck         # TypeScript 类型检查
 npm run test:unit         # 单元测试
 npm run build             # 生产构建

@@ -43,8 +43,6 @@ hotkey-web/
 ```bash
 npm run dev           # 开发服务器
 npm run build         # 生产构建
-npm run docker:up     # 默认读取 .env.prod 构建并启动 Docker
-npm run docker:config # 校验默认生产 Compose 配置
 npm run typecheck     # 类型检查
 npm run test:unit     # test/ 下的单元测试
 npm run openapi:generate   # 从服务器 OpenAPI 重新生成 API 客户端
@@ -189,5 +187,5 @@ npm run openapi:generate   # 从服务器 OpenAPI 重新生成 API 客户端
 - `HOTKEY_API_ORIGIN` — API 服务器地址（仅由 Next.js 服务端 rewrites 使用，不暴露给浏览器）
 - `NEXT_OUTPUT` — 可选；设为 `standalone` 时生成 Docker 使用的独立运行产物
 - `WEB_PORT` — 可选；`docker compose` 对外暴露的 Web 端口
-- Docker 启动统一通过 `scripts/docker-compose.mjs`；默认显式读取 `.env.prod`，其他环境使用 `--env <name>` 选择 `.env.<name>`
-- `HOTKEY_DEPLOY_ENV` 与 `COMPOSE_PROJECT_NAME` 用于区分 Docker 部署资源，不替代容器内固定的 `NODE_ENV=production`
+- Docker 使用单一 `docker-compose.yml`；生产环境通过 `docker compose --env-file .env.prod -f docker-compose.yml ...` 显式加载配置
+- `HOTKEY_DEPLOY_ENV` 用于区分 Compose 项目名和镜像标签，不替代容器内固定的 `NODE_ENV=production`

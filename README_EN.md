@@ -98,41 +98,38 @@ Docker startup explicitly loads `.env.<environment>` and defaults to `prod`. Cre
 
 ```bash
 cp .env.prod.example .env.prod
-npm run docker:up
+docker compose --env-file .env.prod -f docker-compose.yml up --build
 ```
 
-This is equivalent to `docker compose --env-file .env.prod up --build`. Append `-d` to run in the background:
+Append `-d` to run in the background:
 
 ```bash
-npm run docker:up -- -d
+docker compose --env-file .env.prod -f docker-compose.yml up --build -d
 ```
 
-Select another deployment configuration with `--env`. For example, for `.env.staging`:
+Use the same `docker-compose.yml` for another deployment and only switch `--env-file`. For example, for `.env.staging`:
 
 ```bash
 cp .env.prod.example .env.staging
-# Update HOTKEY_DEPLOY_ENV, COMPOSE_PROJECT_NAME, the port, and backend origin.
-npm run docker:config -- --env staging
-npm run docker:up -- --env staging -d
+# Set HOTKEY_DEPLOY_ENV to staging, then update the port and backend origin.
+docker compose --env-file .env.staging -f docker-compose.yml config
+docker compose --env-file .env.staging -f docker-compose.yml up --build -d
 ```
 
-`-env staging` is accepted as an alias for `--env staging`. The selected name identifies deployment configuration only: containers always run with `NODE_ENV=production`, while `HOTKEY_DEPLOY_ENV` and `COMPOSE_PROJECT_NAME` isolate image tags and Compose resources.
+`HOTKEY_DEPLOY_ENV=prod` in `.env.prod` produces the `hotkey-web-prod` Compose project and the `hotkey-web:prod` image. Containers always run with `NODE_ENV=production`; deployment environments are selected only through env files.
 
 Common lifecycle commands:
 
 ```bash
-npm run docker:config
-npm run docker:logs
-npm run docker:down
-npm run docker:down -- --env staging
+docker compose --env-file .env.prod -f docker-compose.yml config
+docker compose --env-file .env.prod -f docker-compose.yml logs --follow
+docker compose --env-file .env.prod -f docker-compose.yml down
 ```
 
 ## Commands
 
 ```bash
 npm run dev
-npm run docker:up
-npm run docker:config
 npm run typecheck
 npm run test:unit
 npm run build
