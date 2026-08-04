@@ -20,7 +20,9 @@ describe("Docker Compose environment configuration", () => {
     const prodExample = readRepositoryFile(".env.prod.example");
 
     expect(prodExample).toContain("HOTKEY_DEPLOY_ENV=prod");
-    expect(prodExample).toContain("HOTKEY_API_ORIGIN=http://host.docker.internal:8080");
+    expect(prodExample).toContain(
+      "HOTKEY_API_ORIGIN=http://host.docker.internal:8080"
+    );
     expect(prodExample).toContain("WEB_PORT=3000");
     expect(prodExample).not.toContain("COMPOSE_PROJECT_NAME");
   });
