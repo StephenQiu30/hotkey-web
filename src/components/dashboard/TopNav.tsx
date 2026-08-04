@@ -37,6 +37,9 @@ export default function TopNav({
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const canManage = user?.role === UserRole.Admin || user?.role === UserRole.Editor;
+  const adminMenuActive = adminMenuItems.some(
+    (item) => pathname === item.path || pathname.startsWith(`${item.path}/`),
+  );
 
   const handleLogout = async () => {
     await logout();
@@ -77,19 +80,20 @@ export default function TopNav({
         </nav>
         {canManage && adminMenuItems.length > 0 ? (
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                aria-label="管理"
-                variant="ghost"
-                size="sm"
-                className="hidden h-9 gap-1.5 px-3 text-xs text-muted-foreground xl:inline-flex"
-              >
-                <Settings2 className="h-3.5 w-3.5" />
-                管理
-                <ChevronDown className="h-3 w-3" />
-              </Button>
+            <DropdownMenuTrigger
+              aria-label="管理"
+              data-active={adminMenuActive ? "true" : "false"}
+              data-nav-menu-trigger="management"
+              className={`group relative hidden h-9 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-xs font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 xl:inline-flex 2xl:px-4 ${adminMenuActive ? "bg-blue-50 text-blue-700" : "text-muted-foreground hover:bg-slate-50 hover:text-foreground data-[state=open]:bg-blue-50 data-[state=open]:text-blue-700"}`}
+            >
+              <Settings2 className="h-3.5 w-3.5" />
+              管理
+              <ChevronDown className="h-3 w-3 transition-transform group-data-[state=open]:rotate-180" />
+              {adminMenuActive ? (
+                <span className="absolute inset-x-3 -bottom-[16px] h-0.5 rounded-full bg-blue-600" />
+              ) : null}
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-44">
+            <DropdownMenuContent align="start" sideOffset={12} className="w-44 rounded-lg p-1.5">
               {adminMenuItems.map((item) => (
                 <DropdownMenuItem key={item.path} asChild>
                   <Link href={item.path} className="text-xs no-underline">
@@ -119,20 +123,22 @@ export default function TopNav({
           {mobileOpen ? <X /> : <Menu />}
         </Button>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-auto gap-2 p-1 text-xs text-muted-foreground">
-              <Avatar className="h-7 w-7">
-                <AvatarFallback className="bg-blue-100 text-[10px] font-semibold text-blue-700">
-                  {user?.display_name?.slice(0, 1)?.toUpperCase() || (
-                    <User className="h-3 w-3" />
-                  )}
-                </AvatarFallback>
-              </Avatar>
-              <span className="hidden max-w-24 truncate 2xl:block">
-                {user?.display_name || "账户"}
-              </span>
-              <ChevronDown className="hidden h-3 w-3 2xl:block" />
-            </Button>
+          <DropdownMenuTrigger
+            aria-label="账户菜单"
+            data-nav-menu-trigger="account"
+            className="inline-flex h-9 items-center gap-2 rounded-lg p-1 text-xs text-muted-foreground outline-none transition-colors hover:bg-slate-50 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=open]:bg-blue-50 data-[state=open]:text-blue-700"
+          >
+            <Avatar className="h-7 w-7">
+              <AvatarFallback className="bg-blue-100 text-[10px] font-semibold text-blue-700">
+                {user?.display_name?.slice(0, 1)?.toUpperCase() || (
+                  <User className="h-3 w-3" />
+                )}
+              </AvatarFallback>
+            </Avatar>
+            <span className="hidden max-w-24 truncate 2xl:block">
+              {user?.display_name || "账户"}
+            </span>
+            <ChevronDown className="hidden h-3 w-3 2xl:block" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
             <div className="px-2 py-2">
