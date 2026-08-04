@@ -2,8 +2,8 @@
 
 - Source visual truth: `/Users/stephenqiu/.codex/generated_images/019fca8b-32dc-78e0-ab7c-61b52dd860f8/exec-26a1195a-1082-4cea-9532-1aff4c0066d4.png`
 - Normalized source: `/Users/stephenqiu/Desktop/StephenQiu/HotKey/hotkey-web/product-design-output/admin-dashboard-redesign-20260804/screenshots/08-reference-normalized-1440.png`
-- Implementation screenshot: `/Users/stephenqiu/Desktop/StephenQiu/HotKey/hotkey-web/product-design-output/admin-dashboard-redesign-20260804/screenshots/11-implementation-1440-pass-2.png`
-- Full-view comparison: `/Users/stephenqiu/Desktop/StephenQiu/HotKey/hotkey-web/product-design-output/admin-dashboard-redesign-20260804/screenshots/12-comparison-pass-2.png`
+- Implementation screenshot: `/Users/stephenqiu/Desktop/StephenQiu/HotKey/hotkey-web/product-design-output/admin-dashboard-redesign-20260804/screenshots/15-official-components-1440.png`
+- Full-view comparison: `/Users/stephenqiu/Desktop/StephenQiu/HotKey/hotkey-web/product-design-output/admin-dashboard-redesign-20260804/screenshots/16-comparison-official-components.png`
 - Focused header comparison: `/Users/stephenqiu/Desktop/StephenQiu/HotKey/hotkey-web/product-design-output/admin-dashboard-redesign-20260804/screenshots/13-comparison-focus-header.png`
 - Focused evidence comparison: `/Users/stephenqiu/Desktop/StephenQiu/HotKey/hotkey-web/product-design-output/admin-dashboard-redesign-20260804/screenshots/14-comparison-focus-evidence.png`
 - Responsive evidence: `/Users/stephenqiu/Desktop/StephenQiu/HotKey/hotkey-web/product-design-output/admin-dashboard-redesign-20260804/screenshots/10-implementation-mobile-390.png`
@@ -49,6 +49,12 @@
 
 - The CTA is compact, the two-column balance matches the visual target, and no P0/P1/P2 issue remains.
 - Post-fix evidence: `/Users/stephenqiu/Desktop/StephenQiu/HotKey/hotkey-web/product-design-output/admin-dashboard-redesign-20260804/screenshots/12-comparison-pass-2.png`
+
+### Pass 3
+
+- Replaced custom interactive primitives with the repository's official `Button`, `Badge`, `Separator`, `DropdownMenu`, and `Avatar` components without changing the selected layout.
+- Verified that focus treatment, control sizing, navigation hierarchy, two-column proportions, and responsive behavior did not regress.
+- Evidence: `/Users/stephenqiu/Desktop/StephenQiu/HotKey/hotkey-web/product-design-output/admin-dashboard-redesign-20260804/screenshots/16-comparison-official-components.png`
 
 ## Follow-up Polish
 
