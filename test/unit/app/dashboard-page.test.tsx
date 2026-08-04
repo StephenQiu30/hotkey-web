@@ -1,167 +1,113 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import DashboardPage from "@/app/dashboard/page";
 
 const mocks = vi.hoisted(() => ({
-  role: "editor",
-  getEvents: vi.fn(),
-  getEventsId: vi.fn(),
-  getEventsIdContents: vi.fn(),
-  getEventsIdHeat: vi.fn(),
-  getEventsIdIntelligence: vi.fn(),
-  getContentsId: vi.fn(),
-  getCollectionRuns: vi.fn().mockResolvedValue({ data: { items: [] } }),
-  getOperationsOverview: vi.fn().mockResolvedValue({ data: {} }),
+  getRadarEvents: vi.fn(),
+  getAlerts: vi.fn(),
+  getMonitors: vi.fn(),
 }));
 
-vi.mock("@/services/hotkey/hotkey-server/events", () => ({
-  ...mocks,
-  postEventsIdIntelligenceExtract: vi.fn(),
-  postEventsIdIntelligenceSummaryRegenerate: vi.fn(),
+vi.mock("@/services/hotkey/hotkey-server/radar", () => ({
+  getRadarEvents: mocks.getRadarEvents,
 }));
-vi.mock("@/services/hotkey/hotkey-server/reports", () => ({
-  getReports: vi.fn().mockResolvedValue({ data: { items: [] } }),
-  postReportsIdBuild: vi.fn(),
-  postReportsIdPreview: vi.fn(),
+vi.mock("@/services/hotkey/hotkey-server/alerts", () => ({
+  getAlerts: mocks.getAlerts,
 }));
 vi.mock("@/services/hotkey/hotkey-server/monitors", () => ({
-  getMonitors: vi.fn().mockResolvedValue({ data: { items: [] } }),
-}));
-vi.mock("@/services/hotkey/hotkey-server/operations", () => ({
-  getOperationsOverview: mocks.getOperationsOverview,
-}));
-vi.mock("@/services/hotkey/hotkey-server/collectionRuns", () => ({
-  getCollectionRuns: mocks.getCollectionRuns,
-}));
-vi.mock("@/services/hotkey/hotkey-server/contents", () => ({
-  getContents: vi.fn().mockResolvedValue({ data: { items: [] } }),
-  getContentsId: mocks.getContentsId,
-}));
-vi.mock("@/stores/authStore", () => ({
-  useAuthStore: (selector: (state: { user: { role: string } }) => unknown) =>
-    selector({ user: { role: mocks.role } }),
+  getMonitors: mocks.getMonitors,
 }));
 
 describe("DashboardPage", () => {
-  afterEach(() => {
-    cleanup();
-  });
+  afterEach(cleanup);
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.role = "editor";
-    mocks.getEvents.mockResolvedValue({
-      data: { items: [{ id: 4, title_en: "A collected research event" }] },
-    });
-    mocks.getEventsId.mockResolvedValue({
-      data: { id: 4, title_en: "A collected research event" },
-    });
-    mocks.getEventsIdHeat.mockRejectedValue(new Error("heat not ready"));
-    mocks.getEventsIdIntelligence.mockRejectedValue(
-      new Error("intelligence not ready"),
-    );
-    mocks.getEventsIdContents.mockResolvedValue({ data: { items: [] } });
-    mocks.getContentsId.mockReset();
-  });
-
-  it("does not request editor-only runtime data for a viewer", async () => {
-    mocks.role = "viewer";
-
-    render(<DashboardPage />);
-
-    expect(
-      await screen.findByRole("heading", { name: "A collected research event" }),
-    ).toBeInTheDocument();
-    expect(mocks.getOperationsOverview).not.toHaveBeenCalled();
-    expect(mocks.getCollectionRuns).not.toHaveBeenCalled();
-  });
-
-  it("renders an event even when optional heat and intelligence projections are not ready", async () => {
-    render(<DashboardPage />);
-
-    expect(await screen.findByText("今日重点事件")).toBeInTheDocument();
-    expect(screen.getByText("监控运行中")).toBeInTheDocument();
-    expect(
-      await screen.findByRole("heading", { name: "A collected research event" }),
-    ).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "证据验证" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "证据" })).toHaveClass("inline-flex");
-    expect(screen.getByRole("button", { name: "展开 AI 情报助手" })).toHaveClass("inline-flex");
-    expect(
-      screen.getByRole("button", { name: "刷新工作台数据" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("link", { name: "查看完整报告" }).querySelector("button"),
-    ).toBeNull();
-  });
-
-  it("uses the shared centered page width and only pins intelligence on desktop", async () => {
-    render(<DashboardPage />);
-
-    expect(
-      await screen.findByRole("heading", { name: "A collected research event" }),
-    ).toBeInTheDocument();
-    expect(screen.getByTestId("dashboard-shell")).toHaveClass("app-page");
-    expect(screen.getByRole("complementary")).toHaveClass(
-      "xl:border-l",
-    );
-    expect(screen.getByTestId("dashboard-workspace")).toHaveClass(
-      "xl:grid-cols-[minmax(0,1.16fr)_minmax(420px,.84fr)]",
-    );
-  });
-
-  it("keeps evidence full-width, reports partial detail loading and moves heat into Signals", async () => {
-    mocks.getEvents.mockResolvedValue({
+    mocks.getRadarEvents.mockResolvedValue({
       data: {
+        as_of: "2026-08-04T14:30:00+08:00",
         items: [
-          { id: 4, title_en: "A collected research event", heat_score: 42 },
-          { id: 5, title_en: "Another event", heat_score: 15 },
+          {
+            event_id: 7,
+            title_zh: "华东沿海化工园区发生爆燃事故",
+            summary: "事故引发公众对化工园区风险与安全生产的持续关注。",
+            momentum: 92,
+            independent_source_count: 8,
+            trend_status: "rising",
+            confirmation: "corroborated",
+            reason_codes: ["momentum_rising", "source_breadth_growing"],
+            latest_update: { summary: "多家权威来源补充伤亡与救援进展" },
+          },
+          {
+            event_id: 8,
+            title_zh: "国际航线逐步恢复，暑期出行升温",
+            summary: "航司运力增加，热门航线票价与预订热度回升。",
+            momentum: 70,
+            independent_source_count: 5,
+            trend_status: "rising",
+            confirmation: "corroborated",
+          },
+          {
+            event_id: 9,
+            title_zh: "生成式 AI 产品迎来新一轮功能更新",
+            summary: "头部产品密集发布新功能，行业讨论度持续增长。",
+            momentum: 66,
+            independent_source_count: 4,
+            trend_status: "stable",
+            confirmation: "single_source",
+          },
         ],
       },
     });
-    mocks.getEventsIdContents.mockResolvedValue({
+    mocks.getAlerts.mockResolvedValue({
+      data: { items: [{ id: 1, state: "open" }] },
+    });
+    mocks.getMonitors.mockResolvedValue({
       data: {
         items: [
-          { content_id: 11 },
-          { content_id: 12 },
-          { content_id: 13 },
+          { id: 2, name: "化工安全与监管", status: "active" },
+          { id: 3, name: "航空出行与航空", status: "active" },
         ],
       },
     });
-    mocks.getContentsId.mockImplementation(({ id }: { id: number }) =>
-      id === 13
-        ? Promise.reject(new Error("detail unavailable"))
-        : Promise.resolve({
-            data: {
-              id,
-              title: `Evidence ${id}`,
-              canonical_url: `https://example.test/${id}`,
-            },
-          }),
-    );
-
-    render(<DashboardPage />);
-
-    expect(await screen.findByText("已读取 2 条，1 条暂不可读")).toBeInTheDocument();
-    expect(screen.queryByRole("heading", { name: "事件热度对比" })).not.toBeInTheDocument();
-    expect(screen.getByTestId("dashboard-workspace")).toHaveClass(
-      "xl:grid-cols-[minmax(0,1.16fr)_minmax(420px,.84fr)]",
-    );
-
-    fireEvent.click(screen.getByRole("button", { name: "信号" }));
-    expect(screen.getByRole("heading", { name: "事件热度对比" })).toBeInTheDocument();
-    expect(screen.queryByText("关联报告")).not.toBeInTheDocument();
   });
 
-  it("keeps AI assistance compact until the user asks for it", async () => {
+  it("renders a radar-first overview from the new monitoring APIs", async () => {
     render(<DashboardPage />);
 
-    const trigger = await screen.findByRole("button", { name: "展开 AI 情报助手" });
-    expect(screen.queryByText("暂无已验证声明，可重新提取事件情报。")).not.toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", {
+        name: /这是今日值得关注的变化/,
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "今日 AI 摘要" })).toBeInTheDocument();
+    expect(
+      screen.getAllByText("华东沿海化工园区发生爆燃事故"),
+    ).toHaveLength(2);
+    expect(screen.getByRole("heading", { name: "重点事件" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "我的监控" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "查看全部事件" })).toHaveAttribute(
+      "href",
+      "/dashboard/events",
+    );
+    expect(mocks.getRadarEvents).toHaveBeenCalledWith({
+      limit: 12,
+      sort: "momentum",
+      window: "24h",
+    });
+  });
 
-    fireEvent.click(trigger);
+  it("shows a truthful empty state when Radar has no events", async () => {
+    mocks.getRadarEvents.mockResolvedValue({
+      data: { as_of: "2026-08-04T14:30:00+08:00", items: [] },
+    });
 
-    expect(screen.getByRole("button", { name: "收起 AI 情报助手" })).toBeInTheDocument();
-    expect(screen.getByText("暂无已验证声明，可重新提取事件情报。")).toBeInTheDocument();
+    render(<DashboardPage />);
+
+    expect(await screen.findByText("当前窗口内还没有热点事件")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "创建监控" })).toHaveAttribute(
+      "href",
+      "/dashboard/settings",
+    );
   });
 });
