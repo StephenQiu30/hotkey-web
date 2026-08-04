@@ -20,7 +20,8 @@ import { getCollectionRuns } from "@/services/hotkey/hotkey-server/collectionRun
 import { getMonitors } from "@/services/hotkey/hotkey-server/monitors";
 import { getOperationsOverview } from "@/services/hotkey/hotkey-server/operations";
 import { getReports, postReportsIdBuild, postReportsIdPreview } from "@/services/hotkey/hotkey-server/reports";
-import { EventAction, ReportAction, WorkspaceTab } from "@/lib/domainEnums";
+import { EventAction, ReportAction, UserRole, WorkspaceTab } from "@/lib/domainEnums";
+import { useAuthStore } from "@/stores/authStore";
 import { EmptyWorkspace } from "@/components/dashboard/EmptyWorkspace";
 import { EventEvidenceTimeline } from "@/components/dashboard/EventEvidenceTimeline";
 import { EventHeatComparison } from "@/components/dashboard/EventHeatComparison";
@@ -32,6 +33,8 @@ const formatDateTime = (value?: string) => value
 const score = (value?: number) => value == null ? "—" : Math.round(value).toString();
 
 export default function DashboardPage() {
+  const user = useAuthStore((state) => state.user);
+  const canManageOperations = user?.role === UserRole.Editor || user?.role === UserRole.Admin;
   const [events, setEvents] = useState<HotKeyAPI.EventResponse[]>([]);
   const [selectedId, setSelectedId] = useState<number>();
   const [selected, setSelected] = useState<HotKeyAPI.EventResponse>();
@@ -57,26 +60,33 @@ export default function DashboardPage() {
   const loadWorkspace = useCallback(async () => {
     setLoading(true); setError(undefined);
     try {
-      const [eventResult, reportResult, monitorResult, overviewResult, runResult, contentResult] = await Promise.all([
+      const [eventResult, reportResult, monitorResult, contentResult] = await Promise.all([
         getEvents({ limit: 50 }),
         getReports({ limit: 20 }),
         getMonitors({ limit: 100 }),
-        getOperationsOverview().catch(() => undefined),
-        getCollectionRuns({ limit: 50 }),
         getContents({ limit: 50 }),
       ]);
       const nextEvents = eventResult.data?.items ?? [];
       setEvents(nextEvents);
       setReports(reportResult.data?.items ?? []);
       setMonitors(monitorResult.data?.items ?? []);
-      setOverview(overviewResult?.data);
-      setCollectionRuns(runResult.data?.items ?? []);
       setCollectedContents(contentResult.data?.items ?? []);
+      if (canManageOperations) {
+        const [overviewResult, runResult] = await Promise.allSettled([
+          getOperationsOverview(),
+          getCollectionRuns({ limit: 50 }),
+        ]);
+        setOverview(overviewResult.status === "fulfilled" ? overviewResult.value.data : undefined);
+        setCollectionRuns(runResult.status === "fulfilled" ? runResult.value.data?.items ?? [] : []);
+      } else {
+        setOverview(undefined);
+        setCollectionRuns([]);
+      }
       setSelectedId((current) => current ?? nextEvents[0]?.id);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "工作台加载失败");
     } finally { setLoading(false); }
-  }, []);
+  }, [canManageOperations]);
 
   const loadDetail = useCallback(async (id: number) => {
     setDetailLoading(true);

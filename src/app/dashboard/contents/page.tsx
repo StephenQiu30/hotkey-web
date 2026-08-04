@@ -45,26 +45,33 @@ export default function ContentsPage() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [runResult, contentResult] = await Promise.all([
-        getCollectionRuns({ limit: pageSize }),
-        getContents({ limit: pageSize }),
-      ]);
-      setRuns(runResult.data?.items ?? []);
+      const runRequest = canManage
+        ? getCollectionRuns({ limit: pageSize })
+        : undefined;
+      const contentResult = await getContents({ limit: pageSize });
       setContents(contentResult.data?.items ?? []);
-      setRunPage(1);
-      setRunCursors([undefined]);
-      setRunNextCursor(runResult.data?.next_cursor);
       setContentPage(1);
       setContentCursors([undefined]);
       setContentNextCursor(contentResult.data?.next_cursor);
+      if (runRequest) {
+        const runResult = await runRequest;
+        setRuns(runResult.data?.items ?? []);
+        setRunNextCursor(runResult.data?.next_cursor);
+      } else {
+        setRuns([]);
+        setRunNextCursor(undefined);
+      }
+      setRunPage(1);
+      setRunCursors([undefined]);
     } catch (reason) {
       toast.error(reason instanceof Error ? reason.message : "采集数据加载失败");
     } finally {
       setLoading(false);
     }
-  }, [pageSize]);
+  }, [canManage, pageSize]);
 
   const loadRunsPage = async (cursor: string | undefined, page: number) => {
+    if (!canManage) return;
     setLoading(true);
     try {
       const result = await getCollectionRuns({
