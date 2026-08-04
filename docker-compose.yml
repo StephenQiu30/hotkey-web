@@ -1,4 +1,4 @@
-name: ${COMPOSE_PROJECT_NAME:-hotkey-web-prod}
+name: hotkey-web-${HOTKEY_DEPLOY_ENV:-prod}
 
 services:
   hotkey-web:
