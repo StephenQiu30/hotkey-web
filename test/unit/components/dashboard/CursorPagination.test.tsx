@@ -54,11 +54,10 @@ describe("CursorPagination", () => {
       />,
     );
 
-    expect(screen.getByRole("combobox", { name: "每页条数" })).toHaveValue("20");
-    await user.selectOptions(
-      screen.getByRole("combobox", { name: "每页条数" }),
-      "50",
-    );
+    const pageSizeSelect = screen.getByRole("combobox", { name: "每页条数" });
+    expect(pageSizeSelect).toHaveTextContent("20 条");
+    await user.click(pageSizeSelect);
+    await user.click(screen.getByRole("option", { name: "50 条" }));
     expect(onPageSizeChange).toHaveBeenCalledWith(50);
   });
 

@@ -128,7 +128,6 @@ describe("SourcesPage body storage authorization", () => {
   );
 
   it("lets an admin explicitly enable Feed body storage for an existing source", async () => {
-    vi.stubGlobal("confirm", vi.fn(() => true));
     mocks.getSourceConnections
       .mockResolvedValueOnce({
         data: {
@@ -149,6 +148,12 @@ describe("SourcesPage body storage authorization", () => {
 
     render(<SourcesPage />);
     await userEvent.setup().click(await screen.findByRole("button", { name: "开启归档" }));
+
+    expect(
+      await screen.findByRole("alertdialog", { name: "开启正文与摘要归档？" }),
+    ).toBeInTheDocument();
+    expect(mocks.patchSourceConnectionsId).not.toHaveBeenCalled();
+    await userEvent.setup().click(screen.getByRole("button", { name: "确认开启" }));
 
     await waitFor(() =>
       expect(mocks.patchSourceConnectionsId).toHaveBeenCalledWith(
