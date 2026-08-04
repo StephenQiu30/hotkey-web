@@ -1,9 +1,10 @@
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ContentsPage from "@/app/dashboard/contents/page";
 
 const mocks = vi.hoisted(() => ({
+  role: "editor",
   getCollectionRuns: vi.fn(),
   retryCollectionRun: vi.fn(),
   getContents: vi.fn(),
@@ -20,13 +21,30 @@ vi.mock("@/services/hotkey/hotkey-server/contents", () => ({
 }));
 vi.mock("@/stores/authStore", () => ({
   useAuthStore: (selector: (state: { user: { role: string } }) => unknown) =>
-    selector({ user: { role: "editor" } }),
+    selector({ user: { role: mocks.role } }),
 }));
 
 describe("ContentsPage pagination", () => {
+  beforeEach(() => {
+    mocks.role = "editor";
+  });
+
   afterEach(() => {
     cleanup();
     vi.clearAllMocks();
+  });
+
+  it("loads readable contents without requesting collection runs for a viewer", async () => {
+    mocks.role = "viewer";
+    mocks.getContents.mockResolvedValue({
+      data: { items: [{ id: 7, title: "Fetched content" }] },
+    });
+
+    render(<ContentsPage />);
+
+    expect(await screen.findByText("Fetched content")).toBeInTheDocument();
+    expect(mocks.getContents).toHaveBeenCalledWith({ limit: 20 });
+    expect(mocks.getCollectionRuns).not.toHaveBeenCalled();
   });
 
   it("passes the collection cursor when navigating to the next page", async () => {

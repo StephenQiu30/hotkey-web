@@ -3,12 +3,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import DashboardPage from "@/app/dashboard/page";
 
 const mocks = vi.hoisted(() => ({
+  role: "editor",
   getEvents: vi.fn(),
   getEventsId: vi.fn(),
   getEventsIdContents: vi.fn(),
   getEventsIdHeat: vi.fn(),
   getEventsIdIntelligence: vi.fn(),
   getContentsId: vi.fn(),
+  getCollectionRuns: vi.fn().mockResolvedValue({ data: { items: [] } }),
+  getOperationsOverview: vi.fn().mockResolvedValue({ data: {} }),
 }));
 
 vi.mock("@/services/hotkey/hotkey-server/events", () => ({
@@ -25,14 +28,18 @@ vi.mock("@/services/hotkey/hotkey-server/monitors", () => ({
   getMonitors: vi.fn().mockResolvedValue({ data: { items: [] } }),
 }));
 vi.mock("@/services/hotkey/hotkey-server/operations", () => ({
-  getOperationsOverview: vi.fn().mockResolvedValue({ data: {} }),
+  getOperationsOverview: mocks.getOperationsOverview,
 }));
 vi.mock("@/services/hotkey/hotkey-server/collectionRuns", () => ({
-  getCollectionRuns: vi.fn().mockResolvedValue({ data: { items: [] } }),
+  getCollectionRuns: mocks.getCollectionRuns,
 }));
 vi.mock("@/services/hotkey/hotkey-server/contents", () => ({
   getContents: vi.fn().mockResolvedValue({ data: { items: [] } }),
   getContentsId: mocks.getContentsId,
+}));
+vi.mock("@/stores/authStore", () => ({
+  useAuthStore: (selector: (state: { user: { role: string } }) => unknown) =>
+    selector({ user: { role: mocks.role } }),
 }));
 
 describe("DashboardPage", () => {
@@ -42,6 +49,7 @@ describe("DashboardPage", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.role = "editor";
     mocks.getEvents.mockResolvedValue({
       data: { items: [{ id: 4, title_en: "A collected research event" }] },
     });
@@ -54,6 +62,18 @@ describe("DashboardPage", () => {
     );
     mocks.getEventsIdContents.mockResolvedValue({ data: { items: [] } });
     mocks.getContentsId.mockReset();
+  });
+
+  it("does not request editor-only runtime data for a viewer", async () => {
+    mocks.role = "viewer";
+
+    render(<DashboardPage />);
+
+    expect(
+      await screen.findByRole("heading", { name: "热点态势中心" }),
+    ).toBeInTheDocument();
+    expect(mocks.getOperationsOverview).not.toHaveBeenCalled();
+    expect(mocks.getCollectionRuns).not.toHaveBeenCalled();
   });
 
   it("renders an event even when optional heat and intelligence projections are not ready", async () => {
