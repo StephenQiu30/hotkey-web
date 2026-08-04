@@ -66,7 +66,7 @@ describe("TopNav", () => {
     );
   });
 
-  it("groups operational navigation behind an admin-only menu", () => {
+  it("renders operational pages as first-class admin-only navigation links", () => {
     const { rerender } = render(
       <TopNav
         menuItems={[]}
@@ -76,17 +76,14 @@ describe("TopNav", () => {
       />,
     );
 
-    const managementMenu = screen.getByRole("button", { name: "管理" });
     const mainNavigation = screen.getByRole("navigation", { name: "主导航" });
     const navigationList = mainNavigation.querySelector("ul");
+    const sourcesLink = screen.getByRole("link", { name: /来源管理/ });
     expect(mainNavigation).toHaveAttribute("data-orientation", "horizontal");
-    expect(navigationList).toContainElement(managementMenu);
-    expect(managementMenu.closest("li")).not.toBeNull();
-    expect(managementMenu).toHaveAttribute("data-nav-menu-trigger", "management");
-    expect(managementMenu).not.toHaveClass("ring-offset-background");
-    expect(managementMenu).not.toHaveClass("focus-visible:ring-2");
-    expect(managementMenu).not.toHaveClass("focus-visible:ring-offset-2");
-    expect(managementMenu).not.toHaveClass("focus-visible:bg-blue-50");
+    expect(navigationList).toContainElement(sourcesLink);
+    expect(sourcesLink.closest("li")).not.toBeNull();
+    expect(sourcesLink).toHaveAttribute("href", "/dashboard/sources");
+    expect(screen.queryByRole("button", { name: "管理" })).not.toBeInTheDocument();
 
     useAuthStore.setState((state) => ({
       ...state,
@@ -101,10 +98,10 @@ describe("TopNav", () => {
       />,
     );
 
-    expect(screen.queryByRole("button", { name: "管理" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /来源管理/ })).not.toBeInTheDocument();
   });
 
-  it("shows the management menu as the active navigation item on operational pages", () => {
+  it("shows the operational link as active on its page", () => {
     navigationMocks.pathname = "/dashboard/sources";
 
     render(
@@ -116,9 +113,9 @@ describe("TopNav", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: "管理" })).toHaveAttribute(
-      "data-active",
-      "true",
+    expect(screen.getByRole("link", { name: /来源管理/ })).toHaveAttribute(
+      "aria-current",
+      "page",
     );
   });
 });
