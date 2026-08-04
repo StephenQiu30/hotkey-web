@@ -48,10 +48,12 @@ describe("TopNav", () => {
     expect(screen.getByRole("button", { name: "切换导航" })).toHaveClass(
       "xl:hidden",
     );
-    expect(screen.getByRole("button", { name: "账户菜单" })).toHaveAttribute(
+    const accountMenu = screen.getByRole("button", { name: "账户菜单" });
+    expect(accountMenu).toHaveAttribute(
       "data-nav-menu-trigger",
       "account",
     );
+    expect(accountMenu).not.toHaveClass("focus-visible:ring-2");
   });
 
   it("offers a working shortcut to collected data without a fake search control", () => {
@@ -77,6 +79,12 @@ describe("TopNav", () => {
     const managementMenu = screen.getByRole("button", { name: "管理" });
     expect(managementMenu).toHaveAttribute("data-nav-menu-trigger", "management");
     expect(managementMenu).not.toHaveClass("ring-offset-background");
+    expect(managementMenu).not.toHaveClass("focus-visible:ring-2");
+    expect(managementMenu).not.toHaveClass("focus-visible:ring-offset-2");
+    expect(managementMenu).not.toHaveClass("focus-visible:bg-blue-50");
+    expect(
+      managementMenu.querySelector('[data-nav-focus-indicator="management"]'),
+    ).toBeInTheDocument();
 
     useAuthStore.setState((state) => ({
       ...state,
