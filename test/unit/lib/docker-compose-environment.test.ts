@@ -36,7 +36,9 @@ describe("Docker Compose environment configuration", () => {
       scripts: Record<string, string>;
     };
 
-    expect(readme).toContain("docker compose -f docker-compose-env.yml up --build");
+    expect(readme).toContain(
+      "docker compose -f docker-compose-env.yml up --build"
+    );
     expect(readme).toContain(
       "docker compose --env-file .env.prod -f docker-compose-prod.yml up --build"
     );

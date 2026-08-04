@@ -187,5 +187,5 @@ npm run openapi:generate   # 从服务器 OpenAPI 重新生成 API 客户端
 - `HOTKEY_API_ORIGIN` — API 服务器地址（仅由 Next.js 服务端 rewrites 使用，不暴露给浏览器）
 - `NEXT_OUTPUT` — 可选；设为 `standalone` 时生成 Docker 使用的独立运行产物
 - `WEB_PORT` — 可选；`docker compose` 对外暴露的 Web 端口
-- Docker 使用单一 `docker-compose.yml`；生产环境通过 `docker compose --env-file .env.prod -f docker-compose.yml ...` 显式加载配置
-- `HOTKEY_DEPLOY_ENV` 用于区分 Compose 项目名和镜像标签，不替代容器内固定的 `NODE_ENV=production`
+- Docker 通过 `docker-compose-env.yml` 与 `docker-compose-prod.yml` 区分日常和生产环境
+- 两份 Compose 文件分别固定项目名、镜像标签和 `HOTKEY_DEPLOY_ENV`；容器内 `NODE_ENV` 均为 `production`

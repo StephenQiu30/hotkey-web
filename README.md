@@ -94,36 +94,34 @@ HOTKEY_API_ORIGIN=http://127.0.0.1:8080
 
 ### Docker
 
-Docker 启动会显式加载 `.env.<环境>`，默认环境为 `prod`。首次启动先创建本地生产配置：
+Docker 环境直接通过 Compose 文件区分：
+
+- `docker-compose-env.yml`：日常环境，项目名 `hotkey-web-env`，镜像 `hotkey-web:env`
+- `docker-compose-prod.yml`：生产环境，项目名 `hotkey-web-prod`，镜像 `hotkey-web:prod`
+
+启动日常环境：
+
+```bash
+docker compose -f docker-compose-env.yml up --build -d
+```
+
+首次启动生产环境前，先创建本地生产配置：
 
 ```bash
 cp .env.prod.example .env.prod
-docker compose --env-file .env.prod -f docker-compose.yml up --build
+docker compose --env-file .env.prod -f docker-compose-prod.yml config
+docker compose --env-file .env.prod -f docker-compose-prod.yml up --build -d
 ```
 
-需要后台运行时追加 `-d`：
-
-```bash
-docker compose --env-file .env.prod -f docker-compose.yml up --build -d
-```
-
-其他部署环境继续使用同一个 `docker-compose.yml`，只切换 `--env-file`。例如 `.env.staging`：
-
-```bash
-cp .env.prod.example .env.staging
-# 将 HOTKEY_DEPLOY_ENV 改为 staging，并调整端口和后端地址
-docker compose --env-file .env.staging -f docker-compose.yml config
-docker compose --env-file .env.staging -f docker-compose.yml up --build -d
-```
-
-`.env.prod` 中的 `HOTKEY_DEPLOY_ENV=prod` 会生成 `hotkey-web-prod` Compose 项目和 `hotkey-web:prod` 镜像。容器内的 `NODE_ENV` 始终为 `production`；部署环境只通过 env 文件区分。
+两份文件都使用生产模式运行 Next.js，但通过固定的项目名、镜像标签和 `HOTKEY_DEPLOY_ENV` 明确隔离部署资源。
 
 常用 Docker 命令：
 
 ```bash
-docker compose --env-file .env.prod -f docker-compose.yml config
-docker compose --env-file .env.prod -f docker-compose.yml logs --follow
-docker compose --env-file .env.prod -f docker-compose.yml down
+docker compose -f docker-compose-env.yml logs --follow
+docker compose -f docker-compose-env.yml down
+docker compose --env-file .env.prod -f docker-compose-prod.yml logs --follow
+docker compose --env-file .env.prod -f docker-compose-prod.yml down
 ```
 
 ## 常用命令

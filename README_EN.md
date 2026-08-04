@@ -94,36 +94,34 @@ In WebStorm, you can run the `dev` script from `package.json` directly. The Web 
 
 ### Docker
 
-Docker startup explicitly loads `.env.<environment>` and defaults to `prod`. Create the local production configuration before the first run:
+Docker environments are selected directly by Compose file:
+
+- `docker-compose-env.yml`: daily environment, project `hotkey-web-env`, image `hotkey-web:env`
+- `docker-compose-prod.yml`: production environment, project `hotkey-web-prod`, image `hotkey-web:prod`
+
+Start the daily environment:
+
+```bash
+docker compose -f docker-compose-env.yml up --build -d
+```
+
+Create the local production configuration before the first production run:
 
 ```bash
 cp .env.prod.example .env.prod
-docker compose --env-file .env.prod -f docker-compose.yml up --build
+docker compose --env-file .env.prod -f docker-compose-prod.yml config
+docker compose --env-file .env.prod -f docker-compose-prod.yml up --build -d
 ```
 
-Append `-d` to run in the background:
-
-```bash
-docker compose --env-file .env.prod -f docker-compose.yml up --build -d
-```
-
-Use the same `docker-compose.yml` for another deployment and only switch `--env-file`. For example, for `.env.staging`:
-
-```bash
-cp .env.prod.example .env.staging
-# Set HOTKEY_DEPLOY_ENV to staging, then update the port and backend origin.
-docker compose --env-file .env.staging -f docker-compose.yml config
-docker compose --env-file .env.staging -f docker-compose.yml up --build -d
-```
-
-`HOTKEY_DEPLOY_ENV=prod` in `.env.prod` produces the `hotkey-web-prod` Compose project and the `hotkey-web:prod` image. Containers always run with `NODE_ENV=production`; deployment environments are selected only through env files.
+Both files run Next.js in production mode, while fixed project names, image tags, and `HOTKEY_DEPLOY_ENV` values isolate deployment resources.
 
 Common lifecycle commands:
 
 ```bash
-docker compose --env-file .env.prod -f docker-compose.yml config
-docker compose --env-file .env.prod -f docker-compose.yml logs --follow
-docker compose --env-file .env.prod -f docker-compose.yml down
+docker compose -f docker-compose-env.yml logs --follow
+docker compose -f docker-compose-env.yml down
+docker compose --env-file .env.prod -f docker-compose-prod.yml logs --follow
+docker compose --env-file .env.prod -f docker-compose-prod.yml down
 ```
 
 ## Commands
