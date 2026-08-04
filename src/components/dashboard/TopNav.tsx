@@ -248,7 +248,7 @@ export default function TopNav({
               className="h-9 gap-1.5 rounded-full p-0.5 text-xs text-muted-foreground"
             >
               <Avatar className="h-8 w-8">
-                <AvatarFallback className="bg-primary/10 text-[11px] font-semibold text-primary">
+                <AvatarFallback className="bg-primary text-[11px] font-semibold text-primary-foreground">
                   {user?.display_name?.slice(0, 1)?.toUpperCase() || (
                     <User className="h-3.5 w-3.5" />
                   )}
