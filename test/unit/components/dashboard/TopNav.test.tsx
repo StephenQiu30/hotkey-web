@@ -67,7 +67,7 @@ describe("TopNav", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: "管理" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "管理" })).toHaveClass("ring-offset-background");
 
     useAuthStore.setState((state) => ({
       ...state,

@@ -85,7 +85,8 @@ describe("DashboardPage", () => {
       await screen.findByRole("heading", { name: "A collected research event" }),
     ).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "证据验证" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "展开 AI 情报助手" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "证据" })).toHaveClass("inline-flex");
+    expect(screen.getByRole("button", { name: "展开 AI 情报助手" })).toHaveClass("inline-flex");
     expect(
       screen.getByRole("button", { name: "刷新工作台数据" }),
     ).toBeInTheDocument();

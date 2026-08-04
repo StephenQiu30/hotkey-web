@@ -27,6 +27,8 @@ describe("EventEvidenceTimeline", () => {
     expect(screen.getByRole("heading", { name: "证据验证" })).toBeInTheDocument();
     expect(screen.getByText("已读取 2 条，1 条暂不可读")).toBeInTheDocument();
     expect(screen.getAllByText("可读")).toHaveLength(2);
+    expect(screen.getAllByText("可读")[0]).toHaveClass("inline-flex");
+    expect(screen.getByRole("link", { name: "全部证据" })).toHaveClass("inline-flex");
     expect(
       screen.getByRole("link", { name: "阅读归档：An archived research item" }),
     ).toHaveAttribute("href", "/dashboard/contents/11");
