@@ -39,8 +39,9 @@ describe("authSession", () => {
 describe("HotKeyAPIError", () => {
   it("carries HTTP status and Chinese message", async () => {
     const { HotKeyAPIError } = await import("@/lib/request");
-    const err = new HotKeyAPIError(401, "邮箱或密码错误");
-    expect(err.code).toBe(401);
+    const err = new HotKeyAPIError(401, "邮箱或密码错误", null, 20002);
+    expect(err.status).toBe(401);
+    expect(err.code).toBe(20002);
     expect(err.message).toBe("邮箱或密码错误");
     expect(err.name).toBe("HotKeyAPIError");
   });

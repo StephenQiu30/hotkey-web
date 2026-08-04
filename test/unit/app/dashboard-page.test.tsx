@@ -60,6 +60,10 @@ describe("DashboardPage", () => {
     render(<DashboardPage />);
 
     expect(
+      await screen.findByRole("heading", { name: "热点态势中心" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("监控运行中")).toBeInTheDocument();
+    expect(
       await screen.findByRole("heading", { name: "A collected research event" }),
     ).toBeInTheDocument();
     expect(screen.getByText("暂无已验证声明，可重新提取事件情报。")).toBeInTheDocument();
@@ -83,8 +87,8 @@ describe("DashboardPage", () => {
       "max-h-none",
       "overflow-visible",
       "xl:sticky",
-      "xl:top-[76px]",
-      "xl:max-h-[calc(100vh-92px)]",
+      "xl:top-[84px]",
+      "xl:max-h-[calc(100vh-100px)]",
       "xl:overflow-y-auto",
       "xl:self-start",
     );

@@ -12,6 +12,26 @@ describe("Umi OpenAPI generation contract", () => {
     expect(openapiConfig.schemaPath).toBe("http://127.0.0.1:8080/openapi.json");
     expect(openapiConfig.serversPath).toBe(path.resolve(repositoryRoot, "src/services/hotkey"));
     expect(openapiConfig.projectName).toBe("hotkey-server");
+    expect(openapiConfig.namespace).toBe("HotKeyAPI");
+    expect(openapiConfig.enumStyle).toBe("string-literal");
+    expect(openapiConfig.declareType).toBe("type");
+    expect(openapiConfig.nullable).toBe(false);
+    expect(openapiConfig.isCamelCase).toBe(true);
+  });
+
+  it("provides a deterministic contract check around the official openapi2ts CLI", () => {
+    const packageJSON = JSON.parse(
+      fs.readFileSync(path.resolve(repositoryRoot, "package.json"), "utf8"),
+    );
+    const checkScript = path.resolve(repositoryRoot, "scripts/check-openapi.mjs");
+
+    expect(packageJSON.scripts["openapi:generate"]).toBe("openapi2ts");
+    expect(packageJSON.scripts["openapi:check"]).toBe("node scripts/check-openapi.mjs");
+    expect(fs.existsSync(checkScript)).toBe(true);
+
+    const checkSource = fs.readFileSync(checkScript, "utf8");
+    expect(checkSource).toContain("npm run openapi:generate");
+    expect(checkSource).toContain("src/services/hotkey/hotkey-server");
   });
 
   it("routes generated requests through the shared Axios adapter", () => {
