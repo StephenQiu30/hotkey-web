@@ -32,7 +32,14 @@ export const useAuthStore = create<AuthState>()(
         // Step 1: restore token from localStorage (handled by authSession.ts)
         const token = getAccessToken();
         if (!token) {
-          // No token — try HttpOnly refresh cookie (legacy / first-time)
+          // A new anonymous browser has neither an access token nor persisted
+          // user context, so there is no session worth refreshing.
+          if (!get().user) {
+            set({ status: AuthStatus.Unauthenticated, user: null, error: null });
+            return;
+          }
+
+          // Recover a persisted session through its HttpOnly refresh cookie.
           try {
             const res = await postAuthRefresh();
             const newToken = res.data?.access_token ?? "";

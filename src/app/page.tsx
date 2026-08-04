@@ -77,7 +77,7 @@ export default function HomePage() {
             >
               重要变化，第一时间形成共识。
             </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-[#6b7f9f] sm:text-base">
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
               从海量噪声中，锁定真正重要的变化，给团队清晰可行动的判断。
             </p>
           </div>
@@ -91,9 +91,9 @@ export default function HomePage() {
             <CardHeader className="flex flex-col gap-3 space-y-0 px-5 py-6 sm:flex-row sm:items-center sm:px-8">
               <div className="flex items-baseline gap-4">
                 <h2 className="text-xl font-semibold tracking-[-.02em] text-[#10213f]">今日情报简报</h2>
-                <span className="mono text-xs text-[#7385a2]">2026-08-04</span>
+                <span className="mono text-xs text-slate-600">2026-08-04</span>
               </div>
-              <div className="sm:ml-auto flex items-center gap-4 text-xs text-[#7385a2]">
+              <div className="sm:ml-auto flex items-center gap-4 text-xs text-slate-600">
                 <span>基于全网信号实时分析</span>
                 <Badge variant="secondary" className="gap-1.5 border-0 bg-emerald-50 text-emerald-700 hover:bg-emerald-50">
                   <CheckCircle2 className="h-3 w-3" />值得关注
@@ -109,17 +109,17 @@ export default function HomePage() {
                 <h3 className="mt-3 text-xl font-semibold leading-snug tracking-[-.02em] text-[#10213f] sm:text-2xl">
                   AI Agent 进入端侧部署阶段，生态合作加速落地
                 </h3>
-                <p className="mt-3 max-w-3xl text-sm leading-6 text-[#71819a]">
+                <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
                   多家头部厂商在 8 月宣布端侧 AI Agent 产品计划与合作，意味着 Agent 能力正从云端下沉到终端设备，将带来算力、模型压缩、隐私安全与交互体验的系统性升级。
                 </p>
 
                 <div className="mt-7">
                   <div className="flex items-end justify-between gap-4">
                     <div>
-                      <p className="text-xs text-[#71819a]">热度趋势（近 7 天）</p>
-                      <p className="mt-1 text-[11px] text-emerald-600">连续 4 天上升</p>
+                      <p className="text-xs text-slate-600">热度趋势（近 7 天）</p>
+                      <p className="mt-1 text-[11px] text-emerald-700">连续 4 天上升</p>
                     </div>
-                    <p className="mono text-2xl font-semibold text-blue-700">92<span className="ml-1 text-xs font-normal text-[#8a99b0]">/100</span></p>
+                    <p className="mono text-2xl font-semibold text-blue-700">92<span className="ml-1 text-xs font-normal text-slate-600">/100</span></p>
                   </div>
                   <progress aria-label="事件热度 92 分" className="briefing-progress mt-3 w-full" value={92} max={100}>92%</progress>
                 </div>
@@ -128,7 +128,7 @@ export default function HomePage() {
               <aside id="evidence" className="bg-[#fbfdff] px-5 py-9 sm:px-8 lg:border-l lg:border-blue-50">
                 <div>
                   <p className="text-sm font-semibold text-blue-700">为什么重要</p>
-                  <p className="mt-2 text-sm leading-6 text-[#71819a]">
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
                     端侧部署将显著降低延迟与成本，扩大 AI 在消费电子、汽车、工业等场景的渗透，并重塑应用生态与商业模式。
                   </p>
                 </div>
@@ -139,7 +139,7 @@ export default function HomePage() {
                       <div key={item.source} className="flex items-start gap-2.5 text-xs leading-5 text-[#536782]">
                         <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-teal-600" />
                         <span className="min-w-0 flex-1">{item.source}</span>
-                        <span className="shrink-0 text-[10px] text-[#94a3b8]">{item.time}</span>
+                        <span className="shrink-0 text-[10px] text-slate-600">{item.time}</span>
                       </div>
                     ))}
                   </div>
@@ -155,7 +155,7 @@ export default function HomePage() {
               <p className="text-xs leading-5 text-[#5d7290] sm:ml-3">
                 这是一次从“云上能力”到“终端体验”的拐点事件，建议重点关注端侧模型压缩技术、隐私计算方案，以及生态伙伴的落地节奏。
               </p>
-              <span className="mono shrink-0 text-xs text-[#7385a2] sm:ml-auto">置信度 <strong className="text-blue-700">85%</strong></span>
+              <span className="mono shrink-0 text-xs text-slate-600 sm:ml-auto">置信度 <strong className="text-blue-700">85%</strong></span>
             </CardFooter>
           </Card>
         </section>
@@ -178,7 +178,7 @@ export default function HomePage() {
                   <span className="mono pt-1 text-sm font-semibold text-blue-600">{item.step}</span>
                   <div>
                     <h3 className="text-base font-semibold text-[#10213f]">{item.title}</h3>
-                    <p className="mt-2 text-xs leading-5 text-[#71819a]">{item.body}</p>
+                    <p className="mt-2 text-xs leading-5 text-slate-600">{item.body}</p>
                   </div>
                 </article>
               ))}
