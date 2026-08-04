@@ -70,7 +70,7 @@ describe("DashboardPage", () => {
     render(<DashboardPage />);
 
     expect(
-      await screen.findByRole("heading", { name: "热点态势中心" }),
+      await screen.findByRole("heading", { name: "A collected research event" }),
     ).toBeInTheDocument();
     expect(mocks.getOperationsOverview).not.toHaveBeenCalled();
     expect(mocks.getCollectionRuns).not.toHaveBeenCalled();
@@ -79,19 +79,18 @@ describe("DashboardPage", () => {
   it("renders an event even when optional heat and intelligence projections are not ready", async () => {
     render(<DashboardPage />);
 
-    expect(
-      await screen.findByRole("heading", { name: "热点态势中心" }),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("今日重点事件")).toBeInTheDocument();
     expect(screen.getByText("监控运行中")).toBeInTheDocument();
     expect(
       await screen.findByRole("heading", { name: "A collected research event" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("暂无已验证声明，可重新提取事件情报。")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "证据验证" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "展开 AI 情报助手" })).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "刷新工作台数据" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: "进入报告" }).querySelector("button"),
+      screen.getByRole("link", { name: "查看完整报告" }).querySelector("button"),
     ).toBeNull();
   });
 
@@ -103,14 +102,10 @@ describe("DashboardPage", () => {
     ).toBeInTheDocument();
     expect(screen.getByTestId("dashboard-shell")).toHaveClass("app-page");
     expect(screen.getByRole("complementary")).toHaveClass(
-      "static",
-      "max-h-none",
-      "overflow-visible",
-      "xl:sticky",
-      "xl:top-[84px]",
-      "xl:max-h-[calc(100vh-100px)]",
-      "xl:overflow-y-auto",
-      "xl:self-start",
+      "xl:border-l",
+    );
+    expect(screen.getByTestId("dashboard-workspace")).toHaveClass(
+      "xl:grid-cols-[minmax(0,1.16fr)_minmax(420px,.84fr)]",
     );
   });
 
@@ -146,16 +141,26 @@ describe("DashboardPage", () => {
 
     render(<DashboardPage />);
 
-    expect(await screen.findByText("当前展示 2 / 共 3 条")).toBeInTheDocument();
-    expect(screen.getByText("部分证据暂不可读（1 条）")).toBeInTheDocument();
+    expect(await screen.findByText("已读取 2 条，1 条暂不可读")).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "事件热度对比" })).not.toBeInTheDocument();
     expect(screen.getByTestId("dashboard-workspace")).toHaveClass(
-      "xl:grid-cols-[minmax(0,1fr)_360px]",
+      "xl:grid-cols-[minmax(0,1.16fr)_minmax(420px,.84fr)]",
     );
 
     fireEvent.click(screen.getByRole("button", { name: "信号" }));
     expect(screen.getByRole("heading", { name: "事件热度对比" })).toBeInTheDocument();
-    expect(screen.getByText("最近报告")).toBeInTheDocument();
     expect(screen.queryByText("关联报告")).not.toBeInTheDocument();
+  });
+
+  it("keeps AI assistance compact until the user asks for it", async () => {
+    render(<DashboardPage />);
+
+    const trigger = await screen.findByRole("button", { name: "展开 AI 情报助手" });
+    expect(screen.queryByText("暂无已验证声明，可重新提取事件情报。")).not.toBeInTheDocument();
+
+    fireEvent.click(trigger);
+
+    expect(screen.getByRole("button", { name: "收起 AI 情报助手" })).toBeInTheDocument();
+    expect(screen.getByText("暂无已验证声明，可重新提取事件情报。")).toBeInTheDocument();
   });
 });

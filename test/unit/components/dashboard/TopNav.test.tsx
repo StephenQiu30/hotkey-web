@@ -1,5 +1,5 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import { Activity } from "lucide-react";
+import { Activity, Database } from "lucide-react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import TopNav from "@/components/dashboard/TopNav";
 import { useAuthStore } from "@/stores/authStore";
@@ -55,5 +55,33 @@ describe("TopNav", () => {
       "href",
       "/dashboard/contents",
     );
+  });
+
+  it("groups operational navigation behind an admin-only menu", () => {
+    const { rerender } = render(
+      <TopNav
+        menuItems={[]}
+        adminMenuItems={[
+          { path: "/dashboard/sources", name: "来源管理", icon: <Database /> },
+        ]}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "管理" })).toBeInTheDocument();
+
+    useAuthStore.setState((state) => ({
+      ...state,
+      user: state.user ? { ...state.user, role: UserRole.Viewer } : null,
+    }));
+    rerender(
+      <TopNav
+        menuItems={[]}
+        adminMenuItems={[
+          { path: "/dashboard/sources", name: "来源管理", icon: <Database /> },
+        ]}
+      />,
+    );
+
+    expect(screen.queryByRole("button", { name: "管理" })).not.toBeInTheDocument();
   });
 });

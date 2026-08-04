@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { dashboardMenuItems } from "@/app/dashboard/menuConfig";
+import {
+  dashboardAdminMenuItems,
+  dashboardMenuItems,
+} from "@/app/dashboard/menuConfig";
 
 describe("dashboard menu", () => {
   it("exposes the collected content stage in the primary navigation", () => {
@@ -11,5 +14,18 @@ describe("dashboard menu", () => {
         }),
       ])
     );
+  });
+
+  it("keeps operational pages in a secondary admin menu", () => {
+    expect(dashboardMenuItems.map((item) => item.path)).not.toContain(
+      "/dashboard/settings",
+    );
+    expect(dashboardMenuItems.map((item) => item.path)).not.toContain(
+      "/dashboard/sources",
+    );
+    expect(dashboardAdminMenuItems.map((item) => item.path)).toEqual([
+      "/dashboard/settings",
+      "/dashboard/sources",
+    ]);
   });
 });

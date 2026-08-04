@@ -24,8 +24,9 @@ describe("EventEvidenceTimeline", () => {
       />,
     );
 
-    expect(screen.getByText("当前展示 2 / 共 3 条")).toBeInTheDocument();
-    expect(screen.getByText("部分证据暂不可读（1 条）")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "证据验证" })).toBeInTheDocument();
+    expect(screen.getByText("已读取 2 条，1 条暂不可读")).toBeInTheDocument();
+    expect(screen.getAllByText("可读")).toHaveLength(2);
     expect(
       screen.getByRole("link", { name: "阅读归档：An archived research item" }),
     ).toHaveAttribute("href", "/dashboard/contents/11");
@@ -45,7 +46,7 @@ describe("EventEvidenceTimeline", () => {
       <EventEvidenceTimeline contents={[]} failedCount={2} totalCount={2} />,
     );
 
-    expect(screen.getByText("当前展示 0 / 共 2 条")).toBeInTheDocument();
+    expect(screen.getByText("已读取 0 条，2 条暂不可读")).toBeInTheDocument();
     expect(screen.getByText("该事件有证据成员，但详情暂不可读。")).toBeInTheDocument();
   });
 });
