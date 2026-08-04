@@ -1,0 +1,19 @@
+name: hotkey-web-env
+
+services:
+  hotkey-web:
+    image: hotkey-web:env
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        HOTKEY_API_ORIGIN: ${DOCKER_HOTKEY_API_ORIGIN:-http://host.docker.internal:8080}
+        HOTKEY_DEPLOY_ENV: env
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      HOTKEY_DEPLOY_ENV: env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
