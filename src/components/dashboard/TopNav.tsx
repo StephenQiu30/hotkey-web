@@ -14,6 +14,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
+import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
 import { UserRole } from "@/lib/domainEnums";
 
@@ -22,6 +32,9 @@ interface MenuItem {
   name: string;
   icon: React.ReactNode;
 }
+
+const topNavigationItemClass =
+  "relative h-9 gap-1.5 whitespace-nowrap rounded-lg bg-transparent px-3 py-0 text-xs font-medium text-muted-foreground no-underline transition-colors hover:bg-slate-50 hover:text-foreground focus:bg-slate-50 focus:text-foreground focus-visible:outline-none 2xl:px-4";
 
 export default function TopNav({
   menuItems,
@@ -55,58 +68,88 @@ export default function TopNav({
         >
           <BrandLogo title={title} markClassName="h-5 w-5" />
         </Link>
-        <nav
+        <NavigationMenu
           aria-label="主导航"
-          className="hidden h-full shrink-0 items-center xl:flex"
+          delayDuration={100}
+          className="hidden h-full max-w-none flex-none shrink-0 justify-start xl:flex"
         >
-          {menuItems.map((item) => {
-            const active =
-              pathname === item.path ||
-              (item.path !== "/dashboard" && pathname.startsWith(item.path));
-            return (
-              <Link
-                key={item.path}
-                href={item.path}
-                className={`relative flex h-9 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-xs font-medium no-underline transition-colors 2xl:px-4 ${active ? "bg-blue-50 text-blue-700" : "text-muted-foreground hover:bg-slate-50 hover:text-foreground"}`}
-              >
-                {item.icon}
-                {item.name}
-                {active && (
-                  <span className="absolute inset-x-3 -bottom-[16px] h-0.5 rounded-full bg-blue-600" />
-                )}
-              </Link>
-            );
-          })}
-        </nav>
-        {canManage && adminMenuItems.length > 0 ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              aria-label="管理"
-              data-active={adminMenuActive ? "true" : "false"}
-              data-nav-menu-trigger="management"
-              className={`group relative hidden h-9 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-xs font-medium outline-none transition-colors focus-visible:text-blue-700 xl:inline-flex 2xl:px-4 ${adminMenuActive ? "bg-blue-50 text-blue-700" : "text-muted-foreground hover:bg-slate-50 hover:text-foreground data-[state=open]:bg-blue-50 data-[state=open]:text-blue-700"}`}
-            >
-              <Settings2 className="h-3.5 w-3.5" />
-              管理
-              <ChevronDown className="h-3 w-3 transition-transform group-data-[state=open]:rotate-180" />
-              <span
-                aria-hidden="true"
-                data-nav-focus-indicator="management"
-                className={`absolute inset-x-3 -bottom-[16px] h-0.5 rounded-full transition-colors ${adminMenuActive ? "bg-blue-600" : "bg-transparent group-focus-visible:bg-blue-300"}`}
-              />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" sideOffset={12} className="w-44 rounded-lg p-1.5">
-              {adminMenuItems.map((item) => (
-                <DropdownMenuItem key={item.path} asChild>
-                  <Link href={item.path} className="text-xs no-underline">
-                    {item.icon}
-                    {item.name}
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : null}
+          <NavigationMenuList className="h-full justify-start space-x-0">
+            {menuItems.map((item) => {
+              const active =
+                pathname === item.path ||
+                (item.path !== "/dashboard" && pathname.startsWith(item.path));
+              return (
+                <NavigationMenuItem key={item.path}>
+                  <NavigationMenuLink
+                    asChild
+                    active={active}
+                    className={cn(
+                      navigationMenuTriggerStyle(),
+                      topNavigationItemClass,
+                      active &&
+                        "bg-blue-50 text-blue-700 hover:bg-blue-50 hover:text-blue-700 focus:bg-blue-50 focus:text-blue-700",
+                    )}
+                  >
+                    <Link href={item.path}>
+                      {item.icon}
+                      {item.name}
+                      {active ? (
+                        <span className="absolute inset-x-3 -bottom-[16px] h-0.5 rounded-full bg-blue-600" />
+                      ) : null}
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              );
+            })}
+            {canManage && adminMenuItems.length > 0 ? (
+              <NavigationMenuItem>
+                <NavigationMenuTrigger
+                  aria-label="管理"
+                  data-active={adminMenuActive ? "true" : "false"}
+                  data-nav-menu-trigger="management"
+                  className={cn(
+                    topNavigationItemClass,
+                    "data-[state=open]:bg-blue-50 data-[state=open]:text-blue-700",
+                    adminMenuActive &&
+                      "bg-blue-50 text-blue-700 hover:bg-blue-50 hover:text-blue-700 focus:bg-blue-50 focus:text-blue-700",
+                  )}
+                >
+                  <Settings2 className="h-3.5 w-3.5" />
+                  管理
+                  {adminMenuActive ? (
+                    <span className="absolute inset-x-3 -bottom-[16px] h-0.5 rounded-full bg-blue-600" />
+                  ) : null}
+                </NavigationMenuTrigger>
+                <NavigationMenuContent className="rounded-lg p-1.5">
+                  <ul className="w-44 list-none space-y-0.5">
+                    {adminMenuItems.map((item) => {
+                      const active =
+                        pathname === item.path ||
+                        pathname.startsWith(`${item.path}/`);
+                      return (
+                        <li key={item.path}>
+                          <NavigationMenuLink
+                            asChild
+                            active={active}
+                            className={cn(
+                              "flex w-full select-none items-center gap-2 rounded-sm px-2 py-2 text-xs text-foreground no-underline outline-none transition-colors hover:bg-accent focus:bg-accent",
+                              active && "bg-blue-50 text-blue-700",
+                            )}
+                          >
+                            <Link href={item.path}>
+                              {item.icon}
+                              {item.name}
+                            </Link>
+                          </NavigationMenuLink>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            ) : null}
+          </NavigationMenuList>
+        </NavigationMenu>
         <Link
           href="/dashboard/contents"
           aria-label="查看采集数据"
