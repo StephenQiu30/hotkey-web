@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, FileSearch, LogOut, Menu, Settings2, User, X } from "lucide-react";
+import { ChevronDown, FileSearch, LogOut, Menu, User, X } from "lucide-react";
 import { useState } from "react";
 import { BrandLogo } from "@/components/BrandLogo";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -16,11 +16,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
@@ -50,9 +48,9 @@ export default function TopNav({
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const canManage = user?.role === UserRole.Admin || user?.role === UserRole.Editor;
-  const adminMenuActive = adminMenuItems.some(
-    (item) => pathname === item.path || pathname.startsWith(`${item.path}/`),
-  );
+  const desktopMenuItems = canManage
+    ? [...menuItems, ...adminMenuItems]
+    : menuItems;
 
   const handleLogout = async () => {
     await logout();
@@ -74,7 +72,7 @@ export default function TopNav({
           className="hidden h-full max-w-none flex-none shrink-0 justify-start xl:flex"
         >
           <NavigationMenuList className="h-full justify-start space-x-0">
-            {menuItems.map((item) => {
+            {desktopMenuItems.map((item) => {
               const active =
                 pathname === item.path ||
                 (item.path !== "/dashboard" && pathname.startsWith(item.path));
@@ -101,53 +99,6 @@ export default function TopNav({
                 </NavigationMenuItem>
               );
             })}
-            {canManage && adminMenuItems.length > 0 ? (
-              <NavigationMenuItem>
-                <NavigationMenuTrigger
-                  aria-label="管理"
-                  data-active={adminMenuActive ? "true" : "false"}
-                  data-nav-menu-trigger="management"
-                  className={cn(
-                    topNavigationItemClass,
-                    "data-[state=open]:bg-blue-50 data-[state=open]:text-blue-700",
-                    adminMenuActive &&
-                      "bg-blue-50 text-blue-700 hover:bg-blue-50 hover:text-blue-700 focus:bg-blue-50 focus:text-blue-700",
-                  )}
-                >
-                  <Settings2 className="h-3.5 w-3.5" />
-                  管理
-                  {adminMenuActive ? (
-                    <span className="absolute inset-x-3 -bottom-[16px] h-0.5 rounded-full bg-blue-600" />
-                  ) : null}
-                </NavigationMenuTrigger>
-                <NavigationMenuContent className="rounded-lg p-1.5">
-                  <ul className="w-44 list-none space-y-0.5">
-                    {adminMenuItems.map((item) => {
-                      const active =
-                        pathname === item.path ||
-                        pathname.startsWith(`${item.path}/`);
-                      return (
-                        <li key={item.path}>
-                          <NavigationMenuLink
-                            asChild
-                            active={active}
-                            className={cn(
-                              "flex w-full select-none items-center gap-2 rounded-sm px-2 py-2 text-xs text-foreground no-underline outline-none transition-colors hover:bg-accent focus:bg-accent",
-                              active && "bg-blue-50 text-blue-700",
-                            )}
-                          >
-                            <Link href={item.path}>
-                              {item.icon}
-                              {item.name}
-                            </Link>
-                          </NavigationMenuLink>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            ) : null}
           </NavigationMenuList>
         </NavigationMenu>
         <Link
