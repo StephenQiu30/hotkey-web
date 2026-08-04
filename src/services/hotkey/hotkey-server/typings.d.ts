@@ -13,6 +13,92 @@ required property without making explicit null impossible to bind. */
     weight?: number;
   };
 
+  type AlertActionRequest = {
+    expected_version: number;
+    reason_code: string;
+  };
+
+  type AlertDetailResponse = {
+    audits?: AlertStateAuditResponse[];
+    occurrences?: AlertOccurrenceResponse[];
+    thread?: AlertThreadResponse;
+  };
+
+  type AlertOccurrenceResponse = {
+    event_update_id?: number;
+    final_score?: number;
+    id?: number;
+    reason_codes?: string[];
+    severity?: string;
+    threshold?: number;
+    triggered_at?: string;
+  };
+
+  type AlertPageResponse = {
+    items?: AlertThreadResponse[];
+    next_cursor?: string;
+  };
+
+  type AlertResultHttpAlertDetailResponse = {
+    code?: number;
+    data?: AlertDetailResponse;
+    message?: string;
+  };
+
+  type AlertResultHttpAlertPageResponse = {
+    code?: number;
+    data?: AlertPageResponse;
+    message?: string;
+  };
+
+  type AlertResultHttpAlertThreadResponse = {
+    code?: number;
+    data?: AlertThreadResponse;
+    message?: string;
+  };
+
+  type AlertResultInternalModulesAlertTransportHttpEmptyResponse = {
+    code?: number;
+    data?: EmptyResponse;
+    message?: string;
+  };
+
+  type AlertStateAuditResponse = {
+    actor_type?: string;
+    actor_user_id?: number;
+    created_at?: string;
+    expected_version?: number;
+    from_state?: string;
+    id?: number;
+    reason_code?: string;
+    to_state?: string;
+  };
+
+  type AlertThreadResponse = {
+    acknowledged_at?: string;
+    acknowledged_by_user_id?: number;
+    cooldown_until?: string;
+    event_id?: number;
+    first_triggered_at?: string;
+    id?: number;
+    last_triggered_at?: string;
+    monitor_id?: number;
+    monitor_revision?: number;
+    occurrence_count?: number;
+    policy_version?: string;
+    reason?: string;
+    resolved_at?: string;
+    resolved_by_user_id?: number;
+    severity?: string;
+    state?: string;
+    suppressed_at?: string;
+    suppressed_by_user_id?: number;
+    threshold?: number;
+    title?: string;
+    trigger_type?: string;
+    version?: number;
+  };
+
   type ApprovalRequest = {
     approval: "approved" | "rejected";
     /** Gin must not apply required directly to this nullable wrapper: both an
@@ -404,6 +490,8 @@ required property without making explicit null impossible to bind. */
 
   type EmptyResponse = true;
 
+  type EmptyResponse = true;
+
   type EventIntelligenceResponse = {
     claims?: IntelligenceClaimResponse[];
     entities?: IntelligenceEntityResponse[];
@@ -490,6 +578,12 @@ required property without making explicit null impossible to bind. */
     message?: string;
   };
 
+  type EventResultHttpEventUpdatePageResponse = {
+    code?: number;
+    data?: EventUpdatePageResponse;
+    message?: string;
+  };
+
   type EventResultHttpExtractionRegenerationResponse = {
     code?: number;
     data?: ExtractionRegenerationResponse;
@@ -499,6 +593,12 @@ required property without making explicit null impossible to bind. */
   type EventResultHttpHeatResponse = {
     code?: number;
     data?: HeatResponse;
+    message?: string;
+  };
+
+  type EventResultHttpRadarPageResponse = {
+    code?: number;
+    data?: RadarPageResponse;
     message?: string;
   };
 
@@ -522,6 +622,38 @@ required property without making explicit null impossible to bind. */
     version?: string;
   };
 
+  type EventUpdatePageResponse = {
+    items?: EventUpdateResponse[];
+    next_cursor?: number;
+  };
+
+  type EventUpdateResponse = {
+    after_state?: EventUpdateStateResponse;
+    before_state?: EventUpdateStateResponse;
+    event_id?: number;
+    evidence_set_hash?: string;
+    id?: number;
+    kind?: string;
+    observed_at?: string;
+    reason_codes?: string[];
+    sequence_no?: number;
+    summary?: string;
+    version?: number;
+  };
+
+  type EventUpdateStateResponse = {
+    capability_profile_set_hash?: string;
+    content_count?: number;
+    evidence_set_hash?: string;
+    heat_score?: number;
+    heat_version?: string;
+    source_count?: number;
+    trend_score?: number;
+    trend_status?: string;
+    window_end?: string;
+    window_hours?: number;
+  };
+
   type ExtractionRegenerationResponse = {
     claim_count?: number;
     entity_count?: number;
@@ -535,6 +667,24 @@ required property without making explicit null impossible to bind. */
   type getAiModelProfilesIdParams = {
     /** model profile ID */
     id: number;
+  };
+
+  type getAlertsIdParams = {
+    /** alert thread ID */
+    id: number;
+  };
+
+  type getAlertsParams = {
+    /** thread state */
+    state?: "open" | "acknowledged" | "resolved" | "suppressed";
+    /** severity */
+    severity?: "info" | "warning" | "critical";
+    /** monitor ID */
+    monitor_id?: number;
+    /** page size */
+    limit?: number;
+    /** opaque alert cursor */
+    cursor?: string;
   };
 
   type getCollectionRunsParams = {
@@ -579,6 +729,15 @@ required property without making explicit null impossible to bind. */
   type getEventsIdParams = {
     /** event ID */
     id: number;
+  };
+
+  type getEventsIdUpdatesParams = {
+    /** event ID */
+    id: number;
+    /** sequence cursor */
+    cursor?: number;
+    /** page size */
+    limit?: number;
   };
 
   type getEventsParams = {
@@ -643,6 +802,41 @@ required property without making explicit null impossible to bind. */
     state?: string;
     /** page size */
     limit?: number;
+  };
+
+  type getRadarEventsParams = {
+    /** Radar window */
+    window?: "1h" | "6h" | "24h" | "7d";
+    /** monitor ID */
+    monitor_id?: number;
+    /** lifecycle filters */
+    lifecycle?: (
+      | "detected"
+      | "active"
+      | "cooling"
+      | "closed"
+      | "merged"
+      | "archived"
+      | "rejected"
+    )[];
+    /** trend filters */
+    trend?: ("emerging" | "rising" | "stable" | "falling" | "dormant")[];
+    /** verification filters */
+    verification?: (
+      | "disputed"
+      | "corroborated"
+      | "single_source"
+      | "unverified"
+      | "insufficient"
+    )[];
+    /** minimum heat */
+    min_heat?: number;
+    /** ranking dimension */
+    sort?: "momentum" | "attention" | "breadth" | "latest" | "relevance";
+    /** page size */
+    limit?: number;
+    /** opaque Radar cursor */
+    cursor?: string;
   };
 
   type getReportsIdParams = {
@@ -1058,6 +1252,21 @@ required property without making explicit null impossible to bind. */
     id: number;
   };
 
+  type postAlertsIdAcknowledgeParams = {
+    /** alert thread ID */
+    id: number;
+  };
+
+  type postAlertsIdResolveParams = {
+    /** alert thread ID */
+    id: number;
+  };
+
+  type postAlertsIdSuppressParams = {
+    /** alert thread ID */
+    id: number;
+  };
+
   type postCollectionRunsIdRetryParams = {
     /** collection run ID */
     id: number;
@@ -1347,6 +1556,39 @@ required property without making explicit null impossible to bind. */
     id: number;
     /** match ID */
     match_id: number;
+  };
+
+  type RadarEventResponse = {
+    attention?: number;
+    breadth?: number;
+    confirmation?: string;
+    confirmation_score?: number;
+    data_confidence?: number;
+    event_id?: number;
+    event_key?: string;
+    first_seen_at?: string;
+    independent_source_count?: number;
+    last_seen_at?: string;
+    latest_update?: EventUpdateResponse;
+    lifecycle_status?: string;
+    momentum?: number;
+    ranking_score?: number;
+    reason_codes?: string[];
+    summary?: string;
+    title?: string;
+    title_en?: string;
+    title_zh?: string;
+    trend_score?: number;
+    trend_status?: string;
+    version?: number;
+    watch_final_score?: number;
+    watch_relevance?: number;
+  };
+
+  type RadarPageResponse = {
+    as_of?: string;
+    items?: RadarEventResponse[];
+    next_cursor?: string;
   };
 
   type ReconciliationIssue = {

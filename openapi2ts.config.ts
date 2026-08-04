@@ -7,7 +7,8 @@ const openapiConfig = {
   requestImportStatement:
     "import { request, type RequestOptions } from '@/lib/request';",
   requestOptionsType: "RequestOptions",
-  schemaPath: "http://127.0.0.1:8080/openapi.json",
+  schemaPath:
+    process.env.HOTKEY_OPENAPI_SCHEMA ?? "http://127.0.0.1:8080/openapi.json",
   serversPath: path.resolve(repositoryRoot, "src/services/hotkey"),
   projectName: "hotkey-server",
   namespace: "HotKeyAPI",
