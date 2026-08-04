@@ -84,14 +84,16 @@ export default function TopNav({
               aria-label="管理"
               data-active={adminMenuActive ? "true" : "false"}
               data-nav-menu-trigger="management"
-              className={`group relative hidden h-9 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-xs font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 xl:inline-flex 2xl:px-4 ${adminMenuActive ? "bg-blue-50 text-blue-700" : "text-muted-foreground hover:bg-slate-50 hover:text-foreground data-[state=open]:bg-blue-50 data-[state=open]:text-blue-700"}`}
+              className={`group relative hidden h-9 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-xs font-medium outline-none transition-colors focus-visible:text-blue-700 xl:inline-flex 2xl:px-4 ${adminMenuActive ? "bg-blue-50 text-blue-700" : "text-muted-foreground hover:bg-slate-50 hover:text-foreground data-[state=open]:bg-blue-50 data-[state=open]:text-blue-700"}`}
             >
               <Settings2 className="h-3.5 w-3.5" />
               管理
               <ChevronDown className="h-3 w-3 transition-transform group-data-[state=open]:rotate-180" />
-              {adminMenuActive ? (
-                <span className="absolute inset-x-3 -bottom-[16px] h-0.5 rounded-full bg-blue-600" />
-              ) : null}
+              <span
+                aria-hidden="true"
+                data-nav-focus-indicator="management"
+                className={`absolute inset-x-3 -bottom-[16px] h-0.5 rounded-full transition-colors ${adminMenuActive ? "bg-blue-600" : "bg-transparent group-focus-visible:bg-blue-300"}`}
+              />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" sideOffset={12} className="w-44 rounded-lg p-1.5">
               {adminMenuItems.map((item) => (
@@ -126,7 +128,7 @@ export default function TopNav({
           <DropdownMenuTrigger
             aria-label="账户菜单"
             data-nav-menu-trigger="account"
-            className="inline-flex h-9 items-center gap-2 rounded-lg p-1 text-xs text-muted-foreground outline-none transition-colors hover:bg-slate-50 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=open]:bg-blue-50 data-[state=open]:text-blue-700"
+            className="inline-flex h-9 items-center gap-2 rounded-lg p-1 text-xs text-muted-foreground outline-none transition-colors hover:bg-slate-50 hover:text-foreground focus-visible:bg-blue-50 focus-visible:text-blue-700 data-[state=open]:bg-blue-50 data-[state=open]:text-blue-700"
           >
             <Avatar className="h-7 w-7">
               <AvatarFallback className="bg-blue-100 text-[10px] font-semibold text-blue-700">
