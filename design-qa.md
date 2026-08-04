@@ -1,55 +1,65 @@
-# Design QA — HotKey 方案 3「高管情报简报」
+# HotKey 工作台方案 2 — Design QA
 
-- 视觉真值：`/Users/stephenqiu/.codex/generated_images/019fca8b-32dc-78e0-ab7c-61b52dd860f8/exec-8c344c29-f0f3-4ad2-9057-c32f2b99855f.png`
-- 最终实现截图：`/Users/stephenqiu/.codex/visualizations/2026/08/04/019fca8b-32dc-78e0-ab7c-61b52dd860f8/hotkey-option-3-lean-components-desktop.jpg`
-- 完整页面对照：`/Users/stephenqiu/.codex/visualizations/2026/08/04/019fca8b-32dc-78e0-ab7c-61b52dd860f8/hotkey-option-3-lean-comparison.jpg`
-- 主简报区对照：`/Users/stephenqiu/.codex/visualizations/2026/08/04/019fca8b-32dc-78e0-ab7c-61b52dd860f8/hotkey-option-3-lean-panel-comparison.jpg`
-- 桌面验收状态：主页、浅色主题、1487 × 1058 CSS px，参考图与实现图均为 1487 × 1058，像素密度 1:1。
-- 移动验收状态：主页、390 × 844 CSS px；首屏与单列情报内容可读，无横向溢出。
+- Source visual truth: `/Users/stephenqiu/.codex/generated_images/019fca8b-32dc-78e0-ab7c-61b52dd860f8/exec-26a1195a-1082-4cea-9532-1aff4c0066d4.png`
+- Normalized source: `/Users/stephenqiu/Desktop/StephenQiu/HotKey/hotkey-web/product-design-output/admin-dashboard-redesign-20260804/screenshots/08-reference-normalized-1440.png`
+- Implementation screenshot: `/Users/stephenqiu/Desktop/StephenQiu/HotKey/hotkey-web/product-design-output/admin-dashboard-redesign-20260804/screenshots/11-implementation-1440-pass-2.png`
+- Full-view comparison: `/Users/stephenqiu/Desktop/StephenQiu/HotKey/hotkey-web/product-design-output/admin-dashboard-redesign-20260804/screenshots/12-comparison-pass-2.png`
+- Focused header comparison: `/Users/stephenqiu/Desktop/StephenQiu/HotKey/hotkey-web/product-design-output/admin-dashboard-redesign-20260804/screenshots/13-comparison-focus-header.png`
+- Focused evidence comparison: `/Users/stephenqiu/Desktop/StephenQiu/HotKey/hotkey-web/product-design-output/admin-dashboard-redesign-20260804/screenshots/14-comparison-focus-evidence.png`
+- Responsive evidence: `/Users/stephenqiu/Desktop/StephenQiu/HotKey/hotkey-web/product-design-output/admin-dashboard-redesign-20260804/screenshots/10-implementation-mobile-390.png`
+- Viewport: 1440 × 1024 CSS px; mobile check 390 × 844 CSS px
+- Pixel dimensions: source 1487 × 1058, normalized to 1440 × 1024; implementation 1440 × 1024
+- Density normalization: both comparison inputs are 1× and 1440 × 1024 after proportional source normalization
+- State: authenticated administrator, dashboard, evidence tab selected, AI assistant collapsed
+- Browser: agent-browser headed session selected by the user
 
-## 对照结论
+## Findings
 
-- P0 / P1 / P2：无待处理差异。
-- 布局：桌面主简报区实测为 `x=143.5, y=318.7, w=1200, h=465.5`，与视觉真值的主容器位置及宽度对齐；高度收紧 8 px，减少无功能留白。工作流在首屏下沿自然露出，层级清楚。
-- 字体：主标题使用系统宋体栈 `Songti SC / STSong / Noto Serif CJK SC`，界面正文沿用项目 Geist；等宽数字沿用项目 `mono` 工具类。
-- 间距与表面：采用大留白、单个 `Card` 轻量主容器、低对比蓝色分区和语义状态 `Badge`；移除复合阴影、按钮上浮动画和装饰性大号步骤数字。
-- 颜色：背景为白色与 `#f8fbff`，主文字为深海军蓝，信号和操作使用品牌蓝，证据状态使用低饱和绿色。
-- 资产与图标：品牌标识继续使用项目现有 `BrandLogo`；时间、证据、AI 判断和箭头使用 Lucide，未使用占位资产或手绘 SVG。
-- 文案：保持定稿中的“重要变化，第一时间形成共识”、今日情报简报、为什么重要、证据来源、AI 判断和三步工作流。
+- No actionable P0/P1/P2 differences remain.
+- [Expected data constraint] The design reference depicts six fully populated evidence rows, while the live API currently returns six event members whose content details are unreadable. The implementation deliberately shows the truthful Chinese state “已读取 0 条，6 条暂不可读” instead of fabricating sources or claims.
+- [Expected data constraint] The live event does not currently provide `title_zh`, intelligence entities, or verified claims. The implementation falls back to the source-language title, keeps all surrounding explanatory UI in Chinese, and conditionally omits empty entity/claim sections.
 
-## 有意保留的 P3 差异
+## Required Fidelity Surfaces
 
-- 将参考图的装饰性分段热度条改为原生 `progress` 连续进度条，保留 92/100 的视觉表达，同时提供可访问名称和值。
-- 导航未加入参考图中的“定价”，因为当前产品没有对应页面或能力；保留产品、解决方案、资源、登录和开始使用等真实入口。
-- 品牌图形使用项目既有正式标识，不以代码近似生成参考图中的圆点标识。
-- 工作流数字从参考图的大号装饰数字收敛为小号等宽步骤标签，优先保证信息阅读，不保留无功能的视觉强调。
+- Fonts and typography: passed. The existing Geist/SF/Segoe stack is preserved; headline scale, weight, line-height, metadata size, and Chinese hierarchy match the selected direction without introducing a new font dependency.
+- Spacing and layout rhythm: passed. The page uses the selected 58/42 desktop split, restrained 48 px outer rhythm, hairline section dividers, compact metadata, and a single full-width assistant bar. The mobile layout collapses to one column without horizontal overflow.
+- Colors and visual tokens: passed. Existing blue/white tokens remain the base; green is limited to running/readable states and amber to unavailable evidence. Borders and shadows are reduced relative to the prior page.
+- Image quality and asset fidelity: passed. The selected design contains no photographic or illustrative assets. Existing brand artwork and the repository's Lucide icon system are reused; no placeholder, CSS drawing, handcrafted SVG, or fake raster asset was introduced.
+- Copy and content: passed with the live-data constraints above. Navigation, explanations, empty states, actions, and status language are Chinese-first and describe actual API state.
 
-## 响应式与可访问性
+## Interaction And Browser Verification
 
-- 390 px 下标题自动换行，导航收敛到登录与开始使用，简报内容按“摘要 → 影响 → 证据 → AI 判断”纵向排列。
-- 页面实测 `scrollWidth=390`、`innerWidth=390`，无横向溢出。
-- 主简报使用命名 `region`，主导航有可访问名称，热度使用命名 `progressbar`，主要操作均为真实链接。
-- 状态没有只依赖颜色：值得关注、连续上升、置信度均有文字说明。
+- Primary navigation renders with 工作台、采集内容、报告中心、发布订阅.
+- Administrator-only 热点监控 and 来源管理 are available from the secondary 管理 menu.
+- 信号、证据、报告 tabs switch correctly.
+- AI 情报助手 expands and collapses; 提取实体 and 生成摘要 remain wired to the generated OpenAPI client.
+- 查看完整报告 and evidence reading paths remain real links.
+- Browser page errors: none.
+- Console: no new dashboard runtime errors; only development/HMR messages and stale warnings from previously visited authentication routes were present in the long-lived session.
 
-## 交互与控制台
+## Comparison History
 
-- “产品”锚点：唯一匹配，点击后到达 `/#briefing`，目标简报区域可见。
-- 头部“开始使用”：唯一匹配，点击后到达 `/register`。
-- 浏览器桌面和移动状态均检查错误与警告：0。
-- 本地后端未启动不影响公开主页；验收仅覆盖本次重构的公开页面及其主要入口。
+### Pass 1
 
-## 对照迭代记录
+- [P1] The primary report CTA stretched across the left column because it inherited the cross-axis size of a column flex container.
+- Fix: added an explicit `self-start` constraint so the button returns to a compact primary action.
+- Evidence before fix: `/Users/stephenqiu/Desktop/StephenQiu/HotKey/hotkey-web/product-design-output/admin-dashboard-redesign-20260804/screenshots/09-comparison-pass-1.png`
 
-1. 初版发现 P2：主标题字体过于现代、简报区宽度偏窄、工作流露出节奏偏低。
-2. 第二轮修正：切换宋体展示栈，将主简报区对齐到 1200 px，并收紧工作流上方间距。
-3. 最终轮：同画布完整对照与主简报聚焦对照均通过；移动端视口与关键交互通过。
-4. 组件收敛轮：主简报切换为 `Card / CardHeader / CardContent / CardFooter`，时间与状态使用 `Badge`，分区使用 `Separator`，操作统一使用 `Button`；复查无新的 P0/P1/P2 问题。
+### Pass 2
 
-## 实现检查清单
+- The CTA is compact, the two-column balance matches the visual target, and no P0/P1/P2 issue remains.
+- Post-fix evidence: `/Users/stephenqiu/Desktop/StephenQiu/HotKey/hotkey-web/product-design-output/admin-dashboard-redesign-20260804/screenshots/12-comparison-pass-2.png`
 
-- [x] 视觉真值与实现使用相同桌面视口和状态。
-- [x] 完整页面和聚焦区域均在同一张对照图中检查。
-- [x] 用户要求的蓝白主题与弱线条方向已实现。
-- [x] 桌面、移动、关键链接、控制台、类型、单元测试和生产构建均纳入验收。
+## Follow-up Polish
+
+- [P3] When the backend begins returning `title_zh`, entities, claims, and readable content details, the live page will naturally fill the corresponding selected-design regions without frontend changes.
+
+## Implementation Checklist
+
+- [x] Preserve existing OpenAPI-generated service calls and permissions.
+- [x] Replace KPI/card-heavy hierarchy with an event/evidence split workspace.
+- [x] Keep AI assistance compact and user-controlled.
+- [x] Move operational navigation into a secondary administrator menu.
+- [x] Verify desktop and mobile layouts, primary interactions, typecheck, generated API contract, full tests, and production build.
 
 final result: passed

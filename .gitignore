@@ -48,6 +48,7 @@ temp/
 # 产品设计与浏览器验收临时产物
 .product-design/
 dogfood-output/
+product-design-output/
 
 # 日志文件
 *.log
