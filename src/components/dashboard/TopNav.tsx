@@ -78,14 +78,16 @@ export default function TopNav({
         {canManage && adminMenuItems.length > 0 ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button
+              <Button
                 aria-label="管理"
-                className="hidden h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-medium text-muted-foreground outline-none transition-colors hover:bg-slate-50 hover:text-foreground xl:flex"
+                variant="ghost"
+                size="sm"
+                className="hidden h-9 gap-1.5 px-3 text-xs text-muted-foreground xl:inline-flex"
               >
                 <Settings2 className="h-3.5 w-3.5" />
                 管理
                 <ChevronDown className="h-3 w-3" />
-              </button>
+              </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-44">
               {adminMenuItems.map((item) => (
@@ -118,7 +120,7 @@ export default function TopNav({
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-2 rounded-md p-1 text-xs text-muted-foreground outline-none hover:text-foreground">
+            <Button variant="ghost" size="sm" className="h-auto gap-2 p-1 text-xs text-muted-foreground">
               <Avatar className="h-7 w-7">
                 <AvatarFallback className="bg-blue-100 text-[10px] font-semibold text-blue-700">
                   {user?.display_name?.slice(0, 1)?.toUpperCase() || (
@@ -130,7 +132,7 @@ export default function TopNav({
                 {user?.display_name || "账户"}
               </span>
               <ChevronDown className="hidden h-3 w-3 2xl:block" />
-            </button>
+            </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
             <div className="px-2 py-2">

@@ -1,4 +1,6 @@
 import { ExternalLink, FileText, RefreshCw } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 type EventEvidenceTimelineProps = {
   contents: HotKeyAPI.ContentResponse[];
@@ -47,12 +49,9 @@ export function EventEvidenceTimeline({
             {countDescription}
           </p>
         </div>
-        <a
-          href="#event-evidence-list"
-          className="shrink-0 text-xs font-medium text-blue-700 no-underline hover:text-blue-800"
-        >
-          全部证据
-        </a>
+        <Button asChild variant="ghost" size="sm" className="h-auto shrink-0 px-2 text-xs text-blue-700 hover:bg-blue-50 hover:text-blue-800">
+          <a href="#event-evidence-list">全部证据</a>
+        </Button>
       </div>
 
       {unavailable ? (
@@ -70,9 +69,9 @@ export function EventEvidenceTimeline({
                 key={content.id ?? `${content.external_id ?? title}-${index}`}
                 className="grid grid-cols-[28px_minmax(0,1fr)] gap-3 py-5"
               >
-                <span className="mono flex h-6 w-6 items-center justify-center rounded-full bg-blue-50 text-[10px] font-semibold text-blue-700">
+                <Badge variant="secondary" className="mono flex h-6 w-6 items-center justify-center rounded-full border-0 bg-blue-50 p-0 text-[10px] font-semibold text-blue-700">
                   {index + 1}
-                </span>
+                </Badge>
                 <div className="min-w-0">
                   <div className="flex min-w-0 items-start gap-3">
                     <div className="min-w-0 flex-1">
@@ -85,31 +84,23 @@ export function EventEvidenceTimeline({
                         </span>
                       </div>
                     </div>
-                    <span className="shrink-0 rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-medium text-emerald-700">
+                    <Badge variant="secondary" className="shrink-0 rounded-md border-0 bg-emerald-50 px-2 py-1 text-[10px] font-medium text-emerald-700">
                       可读
-                    </span>
+                    </Badge>
                   </div>
                   <p className="mt-2 line-clamp-2 text-xs leading-5 text-slate-600">{title}</p>
                   <div className="mt-3 flex flex-wrap items-center gap-4 text-[11px]">
                     {content.id != null ? (
-                      <a
-                        aria-label={`阅读归档：${title}`}
-                        className="font-medium text-blue-700 no-underline hover:text-blue-800"
-                        href={`/dashboard/contents/${content.id}`}
-                      >
-                        阅读归档
-                      </a>
+                      <Button asChild variant="link" className="h-auto p-0 text-[11px] font-medium text-blue-700 no-underline hover:text-blue-800">
+                        <a aria-label={`阅读归档：${title}`} href={`/dashboard/contents/${content.id}`}>阅读归档</a>
+                      </Button>
                     ) : null}
                     {content.canonical_url ? (
-                      <a
-                        aria-label={`访问原站：${title}`}
-                        className="inline-flex items-center gap-1 text-muted-foreground no-underline hover:text-foreground"
-                        href={content.canonical_url}
-                        rel="noreferrer"
-                        target="_blank"
-                      >
-                        访问原站 <ExternalLink className="h-3 w-3" />
-                      </a>
+                      <Button asChild variant="link" className="h-auto gap-1 p-0 text-[11px] text-muted-foreground no-underline hover:text-foreground">
+                        <a aria-label={`访问原站：${title}`} href={content.canonical_url} rel="noreferrer" target="_blank">
+                          访问原站 <ExternalLink className="h-3 w-3" />
+                        </a>
+                      </Button>
                     ) : null}
                     <span className="ml-auto text-muted-foreground">
                       互动 {(content.metrics?.like_count ?? 0) + (content.metrics?.comment_count ?? 0) + (content.metrics?.share_count ?? 0)}

@@ -17,6 +17,7 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import {
   getEvents,
   getEventsId,
@@ -188,16 +189,17 @@ export default function DashboardPage() {
         className="grid min-h-[calc(100vh-68px)] grid-cols-1 bg-white xl:grid-cols-[minmax(0,1.16fr)_minmax(420px,.84fr)]"
       >
         <section className="min-w-0 px-5 py-7 sm:px-8 lg:px-10 xl:px-12">
-          <div className="flex flex-wrap items-center gap-3 border-b border-border pb-5 text-xs text-muted-foreground">
-            <span className="inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2 py-1 font-medium text-emerald-700">
+          <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+            <Badge variant="secondary" className="gap-1.5 rounded-md bg-emerald-50 font-medium text-emerald-700">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />监控运行中
-            </span>
+            </Badge>
             <span>{new Intl.DateTimeFormat("zh-CN", { dateStyle: "long" }).format(new Date())}</span>
             <span>{events.length} 个活跃事件</span>
             <Button aria-label="刷新工作台数据" title="刷新工作台数据" size="icon" variant="ghost" onClick={loadWorkspace} className="ml-auto h-8 w-8 text-blue-700">
               <RefreshCw className="h-3.5 w-3.5" />
             </Button>
           </div>
+          <Separator className="mt-5" />
 
           {detailLoading || !selected ? (
             <div className="flex min-h-[520px] items-center justify-center"><Loader2 className="h-5 w-5 animate-spin text-blue-600" /></div>
@@ -224,15 +226,17 @@ export default function DashboardPage() {
                   </Button>
                 </div>
 
-                <div className="mt-7 flex flex-wrap gap-x-6 gap-y-3 border-y border-border py-4 text-xs text-muted-foreground">
+                <Separator className="mt-7" />
+                <div className="flex flex-wrap gap-x-6 gap-y-3 py-4 text-xs text-muted-foreground">
                   <span>首次发现 {formatDateTime(selected.first_seen_at)}</span>
                   <span>最近更新 {formatDateTime(selected.last_seen_at)}</span>
                   <span>独立来源 {heat?.source_count ?? "—"}</span>
                   <span>证据内容 {evidenceTotal || heat?.content_count || "—"}</span>
                   <span className="font-medium text-blue-700">热度 {score(heat?.heat_score ?? selected.heat_score)}</span>
                 </div>
+                <Separator />
 
-                <section className="border-b border-border py-7" aria-labelledby="why-it-matters-heading">
+                <section className="py-7" aria-labelledby="why-it-matters-heading">
                   <div className="flex items-center gap-2">
                     <Sparkles className="h-4 w-4 text-blue-600" />
                     <h2 id="why-it-matters-heading" className="text-base font-semibold text-slate-950">为什么重要</h2>
@@ -241,17 +245,18 @@ export default function DashboardPage() {
                     事件仍在快速演化，可能影响行业判断与后续报道方向。右侧证据按来源与发布时间展示，帮助你区分已确认信息和暂不可读内容。
                   </p>
                 </section>
+                <Separator />
 
                 {intelligence?.entities?.length ? (
-                  <section className="border-b border-border py-6" aria-labelledby="entities-heading">
+                  <section className="py-6" aria-labelledby="entities-heading">
                     <h2 id="entities-heading" className="text-sm font-semibold text-slate-950">涉及实体</h2>
                     <div className="mt-3 flex flex-wrap gap-2">
                       {intelligence.entities.slice(0, 5).map((entity) => (
-                        <span key={entity.relation_id ?? entity.entity_id ?? entity.entity_key} className="inline-flex items-center gap-2 rounded-md bg-slate-50 px-2.5 py-1.5 text-xs text-slate-600">
+                        <Badge key={entity.relation_id ?? entity.entity_id ?? entity.entity_key} variant="secondary" className="gap-2 rounded-md bg-slate-50 px-2.5 py-1.5 font-medium text-slate-600">
                           <UserRound className="h-3.5 w-3.5 text-slate-500" />
                           {entity.canonical_name || entity.entity_key || "未命名实体"}
                           {entity.entity_type ? <span className="text-[10px] text-muted-foreground">{entity.entity_type}</span> : null}
-                        </span>
+                        </Badge>
                       ))}
                     </div>
                   </section>
@@ -260,9 +265,9 @@ export default function DashboardPage() {
 
               <div className="inline-flex border-b border-border">
                 {([[WorkspaceTab.Signal, "信号"], [WorkspaceTab.Evidence, "证据"], [WorkspaceTab.Report, "报告"]] as const).map(([value, label]) => (
-                  <button key={value} onClick={() => setTab(value)} className={`border-b-2 px-4 py-3 text-sm font-medium transition-colors ${tab === value ? "border-blue-600 text-blue-700" : "border-transparent text-muted-foreground hover:text-foreground"}`}>
+                  <Button key={value} variant="ghost" onClick={() => setTab(value)} className={`h-auto rounded-none border-b-2 px-4 py-3 text-sm ${tab === value ? "border-blue-600 text-blue-700 hover:bg-transparent hover:text-blue-700" : "border-transparent text-muted-foreground hover:bg-transparent hover:text-foreground"}`}>
                     {label}
-                  </button>
+                  </Button>
                 ))}
               </div>
 
@@ -281,11 +286,11 @@ export default function DashboardPage() {
                   <EventHeatComparison events={sortedEvents} />
                   <div className="divide-y divide-border border-y border-border">
                     {sortedEvents.slice(0, 8).map((event, index) => (
-                      <button key={event.id} onClick={() => setSelectedId(event.id)} className={`grid w-full grid-cols-[32px_minmax(0,1fr)_64px] items-center gap-3 py-4 text-left ${event.id === selectedId ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+                      <Button key={event.id} variant="ghost" onClick={() => setSelectedId(event.id)} className={`grid h-auto w-full grid-cols-[32px_minmax(0,1fr)_64px] items-center gap-3 rounded-none px-0 py-4 text-left hover:bg-transparent ${event.id === selectedId ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}>
                         <span className="mono text-xs text-blue-600">{String(index + 1).padStart(2, "0")}</span>
                         <span className="min-w-0"><span className="block truncate text-sm font-medium">{event.title_zh || event.title_en || `事件 #${event.id}`}</span><span className="mt-1 block text-xs text-muted-foreground">{formatDateTime(event.last_seen_at)} · {event.lifecycle_status}</span></span>
                         <span className="mono text-right text-sm font-semibold text-blue-700">{score(event.heat_score)}</span>
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 </div>
@@ -324,17 +329,18 @@ export default function DashboardPage() {
         </aside>
 
         <section className="col-span-full border-t border-border bg-white" aria-label="AI 情报助手">
-          <button
+          <Button
             aria-label={assistantOpen ? "收起 AI 情报助手" : "展开 AI 情报助手"}
             aria-expanded={assistantOpen}
+            variant="ghost"
             onClick={() => setAssistantOpen((value) => !value)}
-            className="flex w-full items-center gap-3 px-5 py-4 text-left sm:px-8 lg:px-10"
+            className="h-auto w-full justify-start gap-3 rounded-none px-5 py-4 text-left hover:bg-blue-50/40 sm:px-8 lg:px-10"
           >
             <Sparkles className="h-4 w-4 text-blue-600" />
             <span className="text-xs font-semibold tracking-[.08em] text-blue-700">AI 情报助手</span>
             <span className="hidden text-xs text-muted-foreground sm:inline">基于事件证据生成辅助研判，结果可能不完整。</span>
             {assistantOpen ? <ChevronUp className="ml-auto h-4 w-4 text-muted-foreground" /> : <ChevronDown className="ml-auto h-4 w-4 text-muted-foreground" />}
-          </button>
+          </Button>
           {assistantOpen ? (
             <div className="grid gap-5 border-t border-border bg-slate-50/50 px-5 py-5 sm:px-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:px-10">
               <div>
