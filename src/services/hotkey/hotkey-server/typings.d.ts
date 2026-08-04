@@ -299,13 +299,13 @@ required property without making explicit null impossible to bind. */
   };
 
   type CreateSubscriptionRequest = {
-    channel: "email" | "rss";
+    channel?: "email" | "rss";
     enabled?: boolean;
     monitor_id?: number;
     recipient?: string;
-    report_type: "daily" | "weekly";
-    schedule: string;
-    timezone: string;
+    report_type?: "daily" | "weekly";
+    schedule?: string;
+    timezone?: string;
   };
 
   type deleteAiModelProfilesIdParams = {

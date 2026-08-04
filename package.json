@@ -19,6 +19,7 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "openapi:generate": "openapi2ts",
+    "openapi:check": "node scripts/check-openapi.mjs",
     "test": "tsc --noEmit",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
