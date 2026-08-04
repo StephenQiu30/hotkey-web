@@ -1,4 +1,10 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { Activity, Database } from "lucide-react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import TopNav from "@/components/dashboard/TopNav";
@@ -85,5 +91,25 @@ describe("TopNav", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "账户菜单" }));
     expect(await screen.findByRole("menuitem", { name: /来源管理/ })).toBeInTheDocument();
+  });
+
+  it("opens mobile navigation as an accessible sheet", async () => {
+    render(
+      <TopNav
+        menuItems={[{ path: "/dashboard", name: "概览", icon: <Activity /> }]}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "打开导航" }));
+
+    expect(await screen.findByRole("dialog", { name: "工作区导航" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("navigation", { name: "移动导航" }),
+    ).toBeInTheDocument();
+
+    fireEvent.keyDown(document, { key: "Escape" });
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog", { name: "工作区导航" })).not.toBeInTheDocument();
+    });
   });
 });

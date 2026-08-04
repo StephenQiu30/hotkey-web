@@ -68,6 +68,8 @@ describe("EventsPage", () => {
     expect(screen.getByText("华东沿海化工园区发生爆燃事故")).toBeInTheDocument();
     expect(await screen.findByText("新增 3 条独立来源")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "为什么值得关注" })).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "热点事件列表" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "事件" })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: /生成式 AI 产品/ }));
 

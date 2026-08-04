@@ -5,13 +5,14 @@ import AlertsPage from "@/app/dashboard/alerts/page";
 const mocks = vi.hoisted(() => ({
   getAlerts: vi.fn(),
   postAlertsIdAcknowledge: vi.fn(),
+  postAlertsIdSuppress: vi.fn(),
 }));
 
 vi.mock("@/services/hotkey/hotkey-server/alerts", () => ({
   getAlerts: mocks.getAlerts,
   postAlertsIdAcknowledge: mocks.postAlertsIdAcknowledge,
   postAlertsIdResolve: vi.fn(),
-  postAlertsIdSuppress: vi.fn(),
+  postAlertsIdSuppress: mocks.postAlertsIdSuppress,
 }));
 
 describe("AlertsPage", () => {
@@ -37,6 +38,7 @@ describe("AlertsPage", () => {
       },
     });
     mocks.postAlertsIdAcknowledge.mockResolvedValue({ data: {} });
+    mocks.postAlertsIdSuppress.mockResolvedValue({ data: {} });
   });
 
   it("turns alert threads into an actionable inbox", async () => {
@@ -44,11 +46,32 @@ describe("AlertsPage", () => {
 
     expect(await screen.findByRole("heading", { name: "告警中心" })).toBeInTheDocument();
     expect(screen.getByText("化工安全事件快速升温")).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "告警线程列表" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "确认告警" }));
 
     expect(mocks.postAlertsIdAcknowledge).toHaveBeenCalledWith(
       { id: 5 },
       { expected_version: 2, reason_code: "user_acknowledged" },
+    );
+  });
+
+  it("requires confirmation before suppressing similar alerts", async () => {
+    render(<AlertsPage />);
+
+    expect(await screen.findByText("化工安全事件快速升温")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "打开告警操作" }));
+    fireEvent.click(await screen.findByRole("menuitem", { name: "抑制同类告警" }));
+
+    expect(
+      await screen.findByRole("alertdialog", { name: "抑制同类告警？" }),
+    ).toBeInTheDocument();
+    expect(mocks.postAlertsIdSuppress).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "确认抑制" }));
+
+    expect(mocks.postAlertsIdSuppress).toHaveBeenCalledWith(
+      { id: 5 },
+      { expected_version: 2, reason_code: "user_suppressed" },
     );
   });
 });
