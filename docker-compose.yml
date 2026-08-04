@@ -1,16 +1,19 @@
-version: "3.9"
+name: ${COMPOSE_PROJECT_NAME:-hotkey-web-prod}
 
 services:
   hotkey-web:
+    image: hotkey-web:${HOTKEY_DEPLOY_ENV:-prod}
     build:
       context: .
       dockerfile: Dockerfile
       args:
         HOTKEY_API_ORIGIN: ${HOTKEY_API_ORIGIN:-http://host.docker.internal:8080}
+        HOTKEY_DEPLOY_ENV: ${HOTKEY_DEPLOY_ENV:-prod}
     ports:
       - "${WEB_PORT:-3000}:3000"
     environment:
-      - NODE_ENV=production
+      NODE_ENV: production
+      HOTKEY_DEPLOY_ENV: ${HOTKEY_DEPLOY_ENV:-prod}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     restart: unless-stopped
