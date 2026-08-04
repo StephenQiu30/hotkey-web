@@ -1,4 +1,4 @@
-import { ExternalLink, FileText } from "lucide-react";
+import { ExternalLink, FileText, RefreshCw } from "lucide-react";
 
 type EventEvidenceTimelineProps = {
   contents: HotKeyAPI.ContentResponse[];
@@ -26,50 +26,71 @@ export function EventEvidenceTimeline({
   failedCount,
   unavailable = false,
 }: EventEvidenceTimelineProps) {
+  const countDescription = failedCount > 0
+    ? `已读取 ${contents.length} 条，${failedCount} 条暂不可读`
+    : `已读取 ${contents.length} 条，共 ${totalCount} 条`;
+
   return (
-    <section className="py-6" aria-labelledby="event-evidence-heading">
-      <div className="flex flex-col gap-2 border-b border-border pb-4 sm:flex-row sm:items-end sm:justify-between">
+    <section aria-labelledby="event-evidence-heading">
+      <div className="flex items-start justify-between gap-4 border-b border-border px-5 py-6 sm:px-7">
         <div>
-          <h3 id="event-evidence-heading" className="text-sm font-medium">
-            证据叙事（按时间）
-          </h3>
-          <p className="mt-1 text-xs text-muted-foreground">
-            当前展示 {contents.length} / 共 {totalCount} 条
+          <div className="flex items-baseline gap-2">
+            <h2 id="event-evidence-heading" className="text-base font-semibold text-slate-950">
+              证据验证
+            </h2>
+            <span className="text-xs text-muted-foreground">（{totalCount} 条）</span>
+          </div>
+          <p className="mt-2 text-xs leading-5 text-muted-foreground">
+            按发布时间呈现公开来源，帮助核对事件依据
+          </p>
+          <p className={`mt-1 text-xs ${failedCount > 0 ? "text-amber-700" : "text-emerald-700"}`}>
+            {countDescription}
           </p>
         </div>
-        {failedCount > 0 ? (
-          <p className="text-xs text-amber-700">部分证据暂不可读（{failedCount} 条）</p>
-        ) : null}
+        <a
+          href="#event-evidence-list"
+          className="shrink-0 text-xs font-medium text-blue-700 no-underline hover:text-blue-800"
+        >
+          全部证据
+        </a>
       </div>
 
       {unavailable ? (
-        <div className="panel mt-5 flex min-h-44 flex-col items-center justify-center px-6 text-center">
+        <div className="flex min-h-56 flex-col items-center justify-center px-8 text-center">
           <FileText className="mb-3 h-5 w-5 text-muted-foreground" />
           <p className="text-sm font-medium">证据成员暂时无法加载</p>
-          <p className="mt-1 text-xs text-muted-foreground">事件本身仍可查看，稍后刷新可重试证据列表。</p>
+          <p className="mt-1 text-xs leading-5 text-muted-foreground">事件本身仍可查看，稍后刷新可重试证据列表。</p>
         </div>
       ) : contents.length ? (
-        <div className="border-l border-border pl-5">
+        <div id="event-evidence-list" className="divide-y divide-border px-5 sm:px-7">
           {contents.map((content, index) => {
             const title = contentTitle(content);
             return (
               <article
                 key={content.id ?? `${content.external_id ?? title}-${index}`}
-                className="relative border-b border-border py-5 last:border-b-0"
+                className="grid grid-cols-[28px_minmax(0,1fr)] gap-3 py-5"
               >
-                <span className="absolute -left-[25px] top-6 h-2 w-2 rounded-full border-2 border-blue-600 bg-white" />
-                <div className="flex flex-wrap items-center gap-2 text-xs">
-                  <span className="signal-text mono">{formatDateTime(content.published_at)}</span>
-                  <span className="font-medium">{content.source_name || content.source_type || "来源"}</span>
-                  <span className="ml-auto text-muted-foreground">{content.language || "—"}</span>
-                </div>
-                <p className="mt-2 text-sm font-medium leading-6">{title}</p>
-                <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
-                  <span>浏览 {content.metrics?.view_count ?? "—"}</span>
-                  <span>
-                    互动 {(content.metrics?.like_count ?? 0) + (content.metrics?.comment_count ?? 0) + (content.metrics?.share_count ?? 0)}
-                  </span>
-                  <span className="ml-auto flex flex-wrap gap-4">
+                <span className="mono flex h-6 w-6 items-center justify-center rounded-full bg-blue-50 text-[10px] font-semibold text-blue-700">
+                  {index + 1}
+                </span>
+                <div className="min-w-0">
+                  <div className="flex min-w-0 items-start gap-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                        <span className="truncate text-sm font-medium text-slate-900">
+                          {content.source_name || content.source_type || "公开来源"}
+                        </span>
+                        <span className="mono text-[10px] text-muted-foreground">
+                          {formatDateTime(content.published_at)}
+                        </span>
+                      </div>
+                    </div>
+                    <span className="shrink-0 rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-medium text-emerald-700">
+                      可读
+                    </span>
+                  </div>
+                  <p className="mt-2 line-clamp-2 text-xs leading-5 text-slate-600">{title}</p>
+                  <div className="mt-3 flex flex-wrap items-center gap-4 text-[11px]">
                     {content.id != null ? (
                       <a
                         aria-label={`阅读归档：${title}`}
@@ -90,20 +111,29 @@ export function EventEvidenceTimeline({
                         访问原站 <ExternalLink className="h-3 w-3" />
                       </a>
                     ) : null}
-                  </span>
+                    <span className="ml-auto text-muted-foreground">
+                      互动 {(content.metrics?.like_count ?? 0) + (content.metrics?.comment_count ?? 0) + (content.metrics?.share_count ?? 0)}
+                    </span>
+                  </div>
                 </div>
               </article>
             );
           })}
         </div>
       ) : (
-        <div className="panel mt-5 flex min-h-44 flex-col items-center justify-center px-6 text-center">
+        <div className="flex min-h-56 flex-col items-center justify-center px-8 text-center">
           <FileText className="mb-3 h-5 w-5 text-muted-foreground" />
           <p className="text-sm font-medium">
             {totalCount > 0 ? "该事件有证据成员，但详情暂不可读。" : "该事件暂时没有内容证据。"}
           </p>
+          <p className="mt-1 text-xs text-muted-foreground">采集完成后，证据会按时间显示在这里。</p>
         </div>
       )}
+
+      <div className="flex items-center justify-between border-t border-border px-5 py-4 text-[11px] text-muted-foreground sm:px-7">
+        <span>显示 {contents.length} 条，共 {totalCount} 条</span>
+        <span className="inline-flex items-center gap-1.5"><RefreshCw className="h-3 w-3" />随工作台刷新</span>
+      </div>
     </section>
   );
 }

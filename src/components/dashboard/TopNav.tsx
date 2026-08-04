@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, FileSearch, LogOut, Menu, User, X } from "lucide-react";
+import { ChevronDown, FileSearch, LogOut, Menu, Settings2, User, X } from "lucide-react";
 import { useState } from "react";
 import { BrandLogo } from "@/components/BrandLogo";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/stores/authStore";
+import { UserRole } from "@/lib/domainEnums";
 
 interface MenuItem {
   path: string;
@@ -24,15 +25,18 @@ interface MenuItem {
 
 export default function TopNav({
   menuItems,
+  adminMenuItems = [],
   title = "HotKey",
 }: {
   menuItems: MenuItem[];
+  adminMenuItems?: MenuItem[];
   title?: string;
 }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
+  const canManage = user?.role === UserRole.Admin || user?.role === UserRole.Editor;
 
   const handleLogout = async () => {
     await logout();
@@ -71,6 +75,30 @@ export default function TopNav({
             );
           })}
         </nav>
+        {canManage && adminMenuItems.length > 0 ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                aria-label="管理"
+                className="hidden h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-medium text-muted-foreground outline-none transition-colors hover:bg-slate-50 hover:text-foreground xl:flex"
+              >
+                <Settings2 className="h-3.5 w-3.5" />
+                管理
+                <ChevronDown className="h-3 w-3" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-44">
+              {adminMenuItems.map((item) => (
+                <DropdownMenuItem key={item.path} asChild>
+                  <Link href={item.path} className="text-xs no-underline">
+                    {item.icon}
+                    {item.name}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : null}
         <Link
           href="/dashboard/contents"
           aria-label="查看采集数据"
@@ -148,6 +176,22 @@ export default function TopNav({
               {item.name}
             </Link>
           ))}
+          {canManage && adminMenuItems.length > 0 ? (
+            <div className="mt-1 border-t border-border pt-1">
+              <p className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[.08em] text-muted-foreground">管理</p>
+              {adminMenuItems.map((item) => (
+                <Link
+                  key={item.path}
+                  href={item.path}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-xs text-muted-foreground no-underline hover:bg-blue-50 hover:text-blue-700"
+                >
+                  {item.icon}
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+          ) : null}
         </nav>
       )}
     </header>
