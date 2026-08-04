@@ -82,7 +82,9 @@ describe("ContentsPage pagination", () => {
     const pageSizeSelectors = await screen.findAllByRole("combobox", {
       name: "每页条数",
     });
-    await userEvent.setup().selectOptions(pageSizeSelectors[0], "50");
+    const user = userEvent.setup();
+    await user.click(pageSizeSelectors[0]);
+    await user.click(screen.getByRole("option", { name: "50 条" }));
 
     await waitFor(() => {
       expect(mocks.getCollectionRuns).toHaveBeenLastCalledWith({ limit: 50 });
