@@ -29,14 +29,15 @@ export default function ProfilePage() {
     let cancelled = false;
     const load = async () => {
       try {
+        const overviewRequest = canViewOperations
+          ? getOperationsOverview().catch(() => undefined)
+          : undefined;
         const [monitors, reports, sources] = await Promise.all([
           getMonitors({ limit: 100 }),
           getReports({ limit: 100 }),
           getSourceConnections({ limit: 100 }),
         ]);
-        const overview = canViewOperations
-          ? await getOperationsOverview().catch(() => undefined)
-          : undefined;
+        const overview = await overviewRequest;
         if (!cancelled) {
           setStats({
             monitors: monitors.data?.items?.length ?? 0,

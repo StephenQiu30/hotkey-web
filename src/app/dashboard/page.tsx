@@ -60,6 +60,12 @@ export default function DashboardPage() {
   const loadWorkspace = useCallback(async () => {
     setLoading(true); setError(undefined);
     try {
+      const runtimeRequest = canManageOperations
+        ? Promise.allSettled([
+            getOperationsOverview(),
+            getCollectionRuns({ limit: 50 }),
+          ])
+        : undefined;
       const [eventResult, reportResult, monitorResult, contentResult] = await Promise.all([
         getEvents({ limit: 50 }),
         getReports({ limit: 20 }),
@@ -71,11 +77,8 @@ export default function DashboardPage() {
       setReports(reportResult.data?.items ?? []);
       setMonitors(monitorResult.data?.items ?? []);
       setCollectedContents(contentResult.data?.items ?? []);
-      if (canManageOperations) {
-        const [overviewResult, runResult] = await Promise.allSettled([
-          getOperationsOverview(),
-          getCollectionRuns({ limit: 50 }),
-        ]);
+      if (runtimeRequest) {
+        const [overviewResult, runResult] = await runtimeRequest;
         setOverview(overviewResult.status === "fulfilled" ? overviewResult.value.data : undefined);
         setCollectionRuns(runResult.status === "fulfilled" ? runResult.value.data?.items ?? [] : []);
       } else {
