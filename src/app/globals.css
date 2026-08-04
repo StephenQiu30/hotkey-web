@@ -25,16 +25,16 @@
 }
 
 :root {
-  --background: #f5f8fd;
-  --foreground: #10213b;
+  --background: #f8fafc;
+  --foreground: #0f172a;
   --card: #ffffff;
   --popover: #ffffff;
   --primary: #1769e0;
   --primary-foreground: #ffffff;
-  --secondary: #edf4ff;
-  --muted-foreground: #62738a;
-  --border: #dce6f2;
-  --border-strong: #c7d6e8;
+  --secondary: #eff6ff;
+  --muted-foreground: #5f7088;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
   --signal: #1769e0;
   --success: #139c6a;
   --warning: #c67a0a;
@@ -59,7 +59,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
 h1, h2, h3, h4 { letter-spacing: -0.025em; }
 ::selection { background: rgba(23, 105, 224, .2); }
 
-.app-page { margin: 0 auto; width: 100%; max-width: 1440px; padding: 32px 28px 56px; }
+.app-page { margin: 0 auto; width: 100%; max-width: 1480px; padding: 36px 32px 64px; }
+.radar-page { min-height: calc(100vh - 72px); }
 .signal-text { color: var(--signal); }
 .success-text { color: var(--success); }
 .warning-text { color: var(--warning); }
