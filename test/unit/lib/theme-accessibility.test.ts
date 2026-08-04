@@ -1,7 +1,8 @@
 import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
-const css = readFileSync(new URL("../../../../src/app/globals.css", import.meta.url), "utf8");
+const css = readFileSync(join(process.cwd(), "src/app/globals.css"), "utf8");
 
 function channel(value: number) {
   const normalized = value / 255;
