@@ -25,9 +25,9 @@ HotKey 把 RSS、Atom、Hacker News 等公开信号转化为可验证的事件�
 
 HotKey 是一个前后端分离的开源项目：
 
-| 仓库 | 职责 |
-|------|------|
-| [hotkey-web](https://github.com/StephenQiu30/hotkey-web) | 本仓库；提供面向最终用户的桌面 Web 工作台 |
+| 仓库                                                           | 职责                                                            |
+| -------------------------------------------------------------- | --------------------------------------------------------------- |
+| [hotkey-web](https://github.com/StephenQiu30/hotkey-web)       | 本仓库；提供面向最终用户的桌面 Web 工作台                       |
 | [hotkey-server](https://github.com/StephenQiu30/hotkey-server) | 提供后端 API、采集与 AI 任务、数据模型、交付能力和 OpenAPI 契约 |
 
 你可以分别开发和部署两个仓库；使用完整产品功能时需要同时运行前后端。
@@ -53,14 +53,14 @@ Web 端不手写后端 API 类型。所有请求函数和 DTO 都从 `hotkey-ser
 
 ## 技术栈
 
-| 类别 | 选型 |
-|------|------|
-| 应用框架 | Next.js 16 App Router、React 19、TypeScript 5.9 |
-| 样式系统 | Tailwind CSS 4、CSS Variables、深色主题 |
-| UI 基础 | Radix UI、Lucide Icons、自有组合组件 |
-| 图表与动效 | Recharts、GSAP |
-| 数据与状态 | Axios、Zustand、OpenAPI Generated Client |
-| 测试 | Vitest、Testing Library、Playwright / agent-browser |
+| 类别       | 选型                                                |
+| ---------- | --------------------------------------------------- |
+| 应用框架   | Next.js 16 App Router、React 19、TypeScript 5.9     |
+| 样式系统   | Tailwind CSS 4、CSS Variables、深色主题             |
+| UI 基础    | Radix UI、Lucide Icons、自有组合组件                |
+| 图表与动效 | Recharts、GSAP                                      |
+| 数据与状态 | Axios、Zustand、OpenAPI Generated Client            |
+| 测试       | Vitest、Testing Library、Playwright / agent-browser |
 
 ## 快速开始
 
@@ -94,22 +94,45 @@ HOTKEY_API_ORIGIN=http://127.0.0.1:8080
 
 ### Docker
 
-后端已运行在宿主机 `8080` 端口时，可以直接构建 Web 容器：
+Docker 启动会显式加载 `.env.<环境>`，默认环境为 `prod`。首次启动先创建本地生产配置：
 
 ```bash
-docker compose up --build
+cp .env.prod.example .env.prod
+npm run docker:up
 ```
 
-如后端位于其他地址，可在构建时覆盖：
+默认命令等价于 `docker compose --env-file .env.prod up --build`。需要后台运行时追加 `-d`：
 
 ```bash
-HOTKEY_API_ORIGIN=http://host.docker.internal:8080 docker compose up --build
+npm run docker:up -- -d
+```
+
+其他部署环境使用 `--env` 选择对应文件。例如 `.env.staging`：
+
+```bash
+cp .env.prod.example .env.staging
+# 将 .env.staging 中的 HOTKEY_DEPLOY_ENV、COMPOSE_PROJECT_NAME、端口和后端地址改为预发布配置
+npm run docker:config -- --env staging
+npm run docker:up -- --env staging -d
+```
+
+`-env staging` 也可作为 `--env staging` 的兼容写法。环境名只用于选择部署配置；容器内的 `NODE_ENV` 始终为 `production`，`HOTKEY_DEPLOY_ENV` 和 `COMPOSE_PROJECT_NAME` 用于区分镜像标签及 Compose 网络、容器等资源。
+
+常用 Docker 命令：
+
+```bash
+npm run docker:config                 # 校验默认 .env.prod
+npm run docker:logs                   # 查看默认生产环境日志
+npm run docker:down                   # 停止默认生产环境
+npm run docker:down -- --env staging  # 停止预发布环境
 ```
 
 ## 常用命令
 
 ```bash
 npm run dev               # 本地开发与 Fast Refresh
+npm run docker:up         # 使用 .env.prod 构建并启动 Docker
+npm run docker:config     # 校验 .env.prod 对应的 Compose 配置
 npm run typecheck         # TypeScript 类型检查
 npm run test:unit         # 单元测试
 npm run build             # 生产构建
@@ -168,10 +191,10 @@ HotKey Web 正处于积极开发阶段。登录、注册、热点工作台、监
 
 ## 相关仓库
 
-| 仓库 | 说明 |
-|------|------|
+| 仓库                                                           | 说明                                      |
+| -------------------------------------------------------------- | ----------------------------------------- |
 | [hotkey-server](https://github.com/StephenQiu30/hotkey-server) | 后端、任务系统、数据模型与 OpenAPI 事实源 |
-| [hotkey-web](https://github.com/StephenQiu30/hotkey-web) | 本仓库，桌面 Web 工作台 |
+| [hotkey-web](https://github.com/StephenQiu30/hotkey-web)       | 本仓库，桌面 Web 工作台                   |
 
 ## 许可证
 

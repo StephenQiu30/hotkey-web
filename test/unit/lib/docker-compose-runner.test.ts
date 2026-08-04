@@ -36,16 +36,24 @@ describe("Docker Compose environment runner", () => {
     const result = spawnSync(
       process.execPath,
       [runnerPath, "--env", "../prod", "config", "--dry-run"],
-      { cwd: repositoryRoot, encoding: "utf8" },
+      { cwd: repositoryRoot, encoding: "utf8" }
     );
 
     expect(result.status).not.toBe(0);
-    expect(result.stderr).toContain("环境名称只能包含字母、数字、短横线和下划线");
+    expect(result.stderr).toContain(
+      "环境名称只能包含字母、数字、短横线和下划线"
+    );
   });
 
   it("keeps Compose resources isolated by deployment environment", () => {
-    const compose = readFileSync(join(repositoryRoot, "docker-compose.yml"), "utf8");
-    const prodExample = readFileSync(join(repositoryRoot, ".env.prod.example"), "utf8");
+    const compose = readFileSync(
+      join(repositoryRoot, "docker-compose.yml"),
+      "utf8"
+    );
+    const prodExample = readFileSync(
+      join(repositoryRoot, ".env.prod.example"),
+      "utf8"
+    );
 
     expect(compose).not.toMatch(/^version:/m);
     expect(compose).toContain("name: ${COMPOSE_PROJECT_NAME:-hotkey-web-prod}");

@@ -29,7 +29,9 @@ const fail = (message) => {
 };
 
 const shellValue = (value) =>
-  /^[a-z0-9_./:=@-]+$/i.test(value) ? value : `'${value.replaceAll("'", "'\\''")}'`;
+  /^[a-z0-9_./:=@-]+$/i.test(value)
+    ? value
+    : `'${value.replaceAll("'", "'\\''")}'`;
 
 let environment = DEFAULT_ENVIRONMENT;
 let dryRun = false;

@@ -25,9 +25,9 @@ HotKey turns public signals from RSS, Atom, Hacker News, and other compliant sou
 
 HotKey is an open-source project with separate frontend and backend repositories:
 
-| Repository | Responsibility |
-|------------|----------------|
-| [hotkey-web](https://github.com/StephenQiu30/hotkey-web) | This repository: the user-facing desktop Web workspace |
+| Repository                                                     | Responsibility                                                                        |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| [hotkey-web](https://github.com/StephenQiu30/hotkey-web)       | This repository: the user-facing desktop Web workspace                                |
 | [hotkey-server](https://github.com/StephenQiu30/hotkey-server) | Backend APIs, collection and AI jobs, data models, delivery, and the OpenAPI contract |
 
 The repositories can be developed and deployed independently. Run both to use the complete product.
@@ -53,14 +53,14 @@ The frontend does not hand-write backend DTOs. Request functions and types are g
 
 ## Stack
 
-| Area | Technology |
-|------|------------|
-| Application | Next.js 16 App Router, React 19, TypeScript 5.9 |
-| Styling | Tailwind CSS 4, CSS variables, dark theme |
-| UI foundations | Radix UI, Lucide Icons, composed local components |
-| Charts and motion | Recharts, GSAP |
-| Data and state | Axios, Zustand, generated OpenAPI client |
-| Testing | Vitest, Testing Library, Playwright / agent-browser |
+| Area              | Technology                                          |
+| ----------------- | --------------------------------------------------- |
+| Application       | Next.js 16 App Router, React 19, TypeScript 5.9     |
+| Styling           | Tailwind CSS 4, CSS variables, dark theme           |
+| UI foundations    | Radix UI, Lucide Icons, composed local components   |
+| Charts and motion | Recharts, GSAP                                      |
+| Data and state    | Axios, Zustand, generated OpenAPI client            |
+| Testing           | Vitest, Testing Library, Playwright / agent-browser |
 
 ## Quick start
 
@@ -94,18 +94,45 @@ In WebStorm, you can run the `dev` script from `package.json` directly. The Web 
 
 ### Docker
 
-With the backend running on port `8080` of the host:
+Docker startup explicitly loads `.env.<environment>` and defaults to `prod`. Create the local production configuration before the first run:
 
 ```bash
-docker compose up --build
+cp .env.prod.example .env.prod
+npm run docker:up
 ```
 
-Override `HOTKEY_API_ORIGIN` when the backend uses a different address.
+This is equivalent to `docker compose --env-file .env.prod up --build`. Append `-d` to run in the background:
+
+```bash
+npm run docker:up -- -d
+```
+
+Select another deployment configuration with `--env`. For example, for `.env.staging`:
+
+```bash
+cp .env.prod.example .env.staging
+# Update HOTKEY_DEPLOY_ENV, COMPOSE_PROJECT_NAME, the port, and backend origin.
+npm run docker:config -- --env staging
+npm run docker:up -- --env staging -d
+```
+
+`-env staging` is accepted as an alias for `--env staging`. The selected name identifies deployment configuration only: containers always run with `NODE_ENV=production`, while `HOTKEY_DEPLOY_ENV` and `COMPOSE_PROJECT_NAME` isolate image tags and Compose resources.
+
+Common lifecycle commands:
+
+```bash
+npm run docker:config
+npm run docker:logs
+npm run docker:down
+npm run docker:down -- --env staging
+```
 
 ## Commands
 
 ```bash
 npm run dev
+npm run docker:up
+npm run docker:config
 npm run typecheck
 npm run test:unit
 npm run build
@@ -144,10 +171,10 @@ Read the [contribution guide](CONTRIBUTING.md), [code of conduct](CODE_OF_CONDUC
 
 ## Related repositories
 
-| Repository | Purpose |
-|------------|---------|
+| Repository                                                     | Purpose                                                |
+| -------------------------------------------------------------- | ------------------------------------------------------ |
 | [hotkey-server](https://github.com/StephenQiu30/hotkey-server) | Backend, jobs, data model, and OpenAPI source of truth |
-| [hotkey-web](https://github.com/StephenQiu30/hotkey-web) | This repository, the desktop web workspace |
+| [hotkey-web](https://github.com/StephenQiu30/hotkey-web)       | This repository, the desktop web workspace             |
 
 ## License
 

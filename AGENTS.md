@@ -7,6 +7,7 @@
 hotkey-web 是 HotKey 平台的 Web 工作台，提供内容创作者使用的界面。
 
 ### 技术栈
+
 - Next.js 16 + React 19
 - Tailwind CSS 4 + CSS Variables
 - Radix UI + 自有组合组件
@@ -19,6 +20,7 @@ hotkey-web 是 HotKey 平台的 Web 工作台，提供内容创作者使用的�
 - TypeScript
 
 ### 项目结构
+
 ```
 hotkey-web/
 ├── src/
@@ -41,6 +43,8 @@ hotkey-web/
 ```bash
 npm run dev           # 开发服务器
 npm run build         # 生产构建
+npm run docker:up     # 默认读取 .env.prod 构建并启动 Docker
+npm run docker:config # 校验默认生产 Compose 配置
 npm run typecheck     # 类型检查
 npm run test:unit     # test/ 下的单元测试
 npm run openapi:generate   # 从服务器 OpenAPI 重新生成 API 客户端
@@ -49,12 +53,14 @@ npm run openapi:generate   # 从服务器 OpenAPI 重新生成 API 客户端
 ## 架构
 
 ### API 客户端生成
+
 - 从 `hotkey-server` 的 OpenAPI 规范生成
 - 使用 `@umijs/openapi` 工具
 - 生成路径：`src/services/hotkey/hotkey-server/`
 - **绝不手写后端 API 类型**
 
 ### 组件结构
+
 - `src/app/dashboard/page.tsx` — 主工作台页面
 - UI 使用 **Tailwind CSS 4**、CSS Variables、Radix UI 和 `src/components/ui/` 组合组件
 - 图标使用 **lucide-react**，图表使用 **recharts**，动效使用 **GSAP**
@@ -138,20 +144,23 @@ npm run openapi:generate   # 从服务器 OpenAPI 重新生成 API 客户端
 
 ### 标准角色与职责
 
-| 角色 | 职责 |
-|------|------|
-| **PM** | 策略分解、任务拆分 |
+| 角色         | 职责                 |
+| ------------ | -------------------- |
+| **PM**       | 策略分解、任务拆分   |
 | **Explorer** | 事实验证、上下文收集 |
-| **Builder** | 实现执行、最小变更 |
-| **Tester** | 质量保证、测试验证 |
-| **Reporter** | 交付回顾、风险总结 |
+| **Builder**  | 实现执行、最小变更   |
+| **Tester**   | 质量保证、测试验证   |
+| **Reporter** | 交付回顾、风险总结   |
 
 ### 角色配置
+
 - 角色配置存放于 `.codex/agents/` 目录
 - 可复用流程存放于 `.codex/skills/` 目录
 
 ### 标准执行流程
+
 **Explorer → PM → Builder → Tester → Reporter**
+
 1. Explorer 先收集上下文
 2. PM 拆分任务，明确范围
 3. Builder 实现最少变更
@@ -163,6 +172,7 @@ npm run openapi:generate   # 从服务器 OpenAPI 重新生成 API 客户端
 ## 交付输出要求
 
 每个任务完成必须包含：
+
 1. 变更了什么
 2. 如何验证
 3. 未验证的内容或残余风险
@@ -175,6 +185,9 @@ npm run openapi:generate   # 从服务器 OpenAPI 重新生成 API 客户端
 ## 环境配置
 
 复制 `.env.example` 到 `.env` 并配置。关键变量：
+
 - `HOTKEY_API_ORIGIN` — API 服务器地址（仅由 Next.js 服务端 rewrites 使用，不暴露给浏览器）
 - `NEXT_OUTPUT` — 可选；设为 `standalone` 时生成 Docker 使用的独立运行产物
 - `WEB_PORT` — 可选；`docker compose` 对外暴露的 Web 端口
+- Docker 启动统一通过 `scripts/docker-compose.mjs`；默认显式读取 `.env.prod`，其他环境使用 `--env <name>` 选择 `.env.<name>`
+- `HOTKEY_DEPLOY_ENV` 与 `COMPOSE_PROJECT_NAME` 用于区分 Docker 部署资源，不替代容器内固定的 `NODE_ENV=production`
