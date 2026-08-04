@@ -11,7 +11,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("@/services/hotkey/hotkey-server/monitors", () => ({ getMonitors: mocks.getMonitors }));
 vi.mock("@/services/hotkey/hotkey-server/reports", () => ({ getReports: mocks.getReports }));
-vi.mock("@/services/hotkey/hotkey-server/sourceConnections", () => ({ getSourceConnections: mocks.getSourceConnections }));
+vi.mock("@/services/hotkey/hotkey-server/sources", () => ({ getSourceConnections: mocks.getSourceConnections }));
 vi.mock("@/services/hotkey/hotkey-server/operations", () => ({ getOperationsOverview: mocks.getOperationsOverview }));
 vi.mock("@/stores/authStore", () => ({
   useAuthStore: (selector: (state: { user: Record<string, unknown> }) => unknown) =>
