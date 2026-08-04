@@ -1,4 +1,5 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AlertsPage from "@/app/dashboard/alerts/page";
 
@@ -56,18 +57,19 @@ describe("AlertsPage", () => {
   });
 
   it("requires confirmation before suppressing similar alerts", async () => {
+    const user = userEvent.setup();
     render(<AlertsPage />);
 
     expect(await screen.findByText("化工安全事件快速升温")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "打开告警操作" }));
-    fireEvent.click(await screen.findByRole("menuitem", { name: "抑制同类告警" }));
+    await user.click(screen.getByRole("button", { name: "打开告警操作" }));
+    await user.click(await screen.findByRole("menuitem", { name: "抑制同类告警" }));
 
     expect(
       await screen.findByRole("alertdialog", { name: "抑制同类告警？" }),
     ).toBeInTheDocument();
     expect(mocks.postAlertsIdSuppress).not.toHaveBeenCalled();
 
-    fireEvent.click(screen.getByRole("button", { name: "确认抑制" }));
+    await user.click(screen.getByRole("button", { name: "确认抑制" }));
 
     expect(mocks.postAlertsIdSuppress).toHaveBeenCalledWith(
       { id: 5 },

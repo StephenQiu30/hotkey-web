@@ -5,6 +5,7 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Activity, Database } from "lucide-react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import TopNav from "@/components/dashboard/TopNav";
@@ -80,6 +81,7 @@ describe("TopNav", () => {
   });
 
   it("keeps operational pages in the account menu for administrators", async () => {
+    const user = userEvent.setup();
     render(
       <TopNav
         menuItems={[]}
@@ -89,18 +91,19 @@ describe("TopNav", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "账户菜单" }));
+    await user.click(screen.getByRole("button", { name: "账户菜单" }));
     expect(await screen.findByRole("menuitem", { name: /来源管理/ })).toBeInTheDocument();
   });
 
   it("opens mobile navigation as an accessible sheet", async () => {
+    const user = userEvent.setup();
     render(
       <TopNav
         menuItems={[{ path: "/dashboard", name: "概览", icon: <Activity /> }]}
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "打开导航" }));
+    await user.click(screen.getByRole("button", { name: "打开导航" }));
 
     expect(await screen.findByRole("dialog", { name: "工作区导航" })).toBeInTheDocument();
     expect(
