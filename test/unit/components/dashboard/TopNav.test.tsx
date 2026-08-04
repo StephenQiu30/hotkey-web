@@ -77,14 +77,16 @@ describe("TopNav", () => {
     );
 
     const managementMenu = screen.getByRole("button", { name: "管理" });
+    const mainNavigation = screen.getByRole("navigation", { name: "主导航" });
+    const navigationList = mainNavigation.querySelector("ul");
+    expect(mainNavigation).toHaveAttribute("data-orientation", "horizontal");
+    expect(navigationList).toContainElement(managementMenu);
+    expect(managementMenu.closest("li")).not.toBeNull();
     expect(managementMenu).toHaveAttribute("data-nav-menu-trigger", "management");
     expect(managementMenu).not.toHaveClass("ring-offset-background");
     expect(managementMenu).not.toHaveClass("focus-visible:ring-2");
     expect(managementMenu).not.toHaveClass("focus-visible:ring-offset-2");
     expect(managementMenu).not.toHaveClass("focus-visible:bg-blue-50");
-    expect(
-      managementMenu.querySelector('[data-nav-focus-indicator="management"]'),
-    ).toBeInTheDocument();
 
     useAuthStore.setState((state) => ({
       ...state,
