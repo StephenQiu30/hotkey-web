@@ -182,7 +182,7 @@ npm run openapi:generate   # 从服务器 OpenAPI 重新生成 API 客户端
 
 ## 环境配置
 
-复制 `.env.example` 到 `.env` 并配置。关键变量：
+复制 `.env.example` 到 `.env` 后可直接使用默认值；只有部署地址或端口不同时才取消注释并覆盖：
 
 - `HOTKEY_API_ORIGIN` — API 服务器地址（仅由 Next.js 服务端 rewrites 使用，不暴露给浏览器）
 - `NEXT_OUTPUT` — 可选；设为 `standalone` 时生成 Docker 使用的独立运行产物

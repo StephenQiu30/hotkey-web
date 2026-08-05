@@ -82,7 +82,7 @@ npm run dev
 
 Open <http://localhost:3000>.
 
-The default environment sends same-origin `/api` and `/healthz` requests through the Next.js server to your backend:
+No environment value is required for the default local backend. Same-origin `/api` and `/healthz` requests are sent through the Next.js server to:
 
 ```dotenv
 HOTKEY_API_ORIGIN=http://127.0.0.1:8080
@@ -105,7 +105,7 @@ Start the daily environment:
 docker compose -f docker-compose-env.yml up --build -d
 ```
 
-Create the local production configuration before the first production run:
+Create the local production configuration before the first production run. The template requires no values unless the backend address or Web port differs:
 
 ```bash
 cp .env.prod.example .env.prod

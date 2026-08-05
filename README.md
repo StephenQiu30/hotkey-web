@@ -82,7 +82,7 @@ npm run dev
 
 访问 <http://localhost:3000>。
 
-默认 `.env.example` 已将 Next.js 服务端代理指向本机后端：
+无需填写环境变量即可使用默认的本机后端地址：
 
 ```dotenv
 HOTKEY_API_ORIGIN=http://127.0.0.1:8080
@@ -105,7 +105,7 @@ Docker 环境直接通过 Compose 文件区分：
 docker compose -f docker-compose-env.yml up --build -d
 ```
 
-首次启动生产环境前，先创建本地生产配置：
+首次启动生产环境前创建本地生产配置。模板默认无需填写；只有后端地址或 Web 端口不同才取消对应注释：
 
 ```bash
 cp .env.prod.example .env.prod
