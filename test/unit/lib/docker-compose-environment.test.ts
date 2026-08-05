@@ -20,13 +20,18 @@ describe("Docker Compose environment configuration", () => {
     expect(prodCompose).toContain("HOTKEY_DEPLOY_ENV: prod");
   });
 
-  it("keeps production values in docker-compose-prod.yml", () => {
+  it("documents optional environment overrides without requiring defaults", () => {
+    const envExample = readRepositoryFile(".env.example");
     const prodExample = readRepositoryFile(".env.prod.example");
 
+    expect(envExample).toContain("# HOTKEY_API_ORIGIN=http://127.0.0.1:8080");
+    expect(envExample).toContain("# NEXT_OUTPUT=standalone");
+    expect(envExample).toContain("# WEB_PORT=3000");
+    expect(prodExample).toContain("# 默认无需填写任何变量");
     expect(prodExample).toContain(
-      "HOTKEY_API_ORIGIN=http://host.docker.internal:8080"
+      "# HOTKEY_API_ORIGIN=http://host.docker.internal:8080"
     );
-    expect(prodExample).toContain("WEB_PORT=3000");
+    expect(prodExample).toContain("# WEB_PORT=3000");
     expect(prodExample).not.toContain("HOTKEY_DEPLOY_ENV");
   });
 
