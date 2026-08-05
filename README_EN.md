@@ -162,7 +162,7 @@ The current version is intended for local use, self-hosted evaluation, and colla
 
 Contributions to accessibility, responsive behavior, visualizations, testing, performance, documentation, and new backend-backed workflows are welcome.
 
-Read the [contribution guide](CONTRIBUTING.md), [code of conduct](CODE_OF_CONDUCT.md), and [security policy](SECURITY.md). Please open an Issue before large changes and describe the user problem, interaction scope, and acceptance criteria.
+Read the [contribution guide](CONTRIBUTING.md) and [security policy](SECURITY.md). Please open an Issue before large changes and describe the user problem, interaction scope, and acceptance criteria.
 
 ## Related repositories
 

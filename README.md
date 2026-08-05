@@ -178,7 +178,6 @@ HotKey Web 正处于积极开发阶段。登录、注册、热点工作台、监
 提交代码前请阅读：
 
 - [贡献指南](CONTRIBUTING.md)
-- [行为准则](CODE_OF_CONDUCT.md)
 - [安全策略](SECURITY.md)
 - [项目文档](docs/README.md)
 
