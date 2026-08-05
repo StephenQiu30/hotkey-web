@@ -8,6 +8,7 @@ const readRepositoryFile = (path: string) =>
 
 describe("Docker Compose environment configuration", () => {
   it("uses separate env and prod Compose files", () => {
+    const dockerfile = readRepositoryFile("Dockerfile");
     const envCompose = readRepositoryFile("docker-compose-env.yml");
     const prodCompose = readRepositoryFile("docker-compose-prod.yml");
 
@@ -18,6 +19,8 @@ describe("Docker Compose environment configuration", () => {
     expect(prodCompose).toContain("name: hotkey-web-prod");
     expect(prodCompose).toContain("image: hotkey-web:prod");
     expect(prodCompose).toContain("HOTKEY_DEPLOY_ENV: prod");
+    expect(dockerfile.match(/^FROM node:latest AS /gm)).toHaveLength(3);
+    expect(dockerfile).toContain("USER node");
   });
 
   it("documents optional environment overrides without requiring defaults", () => {
