@@ -189,3 +189,4 @@ npm run openapi:generate   # 从服务器 OpenAPI 重新生成 API 客户端
 - `WEB_PORT` — 可选；`docker compose` 对外暴露的 Web 端口
 - Docker 通过 `docker-compose-env.yml` 与 `docker-compose-prod.yml` 区分日常和生产环境
 - 两份 Compose 文件分别固定项目名、镜像标签和 `HOTKEY_DEPLOY_ENV`；容器内 `NODE_ENV` 均为 `production`
+- Dockerfile 的三个阶段统一使用 `node:latest`；项目自身继续使用 `hotkey-web:env` / `hotkey-web:prod` 区分环境

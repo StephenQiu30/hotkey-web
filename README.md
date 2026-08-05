@@ -113,7 +113,7 @@ docker compose --env-file .env.prod -f docker-compose-prod.yml config
 docker compose --env-file .env.prod -f docker-compose-prod.yml up --build -d
 ```
 
-两份文件都使用生产模式运行 Next.js，但通过固定的项目名、镜像标签和 `HOTKEY_DEPLOY_ENV` 明确隔离部署资源。
+两份文件都使用 `node:latest` 基础镜像并以生产模式运行 Next.js，同时通过固定的项目名、应用镜像标签和 `HOTKEY_DEPLOY_ENV` 明确隔离部署资源。
 
 常用 Docker 命令：
 

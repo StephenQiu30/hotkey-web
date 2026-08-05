@@ -113,7 +113,7 @@ docker compose --env-file .env.prod -f docker-compose-prod.yml config
 docker compose --env-file .env.prod -f docker-compose-prod.yml up --build -d
 ```
 
-Both files run Next.js in production mode, while fixed project names, image tags, and `HOTKEY_DEPLOY_ENV` values isolate deployment resources.
+Both files build from `node:latest` and run Next.js in production mode, while fixed project names, application image tags, and `HOTKEY_DEPLOY_ENV` values isolate deployment resources.
 
 Common lifecycle commands:
 
