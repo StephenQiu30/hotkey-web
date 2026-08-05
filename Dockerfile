@@ -1,7 +1,7 @@
 # =============================================================================
 # Stage 1: Dependencies (cached separately)
 # =============================================================================
-FROM node:22-alpine AS deps
+FROM node:latest AS deps
 
 WORKDIR /app
 
@@ -11,7 +11,7 @@ RUN npm ci --ignore-scripts
 # =============================================================================
 # Stage 2: Build
 # =============================================================================
-FROM node:22-alpine AS builder
+FROM node:latest AS builder
 
 WORKDIR /app
 
@@ -27,7 +27,7 @@ RUN npm run build
 # =============================================================================
 # Stage 3: Production runner (Next.js standalone)
 # =============================================================================
-FROM node:22-alpine AS runner
+FROM node:latest AS runner
 
 WORKDIR /app
 
@@ -39,15 +39,12 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
-# Non-root user
-RUN addgroup -S hotkey && adduser -S hotkey -G hotkey
-
 # Copy standalone server + static assets
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/public ./public
+COPY --from=builder --chown=node:node /app/.next/standalone ./
+COPY --from=builder --chown=node:node /app/.next/static ./.next/static
+COPY --from=builder --chown=node:node /app/public ./public
 
-USER hotkey
+USER node
 
 EXPOSE 3000
 
